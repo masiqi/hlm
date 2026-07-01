@@ -1,0 +1,92 @@
+from pathlib import Path
+
+from hlm_kg.content_store import ContentStore
+
+
+def test_content_store_loads_seed_chapter_review_card():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    card = store.review_card_for_chapter(27)
+
+    assert card.chapter == 27
+    assert card.source.prompt_name == "hongloumeng_chapter_review_card"
+    assert card.source.prompt_version == "2026-07-01"
+    assert "黛玉葬花" in card.plain_summary
+    assert card.later_association_relation_ids
+
+
+def test_content_store_reads_original_chapter_text():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    chapter = store.chapter(27)
+    text = store.chapter_text(27)
+
+    assert chapter.number == 27
+    assert chapter.title
+    assert "第二十七回" in text or "第27章" in text
+
+
+def test_content_store_exposes_seed_knowledge_cards_relations_topics_and_entries():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    assert any(card.id == "card-lindaiyu" for card in store.knowledge_cards)
+    assert any(relation.id == "rel-daiyu-burying-flowers-fate" for relation in store.graph_relations)
+    assert {topic.category for topic in store.topics} == {
+        "人物关系",
+        "关键事件",
+        "判词命运",
+        "意象伏笔",
+        "可引用事实",
+    }
+    assert any(entry["id"] == "entry-daiyu-burying-flowers" for entry in store.common_entries)
+
+
+def test_content_store_loads_evidence_lookup():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    evidence = store.evidence("ev-027-daiyu-burying-flowers")
+
+    assert evidence.source_type == "original_text"
+    assert store.evidence_by_id()[evidence.id] == evidence
+
+
+def test_seed_reference_integrity():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+    card_ids = {card.id for card in store.knowledge_cards}
+    relation_ids = {relation.id for relation in store.graph_relations}
+    evidence_ids = set(store.evidence_by_id())
+
+    for card in store.knowledge_cards:
+        assert set(card.graph_relation_ids) <= relation_ids
+        assert set(card.evidence_ids) <= evidence_ids
+        assert set(card.related_card_ids) <= card_ids
+
+    for relation in store.graph_relations:
+        assert set(relation.evidence_ids) <= evidence_ids
+
+    for topic in store.topics:
+        assert set(topic.card_ids) <= card_ids
+        assert set(topic.relation_ids) <= relation_ids
+        assert set(topic.evidence_ids) <= evidence_ids
+        assert set(topic.quotable_fact_ids) <= evidence_ids
+
+    for chapter_number in [27, 56]:
+        review_card = store.review_card_for_chapter(chapter_number)
+        assert set(review_card.key_characters) <= card_ids
+        assert set(review_card.later_association_relation_ids) <= relation_ids
+        assert set(review_card.quotable_fact_ids) <= evidence_ids

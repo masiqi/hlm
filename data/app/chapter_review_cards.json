@@ -1,0 +1,38 @@
+[
+  {
+    "id": "review-027",
+    "chapter": 27,
+    "source": {
+      "prompt_name": "hongloumeng_chapter_review_card",
+      "prompt_version": "2026-07-01",
+      "generated_at": null
+    },
+    "plain_summary": "本回主要写宝钗扑蝶、黛玉葬花等情节；黛玉葬花并吟《葬花吟》，集中呈现其身世悲感与洁身自持。",
+    "plot_chain": ["宝钗扑蝶", "黛玉葬花", "黛玉吟《葬花吟》"],
+    "key_events": ["event-daiyu-burying-flowers"],
+    "key_characters": ["card-lindaiyu", "card-xuebaochai"],
+    "current_chapter_foreshadowing_signals": ["落花与葬花行为构成黛玉命运悲感的本回信号。"],
+    "later_association_relation_ids": ["rel-daiyu-burying-flowers-fate"],
+    "quotable_fact_ids": ["ev-027-daiyu-burying-flowers"],
+    "retrieval_tags": ["第27回", "黛玉葬花", "葬花吟", "意象伏笔"],
+    "understanding_focus": ["人物情感", "意象", "命运伏笔"]
+  },
+  {
+    "id": "review-056",
+    "chapter": 56,
+    "source": {
+      "prompt_name": "hongloumeng_chapter_review_card",
+      "prompt_version": "2026-07-01",
+      "generated_at": null
+    },
+    "plain_summary": "本回主要写探春理家，探春通过兴利除弊整顿事务，表现其管理才干和忧患意识。",
+    "plot_chain": ["探春代管家务", "整顿大观园事务", "兴利除弊"],
+    "key_events": ["event-tanchun-manages-household"],
+    "key_characters": ["card-jiatanchun"],
+    "current_chapter_foreshadowing_signals": [],
+    "later_association_relation_ids": [],
+    "quotable_fact_ids": ["ev-056-tanchun-manages-household"],
+    "retrieval_tags": ["第56回", "探春理家", "兴利除弊", "人物性格"],
+    "understanding_focus": ["人物性格", "家族治理", "事件作用"]
+  }
+]

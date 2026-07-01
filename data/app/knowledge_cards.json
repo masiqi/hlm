@@ -1,0 +1,35 @@
+[
+  {
+    "id": "card-lindaiyu",
+    "name": "林黛玉",
+    "type": "person",
+    "brief": "《红楼梦》主要人物，常与才情、敏感、自尊、身世悲感等理解角度相关。",
+    "text_understanding": ["第 27 回黛玉葬花并吟《葬花吟》。"],
+    "understanding_angles": ["可从身世悲感、洁身自持、落花意象理解黛玉。"],
+    "graph_relation_ids": ["rel-daiyu-burying-flowers-fate"],
+    "evidence_ids": ["ev-027-daiyu-burying-flowers"],
+    "related_card_ids": []
+  },
+  {
+    "id": "card-xuebaochai",
+    "name": "薛宝钗",
+    "type": "person",
+    "brief": "《红楼梦》主要人物，第 27 回涉及宝钗扑蝶。",
+    "text_understanding": ["第 27 回宝钗扑蝶。"],
+    "understanding_angles": ["可与黛玉葬花并读，观察同回不同人物的情节表现。"],
+    "graph_relation_ids": [],
+    "evidence_ids": ["ev-027-baochai-butterfly"],
+    "related_card_ids": ["card-lindaiyu"]
+  },
+  {
+    "id": "card-jiatanchun",
+    "name": "贾探春",
+    "type": "person",
+    "brief": "贾府三姑娘，探春理家常用于理解其管理才干和兴利除弊意识。",
+    "text_understanding": ["第 56 回探春理家，体现她对家族事务的判断和整顿能力。"],
+    "understanding_angles": ["可从管理才干、忧患意识、刚决性格理解探春。"],
+    "graph_relation_ids": ["rel-tanchun-manages-trait"],
+    "evidence_ids": ["ev-056-tanchun-manages-household"],
+    "related_card_ids": []
+  }
+]

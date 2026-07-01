@@ -1,0 +1,22 @@
+[
+  {
+    "id": "rel-daiyu-burying-flowers-fate",
+    "subject_id": "card-lindaiyu",
+    "predicate": "later_association",
+    "object_id": "event-daiyu-fate",
+    "chapters": [27, 97, 98],
+    "evidence_ids": ["ev-027-daiyu-burying-flowers"],
+    "provenance": "curated",
+    "description": "人工校订关系线索：第 27 回黛玉葬花与《葬花吟》可作为理解黛玉命运悲感的关系线索。"
+  },
+  {
+    "id": "rel-tanchun-manages-trait",
+    "subject_id": "card-jiatanchun",
+    "predicate": "supports_trait",
+    "object_id": "trait-xingli-chubi",
+    "chapters": [56],
+    "evidence_ids": ["ev-056-tanchun-manages-household"],
+    "provenance": "curated",
+    "description": "人工校订关系线索：第 56 回探春理家可支撑其兴利除弊、具有管理才干的理解。"
+  }
+]
