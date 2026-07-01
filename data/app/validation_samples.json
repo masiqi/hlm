@@ -1,0 +1,212 @@
+[
+  {
+    "id": "sample-alias",
+    "category": "人物关系与身份别称",
+    "question": "潇湘妃子指的是谁？",
+    "expected_objects": ["林黛玉"],
+    "expected_chapters": [37],
+    "expected_evidence_types": ["graph_relation", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "必须说明别称与人物对应，不能作为题库展示。"
+  },
+  {
+    "id": "sample-kinship",
+    "category": "人物关系与身份别称",
+    "question": "贾宝玉和林黛玉是什么亲属关系？",
+    "expected_objects": ["贾宝玉", "林黛玉", "贾府"],
+    "expected_chapters": [3],
+    "expected_evidence_types": ["original_text", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要说明亲属关系和章回依据。"
+  },
+  {
+    "id": "sample-servant-role",
+    "category": "人物关系与身份别称",
+    "question": "袭人与宝玉的主仆关系如何影响人物表现？",
+    "expected_objects": ["袭人", "贾宝玉"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要具体情节支撑，不能只写身份标签。"
+  },
+  {
+    "id": "sample-plot",
+    "category": "章回情节与内容概括",
+    "question": "第三回主要写了什么？",
+    "expected_objects": ["林黛玉进贾府"],
+    "expected_chapters": [3],
+    "expected_evidence_types": ["original_text", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "可用章节复习卡支撑情节概括。"
+  },
+  {
+    "id": "sample-event-order",
+    "category": "章回情节与内容概括",
+    "question": "刘姥姥进贾府相关情节应如何按章回定位？",
+    "expected_objects": ["刘姥姥进贾府"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要给出相关章回和事件顺序。"
+  },
+  {
+    "id": "sample-chapter-summary",
+    "category": "章回情节与内容概括",
+    "question": "第 56 回探春理家主要写了什么？",
+    "expected_objects": ["探春理家", "贾探春"],
+    "expected_chapters": [56],
+    "expected_evidence_types": ["processed_material", "original_text"],
+    "should_refuse": false,
+    "quality_notes": "需区分情节概括和人物评价。"
+  },
+  {
+    "id": "sample-compare",
+    "category": "比较鉴赏与论述",
+    "question": "黛玉和宝钗的形象有什么不同？",
+    "expected_objects": ["林黛玉", "薛宝钗"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要具体事实，不能输出套话。"
+  },
+  {
+    "id": "sample-character-view",
+    "category": "比较鉴赏与论述",
+    "question": "如何评价王熙凤既能干又弄权的复杂性？",
+    "expected_objects": ["王熙凤"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要正反两类事实，不能单面定性。"
+  },
+  {
+    "id": "sample-argument-evidence",
+    "category": "比较鉴赏与论述",
+    "question": "用具体情节说明探春的管理才干。",
+    "expected_objects": ["贾探春", "探春理家"],
+    "expected_chapters": [56],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "输出事实依据，不提供模板化论述。"
+  },
+  {
+    "id": "sample-judgement",
+    "category": "诗词判词与人物命运",
+    "question": "金陵十二钗判词如何对应人物命运？",
+    "expected_objects": ["金陵十二钗判词"],
+    "expected_chapters": [5],
+    "expected_evidence_types": ["original_text", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要判词原文或章回定位。"
+  },
+  {
+    "id": "sample-flower-sign",
+    "category": "诗词判词与人物命运",
+    "question": "花签如何对应人物命运？",
+    "expected_objects": ["花签"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["original_text", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要花签文本、人物映射和章回来源。"
+  },
+  {
+    "id": "sample-poem-person",
+    "category": "诗词判词与人物命运",
+    "question": "《葬花吟》如何体现黛玉的身世悲感？",
+    "expected_objects": ["《葬花吟》", "林黛玉"],
+    "expected_chapters": [27],
+    "expected_evidence_types": ["original_text", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "需要诗文出处和具体解释。"
+  },
+  {
+    "id": "sample-image",
+    "category": "主题意象与象征",
+    "question": "黛玉葬花中的落花意象有什么作用？",
+    "expected_objects": ["黛玉葬花", "《葬花吟》"],
+    "expected_chapters": [27],
+    "expected_evidence_types": ["original_text", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "需要章回定位和具体说明。"
+  },
+  {
+    "id": "sample-object-symbol",
+    "category": "主题意象与象征",
+    "question": "通灵宝玉在人物关系中有什么作用？",
+    "expected_objects": ["通灵宝玉", "贾宝玉"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["original_text", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要区分物件事实和象征解释。"
+  },
+  {
+    "id": "sample-space-symbol",
+    "category": "主题意象与象征",
+    "question": "潇湘馆如何烘托林黛玉的气质？",
+    "expected_objects": ["潇湘馆", "林黛玉"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "需要地点、人物和环境描写依据。"
+  },
+  {
+    "id": "sample-foreshadowing",
+    "category": "事件因果与伏笔照应",
+    "question": "金麒麟如何形成后文关联？",
+    "expected_objects": ["金麒麟"],
+    "expected_chapters": [31],
+    "expected_evidence_types": ["graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "不能由单回摘要推断后文。"
+  },
+  {
+    "id": "sample-causality",
+    "category": "事件因果与伏笔照应",
+    "question": "探春理家为什么能体现贾府治理问题？",
+    "expected_objects": ["探春理家", "贾府"],
+    "expected_chapters": [56],
+    "expected_evidence_types": ["processed_material", "graph_relation"],
+    "should_refuse": false,
+    "quality_notes": "事件因果需要至少两个可定位环节。"
+  },
+  {
+    "id": "sample-later-link",
+    "category": "事件因果与伏笔照应",
+    "question": "黛玉葬花和后文命运之间有什么关联？",
+    "expected_objects": ["黛玉葬花", "林黛玉"],
+    "expected_chapters": [27],
+    "expected_evidence_types": ["graph_relation", "original_text"],
+    "should_refuse": false,
+    "quality_notes": "后文关联必须来自全书关系线索。"
+  },
+  {
+    "id": "sample-custom",
+    "category": "制度礼俗与文化常识",
+    "question": "贾府称谓关系如何帮助理解人物身份？",
+    "expected_objects": ["贾府"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["graph_relation", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "需要具体称谓和身份关系。"
+  },
+  {
+    "id": "sample-ritual",
+    "category": "制度礼俗与文化常识",
+    "question": "贾府宴饮礼俗如何体现人物身份秩序？",
+    "expected_objects": ["贾府"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["original_text", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "需要具体场景，不做泛文化解释。"
+  },
+  {
+    "id": "sample-title-custom",
+    "category": "制度礼俗与文化常识",
+    "question": "人物称谓变化如何帮助判断亲疏和辈分？",
+    "expected_objects": ["称谓关系"],
+    "expected_chapters": [],
+    "expected_evidence_types": ["graph_relation", "processed_material"],
+    "should_refuse": false,
+    "quality_notes": "需要称谓、人物和关系三者同时出现。"
+  }
+]
