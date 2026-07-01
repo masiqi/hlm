@@ -1,0 +1,57 @@
+[
+  {
+    "id": "topic-character-relations",
+    "title": "人物关系",
+    "category": "人物关系",
+    "description": "围绕身份、别称、称谓、亲属、主仆、婚恋和对照关系组织。",
+    "card_ids": ["card-lindaiyu", "card-jiatanchun"],
+    "relation_ids": [],
+    "typical_question_patterns": ["说明人物关系及章回依据"],
+    "quotable_fact_ids": [],
+    "evidence_ids": []
+  },
+  {
+    "id": "topic-key-events",
+    "title": "关键事件",
+    "category": "关键事件",
+    "description": "围绕事件起因、经过、结果、牵涉人物和章回出处组织。",
+    "card_ids": ["card-jiatanchun"],
+    "relation_ids": ["rel-tanchun-manages-trait"],
+    "typical_question_patterns": ["概括事件并说明人物表现"],
+    "quotable_fact_ids": ["ev-056-tanchun-manages-household"],
+    "evidence_ids": ["ev-056-tanchun-manages-household"]
+  },
+  {
+    "id": "topic-judgement-destiny",
+    "title": "判词命运",
+    "category": "判词命运",
+    "description": "围绕判词、曲词、花签、灯谜与人物命运组织。",
+    "card_ids": [],
+    "relation_ids": [],
+    "typical_question_patterns": ["说明判词对应人物及命运暗示"],
+    "quotable_fact_ids": [],
+    "evidence_ids": []
+  },
+  {
+    "id": "topic-image-foreshadowing",
+    "title": "意象伏笔",
+    "category": "意象伏笔",
+    "description": "围绕物件、花木、诗文和跨章照应组织。",
+    "card_ids": ["card-lindaiyu"],
+    "relation_ids": ["rel-daiyu-burying-flowers-fate"],
+    "typical_question_patterns": ["说明意象和后文关联"],
+    "quotable_fact_ids": ["ev-027-daiyu-burying-flowers"],
+    "evidence_ids": ["ev-027-daiyu-burying-flowers"]
+  },
+  {
+    "id": "topic-quotable-facts",
+    "title": "可引用事实",
+    "category": "可引用事实",
+    "description": "整理短、具体、可定位的事实材料。",
+    "card_ids": ["card-lindaiyu", "card-jiatanchun"],
+    "relation_ids": ["rel-daiyu-burying-flowers-fate"],
+    "typical_question_patterns": ["查找可用于作答的事实依据"],
+    "quotable_fact_ids": ["ev-027-daiyu-burying-flowers", "ev-056-tanchun-manages-household"],
+    "evidence_ids": ["ev-027-daiyu-burying-flowers", "ev-056-tanchun-manages-household"]
+  }
+]
