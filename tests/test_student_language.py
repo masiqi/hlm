@@ -32,3 +32,13 @@ def test_static_ui_contains_three_entry_points():
     assert "问一问" in html
     assert "读章节" in html
     assert "看专题" in html
+
+
+def test_static_ui_has_no_account_or_history_features():
+    combined = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in [Path("static/index.html"), Path("static/app.js"), Path("static/styles.css")]
+    )
+
+    for term in ["登录", "注册", "个人历史", "收藏", "学习档案", "阅读进度", "书架", "评分"]:
+        assert term not in combined
