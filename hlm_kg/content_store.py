@@ -148,6 +148,12 @@ class ContentStore:
     def knowledge_card(self, card_id: str) -> KnowledgeCard:
         return self._knowledge_cards[card_id]
 
+    def topic(self, topic_id: str) -> Topic:
+        return self._topics[topic_id]
+
+    def graph_relation(self, relation_id: str) -> GraphRelation:
+        return self._graph_relations[relation_id]
+
     @property
     def topics(self) -> list[Topic]:
         return list(self._topics.values())

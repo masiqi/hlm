@@ -102,8 +102,31 @@ async function loadChapter(number = 27) {
 async function loadTopics() {
   const data = await getJson("/api/topics");
   document.querySelector("#topic-list").innerHTML = data.topics
-    .map((topic) => `<article><h3>${topic.title}</h3><p>${topic.description}</p></article>`)
+    .map((topic) => `<article><h3>${topic.title}</h3><p>${topic.description}</p><button data-topic-id="${topic.id}">查看专题</button></article>`)
     .join("");
+}
+
+async function loadTopicDetail(topicId) {
+  const data = await getJson(`/api/topics/${topicId}`);
+  const cards = data.cards.map((card) => `<li><button data-card-id="${card.id}">${card.name}</button></li>`).join("");
+  const relations = data.relations.map((relation) => `<li>${relation.description}</li>`).join("");
+  const facts = data.evidence.map((item) => `<li class="source">第 ${item.chapter} 回：${item.evidenceText}</li>`).join("");
+  const patterns = data.topic.typicalQuestionPatterns.map((item) => `<li>${item}</li>`).join("");
+  document.querySelector("#topic-list").innerHTML = `
+    <article>
+      <h3>${data.topic.title}</h3>
+      <p>${data.topic.description}</p>
+      <h4>核心知识卡</h4>
+      <ul>${cards || "<li>暂无可靠资料</li>"}</ul>
+      <h4>关系线索</h4>
+      <ul>${relations || "<li>暂无可靠资料</li>"}</ul>
+      <h4>典型问法</h4>
+      <ul>${patterns || "<li>暂无可靠资料</li>"}</ul>
+      <h4>可引用事实</h4>
+      <ul>${facts || "<li>暂无可靠资料</li>"}</ul>
+    </article>
+  `;
+  document.querySelector("#topic-knowledge-panel").innerHTML = "";
 }
 
 document.addEventListener("click", (event) => {
@@ -119,6 +142,9 @@ document.addEventListener("click", (event) => {
   if (target.matches("[data-card-id]")) {
     const panel = target.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
     loadKnowledgeCard(target.dataset.cardId, panel);
+  }
+  if (target.matches("[data-topic-id]")) {
+    loadTopicDetail(target.dataset.topicId);
   }
 });
 

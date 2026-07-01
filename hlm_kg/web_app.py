@@ -43,6 +43,18 @@ def handle_api_request(
             "reviewCard": _camel(asdict(review_card)),
             "knowledgeCards": [_camel(asdict(card)) for card in knowledge_cards],
         }
+    if method == "GET" and parsed_path.startswith("/api/topics/"):
+        topic_id = parsed_path.rsplit("/", 1)[1]
+        topic = context.store.topic(topic_id)
+        cards = [context.store.knowledge_card(card_id) for card_id in topic.card_ids]
+        relations = [context.store.graph_relation(relation_id) for relation_id in topic.relation_ids]
+        evidence = [context.store.evidence(evidence_id) for evidence_id in topic.evidence_ids]
+        return 200, {
+            "topic": _camel(asdict(topic)),
+            "cards": [_camel(asdict(card)) for card in cards],
+            "relations": [_camel(asdict(relation)) for relation in relations],
+            "evidence": [_camel(asdict(item)) for item in evidence],
+        }
     if method == "GET" and parsed_path == "/api/topics":
         return 200, {"topics": [_camel(asdict(topic)) for topic in context.store.topics]}
     if method == "GET" and parsed_path.startswith("/api/cards/"):

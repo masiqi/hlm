@@ -73,3 +73,29 @@ def test_api_card_returns_student_facing_knowledge_panel_payload():
     assert payload["evidence"]
     assert payload["relations"]
     assert "LightRAG" not in str(payload)
+
+
+def test_api_topic_detail_links_cards_relations_and_quotable_facts():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/topics/topic-image-foreshadowing")
+
+    assert status == 200
+    assert payload["topic"]["category"] == "意象伏笔"
+    assert payload["topic"]["typicalQuestionPatterns"]
+    assert payload["cards"]
+    assert payload["relations"]
+    assert payload["evidence"]
+
+
+def test_static_topic_view_has_visible_knowledge_panel_target():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    html = Path("static/index.html").read_text(encoding="utf-8")
+
+    assert "topic-knowledge-panel" in html
+    assert "loadKnowledgeCard(target.dataset.cardId, panel)" in js
+    assert "#topic-knowledge-panel" in js
