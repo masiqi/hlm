@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# LightRAG runtime state and generated upload staging.
+data/rag_storage/
+data/inputs/
+
+# Local logs and temporary files.
+*.log
+*.tmp

@@ -1,0 +1,113 @@
+### LightRAG entity type profile for Hongloumeng.
+### ENTITY_EXTRACTION_USE_JSON=true requires entity_extraction_json_examples.
+
+entity_types_guidance: |
+  Classify each entity using one of the following types. Prefer the most specific type.
+  Preserve classical Chinese names, aliases, chapter references, and source wording where useful.
+
+  - Person: 小说人物或叙述中出现的人物，包括主要人物、丫鬟、小厮、僧道、官员、亲族。
+  - Alias: 人物字号、乳名、别号、谐音名、称谓或外号，例如宝玉、颦儿、蘅芜君、凤姐。
+  - Family: 家族、宗族、房支或姻亲群体，例如贾家、王家、史家、薛家、荣国府一支。
+  - Residence: 居所、院落、府第和室内空间，例如荣国府、宁国府、大观园、潇湘馆、怡红院。
+  - Location: 城市、寺庙、渡口、园林以外的地理地点，例如姑苏、扬州、葫芦庙。
+  - Chapter: 章回或明确的文本出处，例如第一回、第五回、金陵十二钗册相关段落。
+  - Event: 情节事件、宴饮、会面、查抄、婚嫁、死亡、审案、梦游、诗社活动等。
+  - PoemOrProphecy: 诗词、曲文、灯谜、判词、册页、偈语以及具有预示功能的文本。
+  - Object: 关键物件、信物、器物、服饰、药物、书信和通灵宝玉等。
+  - CustomOrInstitution: 制度、礼俗、身份秩序、婚姻礼法、科举、家法、官场规则。
+  - ThemeImagery: 主题、意象、象征、母题或审美概念，例如太虚幻境、梦、石、花、泪、盛衰。
+  - Other: 上述类型无法覆盖但对理解文本有帮助的实体。
+
+  Extraction guidance:
+  - Keep chapter provenance in descriptions whenever the passage provides it.
+  - Merge obvious aliases by describing the alias relationship instead of inventing duplicate unrelated people.
+  - For high-school Chinese literature tasks, prioritize interpretable entities and relationships over exhaustive minor mentions.
+  - Relationship descriptions should explain evidence, context, and direction, not only name the relation.
+  - When a poem, prophecy, object, or image foreshadows a person or event, create a relationship that makes the foreshadowing traceable.
+
+  Relationship guidance:
+  - alias_of: 人物与字号、别称、乳名、称谓、外号之间的关系。
+  - kinship: 父母、祖孙、兄弟姊妹、夫妻、姻亲、宗族房支等亲属关系。
+  - master_servant: 主仆、侍奉、管家、丫鬟、小厮、奶娘等等级与依附关系。
+  - romance_marriage: 爱情、婚恋、婚约、成婚、妾媵和情感纠葛。
+  - conflict: 明争暗斗、误会、责罚、争执、陷害、权力冲突。
+  - participates_in: 人物、家族、地点或物件参与某个事件。
+  - causes_or_leads_to: 一个事件、决定、制度或人物行动导致另一个结果。
+  - foreshadows_or_echoes: 判词、诗词、灯谜、物件、梦境或意象对后文情节和命运的伏笔照应。
+  - appears_in_chapter: 实体、事件、诗词或关系的章回出处。
+  - symbolizes_or_themes: 物件、地点、诗词、意象与盛衰、真假、情、梦、命运等主题的象征关系。
+
+entity_extraction_json_examples:
+  - |
+    {
+      "entities": [
+        {
+          "name": "贾宝玉",
+          "type": "Person",
+          "description": "荣国府人物，衔通灵宝玉而生，是大观园诸多情节和人物关系的中心；描述中应保留相关章回来源。"
+        },
+        {
+          "name": "通灵宝玉",
+          "type": "Object",
+          "description": "贯穿全书的重要物件，关联神瑛侍者、太虚幻境、宝玉命运和小说真幻主题。"
+        },
+        {
+          "name": "太虚幻境",
+          "type": "ThemeImagery",
+          "description": "兼具地点、梦境和象征功能，常与人物命运、判词和红楼梦主题相关。"
+        },
+        {
+          "name": "第五回",
+          "type": "Chapter",
+          "description": "包含贾宝玉神游太虚境、警幻仙曲和金陵十二钗判词等关键命运预示。"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "贾宝玉",
+          "target": "通灵宝玉",
+          "keywords": "随身物件,命运线索,真幻关系",
+          "description": "贾宝玉与通灵宝玉相伴而生，物件既推动情节，也承载其来历和命运象征。"
+        },
+        {
+          "source": "第五回",
+          "target": "太虚幻境",
+          "keywords": "章回出处,梦境,判词",
+          "description": "第五回通过太虚幻境集中展示人物命运线索和主题象征，是后续情节伏笔的重要来源。"
+        }
+      ]
+    }
+  - |
+    {
+      "entities": [
+        {
+          "name": "林黛玉",
+          "type": "Person",
+          "description": "贾母外孙女，与贾宝玉有情感与前世还泪关系，常关联潇湘馆、诗才、病弱和悲剧命运。"
+        },
+        {
+          "name": "潇湘馆",
+          "type": "Residence",
+          "description": "林黛玉在大观园中的居所，环境和竹意象常用于映照人物性格。"
+        },
+        {
+          "name": "还泪",
+          "type": "ThemeImagery",
+          "description": "绛珠仙草报答神瑛侍者灌溉之恩的核心神话设定，解释宝黛关系的宿命性。"
+        }
+      ],
+      "relationships": [
+        {
+          "source": "林黛玉",
+          "target": "潇湘馆",
+          "keywords": "居所,人物性格,环境映衬",
+          "description": "潇湘馆是林黛玉的重要生活空间，其清幽竹景常与她的性格、诗才和孤高气质互相映照。"
+        },
+        {
+          "source": "林黛玉",
+          "target": "还泪",
+          "keywords": "前世因缘,情感关系,悲剧伏笔",
+          "description": "林黛玉与还泪设定相关，说明她与贾宝玉关系的前世因缘，也为其悲剧命运提供伏笔。"
+        }
+      ]
+    }
