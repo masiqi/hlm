@@ -1,6 +1,7 @@
+import socket
 from pathlib import Path
 
-from hlm_kg.web_app import create_app_context, handle_api_request
+from hlm_kg.web_app import create_app_context, find_available_port, handle_api_request
 
 
 def test_api_chapter_returns_chapter_evidence_page_payload():
@@ -99,3 +100,12 @@ def test_static_topic_view_has_visible_knowledge_panel_target():
     assert "topic-knowledge-panel" in html
     assert "loadKnowledgeCard(target.dataset.cardId, panel)" in js
     assert "#topic-knowledge-panel" in js
+
+
+def test_find_available_port_skips_occupied_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        sock.listen()
+        occupied_port = sock.getsockname()[1]
+
+        assert find_available_port(occupied_port, attempts=2) == occupied_port + 1

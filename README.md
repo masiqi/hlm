@@ -26,12 +26,12 @@ make build-kg
 make web
 ```
 
-然后打开 `http://127.0.0.1:8765`。
+然后打开终端打印的地址；默认是 `http://127.0.0.1:8765`，如果端口被占用会自动使用后续可用端口。
 
 Smoke test the web app:
 
 1. Run `make web`.
-2. Open `http://127.0.0.1:8765`.
+2. Open the URL printed by the terminal.
 3. Ask `黛玉葬花体现了什么？`; verify the answer shows a short conclusion, source, and 可引用事实.
 4. Ask `请帮我写一篇作文`; verify the app refuses because the product only supports 《红楼梦》阅读理解.
 5. Open `读章节`; verify chapter 27 shows original text and chapter review material.

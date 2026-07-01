@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import socket
 from dataclasses import asdict, dataclass
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -124,14 +125,27 @@ def make_handler(context: AppContext) -> type[SimpleHTTPRequestHandler]:
     return Handler
 
 
+def find_available_port(start_port: int, attempts: int = 20) -> int:
+    for offset in range(attempts):
+        port = start_port + offset
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            try:
+                sock.bind(("127.0.0.1", port))
+            except OSError:
+                continue
+            return port
+    raise OSError(f"no available port from {start_port} across {attempts} attempts")
+
+
 def main() -> None:
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
         static_dir=Path("static"),
     )
-    server = ThreadingHTTPServer(("127.0.0.1", 8765), make_handler(context))
-    print("Serving at http://127.0.0.1:8765")
+    port = find_available_port(8765)
+    server = ThreadingHTTPServer(("127.0.0.1", port), make_handler(context))
+    print(f"Serving at http://127.0.0.1:{port}")
     server.serve_forever()
 
 
