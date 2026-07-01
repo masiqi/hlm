@@ -1,0 +1,119 @@
+body {
+  margin: 0;
+  color: #1f2933;
+  background: #f7f5ef;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #d8d2c4;
+  background: #fffaf0;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+button {
+  min-height: 40px;
+  border: 1px solid #9d8f72;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f2933;
+  cursor: pointer;
+}
+
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.ask-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+}
+
+.ask-row input {
+  min-height: 40px;
+  border: 1px solid #b8ad98;
+  border-radius: 6px;
+  padding: 0 12px;
+}
+
+.entry-grid,
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.chapter-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+}
+
+.knowledge-panel {
+  position: sticky;
+  top: 16px;
+  align-self: start;
+  border-left: 3px solid #8a6f3e;
+  padding-left: 16px;
+}
+
+.source {
+  border-left: 3px solid #5f7f71;
+  padding-left: 10px;
+  color: #425466;
+}
+
+pre {
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    display: block;
+  }
+
+  .topbar nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .ask-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chapter-layout {
+    display: block;
+  }
+
+  .knowledge-panel {
+    position: static;
+    margin-top: 20px;
+    border: 1px solid #d8d2c4;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fffaf0;
+  }
+}

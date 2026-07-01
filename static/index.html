@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>红楼梦阅读助手</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>红楼梦阅读助手</h1>
+      <nav aria-label="主导航">
+        <button data-view="ask">问一问</button>
+        <button data-view="chapters">读章节</button>
+        <button data-view="topics">看专题</button>
+      </nav>
+    </header>
+    <main>
+      <section id="home" class="view active">
+        <form id="ask-form" class="ask-box">
+          <label for="question">输入你对《红楼梦》的疑问</label>
+          <div class="ask-row">
+            <input id="question" name="question" autocomplete="off" />
+            <button type="submit">查找依据</button>
+          </div>
+        </form>
+        <section>
+          <h2>常见理解入口</h2>
+          <div id="common-entries" class="entry-grid"></div>
+        </section>
+      </section>
+      <section id="ask" class="view">
+        <h2>问一问</h2>
+        <div id="answer"></div>
+      </section>
+      <section id="chapters" class="view">
+        <h2>读章节</h2>
+        <div class="chapter-layout">
+          <article id="chapter-content"></article>
+          <aside id="knowledge-panel" class="knowledge-panel"></aside>
+        </div>
+      </section>
+      <section id="topics" class="view">
+        <h2>看专题</h2>
+        <div id="topic-list" class="topic-grid"></div>
+        <aside id="topic-knowledge-panel" class="knowledge-panel"></aside>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
