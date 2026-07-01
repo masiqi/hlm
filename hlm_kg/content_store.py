@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from hlm_kg.domain import Chapter, ChapterReviewCard, GraphRelation, KnowledgeCard, ProcessedMaterialSource, Topic
+from hlm_kg.domain import Chapter, ChapterReviewCard, Evidence, GraphRelation, KnowledgeCard, ProcessedMaterialSource, Topic
 
 
 class ContentStore:
@@ -17,6 +17,7 @@ class ContentStore:
         graph_relations: dict[str, GraphRelation],
         topics: dict[str, Topic],
         common_entries: list[dict[str, Any]],
+        evidence: dict[str, Evidence],
     ) -> None:
         self._chapters = chapters
         self._review_cards = review_cards
@@ -24,6 +25,7 @@ class ContentStore:
         self._graph_relations = graph_relations
         self._topics = topics
         self.common_entries = common_entries
+        self._evidence = evidence
 
     @classmethod
     def from_paths(cls, manifest_path: Path, data_dir: Path) -> ContentStore:
@@ -102,6 +104,22 @@ class ContentStore:
             for item in _read_json(data_dir / "topics.json")
         }
         common_entries = list(_read_json(data_dir / "common_entries.json"))
+        evidence = {
+            str(item["id"]): Evidence(
+                id=str(item["id"]),
+                source_type=item["source_type"],
+                chapter=item.get("chapter"),
+                location=item.get("location"),
+                quote=item.get("quote"),
+                evidence_text=str(item["evidence_text"]),
+                entity_ids=list(item.get("entity_ids", [])),
+                relation_id=item.get("relation_id"),
+                confidence=item["confidence"],
+                provenance=str(item["provenance"]),
+                derived_from_ids=list(item.get("derived_from_ids", [])),
+            )
+            for item in _read_json(data_dir / "evidence.json")
+        }
         return cls(
             chapters=chapters,
             review_cards=review_cards,
@@ -109,6 +127,7 @@ class ContentStore:
             graph_relations=graph_relations,
             topics=topics,
             common_entries=common_entries,
+            evidence=evidence,
         )
 
     def chapter(self, number: int) -> Chapter:
@@ -119,6 +138,12 @@ class ContentStore:
 
     def review_card_for_chapter(self, number: int) -> ChapterReviewCard:
         return self._review_cards[number]
+
+    def evidence_by_id(self) -> dict[str, Evidence]:
+        return dict(self._evidence)
+
+    def evidence(self, evidence_id: str) -> Evidence:
+        return self._evidence[evidence_id]
 
     @property
     def topics(self) -> list[Topic]:

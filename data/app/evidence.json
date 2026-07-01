@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ev-027-daiyu-burying-flowers",
+    "source_type": "original_text",
+    "chapter": 27,
+    "location": "第二十七回",
+    "quote": "花谢花飞花满天，红消香断有谁怜？",
+    "evidence_text": "第 27 回黛玉葬花并吟《葬花吟》，可用于理解其身世悲感与洁身自持。",
+    "entity_ids": ["card-lindaiyu"],
+    "relation_id": "rel-daiyu-burying-flowers-fate",
+    "confidence": "explicit",
+    "provenance": "book/chapters",
+    "derived_from_ids": []
+  },
+  {
+    "id": "ev-rel-daiyu-burying-flowers-fate",
+    "source_type": "graph_relation",
+    "chapter": 27,
+    "location": "关系线索：第二十七回，关联第九十七至九十八回",
+    "quote": null,
+    "evidence_text": "黛玉葬花与后文黛玉命运悲感之间的关系，来自人工校订关系线索。",
+    "entity_ids": ["card-lindaiyu"],
+    "relation_id": "rel-daiyu-burying-flowers-fate",
+    "confidence": "derived",
+    "provenance": "curated",
+    "derived_from_ids": ["ev-027-daiyu-burying-flowers"]
+  },
+  {
+    "id": "ev-027-baochai-butterfly",
+    "source_type": "original_text",
+    "chapter": 27,
+    "location": "第二十七回",
+    "quote": null,
+    "evidence_text": "第 27 回涉及宝钗扑蝶，可与黛玉葬花同回并读。",
+    "entity_ids": ["card-xuebaochai"],
+    "relation_id": null,
+    "confidence": "explicit",
+    "provenance": "book/chapters",
+    "derived_from_ids": []
+  },
+  {
+    "id": "ev-056-tanchun-manages-household",
+    "source_type": "processed_material",
+    "chapter": 56,
+    "location": "第五十六回章节复习卡",
+    "quote": null,
+    "evidence_text": "第 56 回探春理家，通过整顿大观园事务体现其兴利除弊的管理才干。",
+    "entity_ids": ["card-jiatanchun"],
+    "relation_id": null,
+    "confidence": "explicit",
+    "provenance": "data/app/chapter_review_cards.json",
+    "derived_from_ids": []
+  },
+  {
+    "id": "ev-rel-tanchun-manages-trait",
+    "source_type": "graph_relation",
+    "chapter": 56,
+    "location": "关系线索：第五十六回",
+    "quote": null,
+    "evidence_text": "第 56 回探春理家与兴利除弊、管理才干之间的关系，来自人工校订关系线索。",
+    "entity_ids": ["card-jiatanchun"],
+    "relation_id": "rel-tanchun-manages-trait",
+    "confidence": "derived",
+    "provenance": "curated",
+    "derived_from_ids": ["ev-056-tanchun-manages-household"]
+  }
+]

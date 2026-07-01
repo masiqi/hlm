@@ -48,3 +48,45 @@ def test_content_store_exposes_seed_knowledge_cards_relations_topics_and_entries
         "可引用事实",
     }
     assert any(entry["id"] == "entry-daiyu-burying-flowers" for entry in store.common_entries)
+
+
+def test_content_store_loads_evidence_lookup():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    evidence = store.evidence("ev-027-daiyu-burying-flowers")
+
+    assert evidence.source_type == "original_text"
+    assert store.evidence_by_id()[evidence.id] == evidence
+
+
+def test_seed_reference_integrity():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+    card_ids = {card.id for card in store.knowledge_cards}
+    relation_ids = {relation.id for relation in store.graph_relations}
+    evidence_ids = set(store.evidence_by_id())
+
+    for card in store.knowledge_cards:
+        assert set(card.graph_relation_ids) <= relation_ids
+        assert set(card.evidence_ids) <= evidence_ids
+        assert set(card.related_card_ids) <= card_ids
+
+    for relation in store.graph_relations:
+        assert set(relation.evidence_ids) <= evidence_ids
+
+    for topic in store.topics:
+        assert set(topic.card_ids) <= card_ids
+        assert set(topic.relation_ids) <= relation_ids
+        assert set(topic.evidence_ids) <= evidence_ids
+        assert set(topic.quotable_fact_ids) <= evidence_ids
+
+    for chapter_number in [27, 56]:
+        review_card = store.review_card_for_chapter(chapter_number)
+        assert set(review_card.key_characters) <= card_ids
+        assert set(review_card.later_association_relation_ids) <= relation_ids
+        assert set(review_card.quotable_fact_ids) <= evidence_ids
