@@ -145,6 +145,9 @@ class ContentStore:
     def evidence(self, evidence_id: str) -> Evidence:
         return self._evidence[evidence_id]
 
+    def knowledge_card(self, card_id: str) -> KnowledgeCard:
+        return self._knowledge_cards[card_id]
+
     @property
     def topics(self) -> list[Topic]:
         return list(self._topics.values())

@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run build-kg lightrag-up lightrag-down test
+.PHONY: help env split-chapters analyze-questions dry-run build-kg lightrag-up lightrag-down test web
 
 help:
 	@echo "Targets:"
@@ -9,6 +9,7 @@ help:
 	@echo "  make lightrag-up       Start LightRAG Server/WebUI with Docker Compose"
 	@echo "  make build-kg          Run real scan/indexing flow against LightRAG"
 	@echo "  make test              Run local tests"
+	@echo "  make web               Run the V1 reading assistant web app"
 
 env:
 	@test -f .env || cp .env.example .env
@@ -34,3 +35,6 @@ build-kg:
 
 test:
 	pytest -q
+
+web:
+	python -m hlm_kg.web_app
