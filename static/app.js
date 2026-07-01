@@ -52,6 +52,31 @@ async function loadHome() {
     .join("");
 }
 
+function renderKnowledgeButtons(cards) {
+  return cards
+    .map((card) => `<button data-card-id="${card.id}">${card.name}</button>`)
+    .join("");
+}
+
+async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
+  const data = await getJson(`/api/cards/${cardId}`);
+  const textUnderstanding = data.card.textUnderstanding.map((item) => `<li>${item}</li>`).join("");
+  const understandingAngles = data.card.understandingAngles.map((item) => `<li>${item}</li>`).join("");
+  const relationClues = data.relations.map((item) => `<li>${item.description}</li>`).join("");
+  const sources = data.evidence.map((item) => `<li class="source">第 ${item.chapter} 回：${item.evidenceText}</li>`).join("");
+  document.querySelector(targetSelector).innerHTML = `
+    <h3>${data.card.name}</h3>
+    <h4>文本理解</h4>
+    <ul>${textUnderstanding || "<li>暂无可靠资料</li>"}</ul>
+    <h4>理解角度</h4>
+    <ul>${understandingAngles || "<li>暂无可靠资料</li>"}</ul>
+    <h4>关系线索</h4>
+    <ul>${relationClues || "<li>暂无可靠资料</li>"}</ul>
+    <h4>相关章回</h4>
+    <ul>${sources || "<li>暂无可靠资料</li>"}</ul>
+  `;
+}
+
 async function loadChapter(number = 27) {
   const data = await getJson(`/api/chapters/${number}`);
   const focusCards = data.knowledgeCards
@@ -62,6 +87,7 @@ async function loadChapter(number = 27) {
     <h3>第 ${data.chapter.number} 回：${data.chapter.title}</h3>
     <section><h4>本回梗概</h4><p>${data.reviewCard.plainSummary}</p></section>
     <section><h4>关键情节</h4><ul>${data.reviewCard.plotChain.map((item) => `<li>${item}</li>`).join("")}</ul></section>
+    <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
     <section><h4>原文</h4><pre>${data.originalText}</pre></section>
   `;
   document.querySelector("#knowledge-panel").innerHTML = `
@@ -89,6 +115,10 @@ document.addEventListener("click", (event) => {
   }
   if (target.matches("[data-question]")) {
     ask(target.dataset.question);
+  }
+  if (target.matches("[data-card-id]")) {
+    const panel = target.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
+    loadKnowledgeCard(target.dataset.cardId, panel);
   }
 });
 

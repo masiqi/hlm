@@ -48,7 +48,14 @@ def handle_api_request(
     if method == "GET" and parsed_path.startswith("/api/cards/"):
         card_id = parsed_path.rsplit("/", 1)[1]
         card = context.store.knowledge_card(card_id)
-        return 200, {"card": _camel(asdict(card))}
+        evidence = [context.store.evidence(evidence_id) for evidence_id in card.evidence_ids]
+        relation_by_id = {relation.id: relation for relation in context.store.graph_relations}
+        relations = [relation_by_id[relation_id] for relation_id in card.graph_relation_ids]
+        return 200, {
+            "card": _camel(asdict(card)),
+            "evidence": [_camel(asdict(item)) for item in evidence],
+            "relations": [_camel(asdict(item)) for item in relations],
+        }
     if method == "POST" and parsed_path == "/api/ask":
         question = str((body or {}).get("question", ""))
         answer = context.ask_engine.ask(question)

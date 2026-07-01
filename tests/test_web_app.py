@@ -54,3 +54,22 @@ def test_api_topics_returns_five_categories():
         "意象伏笔",
         "可引用事实",
     }
+
+
+def test_api_card_returns_student_facing_knowledge_panel_payload():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/cards/card-lindaiyu")
+
+    assert status == 200
+    assert payload["card"]["name"] == "林黛玉"
+    assert "textUnderstanding" in payload["card"]
+    assert "understandingAngles" in payload["card"]
+    assert "graphRelationIds" in payload["card"]
+    assert payload["evidence"]
+    assert payload["relations"]
+    assert "LightRAG" not in str(payload)
