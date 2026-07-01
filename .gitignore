@@ -11,3 +11,6 @@ data/inputs/
 # Local logs and temporary files.
 *.log
 *.tmp
+
+# Superpowers brainstorming companion output.
+.superpowers/
