@@ -42,3 +42,29 @@ def test_static_ui_has_no_account_or_history_features():
 
     for term in ["登录", "注册", "个人历史", "收藏", "学习档案", "阅读进度", "书架", "评分"]:
         assert term not in combined
+
+
+def test_static_ui_escapes_api_text_before_rendering_html():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "function escapeHtml" in js
+    for expression in [
+        "answer.refusal.message",
+        "claim.text",
+        "evidence.evidenceText",
+        "entry.target",
+        "entry.label",
+        "card.name",
+        "card.brief",
+        "data.chapter.title",
+        "data.reviewCard.plainSummary",
+        "item",
+        "data.originalText",
+        "topic.title",
+        "topic.description",
+        "relation.description",
+        "data.topic.title",
+        "data.topic.description",
+        "data.card.name",
+    ]:
+        assert f"escapeHtml({expression}" in js
