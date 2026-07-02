@@ -68,3 +68,10 @@ def test_static_ui_escapes_api_text_before_rendering_html():
         "data.card.name",
     ]:
         assert f"escapeHtml({expression}" in js
+
+
+def test_static_ask_view_names_source_conflict_in_student_language():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "资料存在不一致，优先查看原文依据" in js
+    assert "SOURCE_CONFLICT" not in js

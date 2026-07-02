@@ -22,7 +22,8 @@ function escapeHtml(value) {
 function renderAnswer(answer) {
   const container = document.querySelector("#answer");
   if (answer.status === "refused") {
-    container.innerHTML = `<h3>当前资料不足</h3><p>${escapeHtml(answer.refusal.message)}</p>`;
+    const conflictNote = answer.refusal.message.includes("不一致") ? "<p>资料存在不一致，优先查看原文依据。</p>" : "";
+    container.innerHTML = `<h3>当前资料不足</h3>${conflictNote}<p>${escapeHtml(answer.refusal.message)}</p>`;
     showView("ask");
     return;
   }

@@ -12,7 +12,7 @@ from hlm_kg.domain import (
     Refusal,
     RefusalReason,
 )
-from hlm_kg.evidence import supported_claims
+from hlm_kg.evidence import detect_source_conflict, supported_claims
 
 
 OUT_OF_SCOPE_TERMS = ("作文", "现实", "八卦", "数学", "英语")
@@ -92,6 +92,8 @@ class AskEngine:
         quotable: AnswerClaim,
         link: ContinuationLink,
     ) -> AskAnswer:
+        if detect_source_conflict(evidence):
+            return self._refuse(question, "SOURCE_CONFLICT", "资料存在不一致，优先查看原文依据。")
         explanation_claim = AnswerClaim(
             text="原文章回材料负责定位事实，关系线索负责说明可支持的理解方向。",
             evidence_ids=conclusion.evidence_ids,
