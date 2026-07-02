@@ -59,6 +59,14 @@ class ContentStore:
                 quotable_fact_ids=list(item.get("quotable_fact_ids", [])),
                 retrieval_tags=list(item.get("retrieval_tags", [])),
                 understanding_focus=list(item.get("understanding_focus", [])),
+                characters=list(item.get("characters", [])),
+                relationships=list(item.get("relationships", [])),
+                places=list(item.get("places", [])),
+                objects=list(item.get("objects", [])),
+                literary_texts=list(item.get("literary_texts", [])),
+                modern_explanations=list(item.get("modern_explanations", [])),
+                later_associations=list(item.get("later_associations", [])),
+                annotations=list(item.get("annotations", [])),
             )
             for item in _read_json(data_dir / "chapter_review_cards.json")
         }

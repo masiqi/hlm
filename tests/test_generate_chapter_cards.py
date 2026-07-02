@@ -274,6 +274,30 @@ def test_validate_generated_card_output_accepts_clean_extended_card():
     assert module.validate_generated_card_output("# 第27回 标题 章节复习卡\n正文", card) == []
 
 
+def test_validate_generated_card_output_rejects_missing_extended_fields_and_bad_required_values():
+    module = _import_script_module()
+    card = {
+        "id": "review-027",
+        "chapter": 27,
+        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
+        "plain_summary": "",
+        "plot_chain": "不是数组",
+        "key_events": ["宝钗扑蝶"],
+        "key_characters": [],
+        "current_chapter_foreshadowing_signals": [],
+        "later_association_relation_ids": [],
+        "quotable_fact_ids": [],
+        "retrieval_tags": ["#第二十七回"],
+        "understanding_focus": ["抓住宝钗与黛玉的对照。"],
+    }
+
+    errors = module.validate_generated_card_output("# 第27回 标题 章节复习卡\n正文", card)
+
+    assert any("plain_summary" in error and "不能为空" in error for error in errors)
+    assert any("plot_chain" in error and "必须是数组" in error for error in errors)
+    assert any("annotations" in error and "缺少必填字段" in error for error in errors)
+
+
 def test_makefile_documents_chapter_card_generation_command():
     makefile = Path("Makefile").read_text(encoding="utf-8")
 
@@ -324,6 +348,22 @@ def test_build_prompt_requests_structured_app_import_sections_for_website_and_da
         assert field in prompt
 
 
+def test_build_prompt_defaults_later_associations_to_empty_array_without_existing_ids():
+    module = _import_script_module()
+
+    prompt = module.build_prompt(
+        chapter_number=27,
+        chapter_title="滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红",
+        source_file="book/chapters/027.txt",
+        chapter_text="第二十七回原文",
+        lightrag_evidence={"data": {"relationships": []}},
+        generated_at="2026-07-02",
+    )
+
+    assert '"later_associations": []' in prompt
+    assert '"source_chapters": [74]' not in prompt
+
+
 def test_repair_prompt_uses_same_structured_app_import_sections():
     module = _import_script_module()
 
@@ -347,6 +387,20 @@ def test_repair_prompt_uses_same_structured_app_import_sections():
         assert field in prompt
     assert "系统提供的全书关系线索" in prompt
     assert "LightRAG 全书关系线索" not in prompt
+
+
+def test_repair_prompt_defaults_later_associations_to_empty_array():
+    module = _import_script_module()
+
+    prompt = module.build_repair_prompt(
+        chapter_number=27,
+        chapter_title="滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红",
+        generated_at="2026-07-02",
+        previous_output="# 第27回 标题 章节复习卡",
+    )
+
+    assert '"later_associations": []' in prompt
+    assert '"后文关联对象"' not in prompt
 
 
 def test_cli_help_runs_from_repo_root_without_import_error():

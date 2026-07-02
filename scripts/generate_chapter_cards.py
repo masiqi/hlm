@@ -418,15 +418,7 @@ def build_prompt(
       "value": "理解重点或考查价值"
     }}
   ],
-  "later_associations": [
-    {{
-      "topic": "后文关联对象",
-      "description": "后文关联说明",
-      "source_chapters": [74],
-      "evidence": "必须来自系统提供的全书关系线索或明确后续章回证据",
-      "relation_id": null
-    }}
-  ],
+  "later_associations": [],
   "annotations": [
     {{
       "text": "原文中可点击的词语",
@@ -441,6 +433,7 @@ def build_prompt(
 注意：
 - AppImportJSON 必须是合法 JSON。
 - key_characters、later_association_relation_ids、quotable_fact_ids 暂时留空数组，除非输入材料明确提供了已经存在的 ID。
+- later_associations 默认输出空数组；只有系统提供的全书关系线索或明确后续章回证据足以支撑时，才可填入对象。
 - plain_summary、plot_chain、key_events、current_chapter_foreshadowing_signals、understanding_focus、characters、relationships、places、objects、literary_texts、modern_explanations、later_associations、annotations 中不得出现禁用词。
 """
 
@@ -477,15 +470,7 @@ def build_repair_prompt(*, chapter_number: int, chapter_title: str, generated_at
   "objects": [],
   "literary_texts": [],
   "modern_explanations": [],
-  "later_associations": [
-    {{
-      "topic": "后文关联对象",
-      "description": "后文关联说明",
-      "source_chapters": [],
-      "evidence": "必须来自系统提供的全书关系线索或明确后续章回证据",
-      "relation_id": null
-    }}
-  ],
+  "later_associations": [],
   "annotations": []
 }}
 ```
@@ -530,8 +515,29 @@ def validate_generated_card_output(markdown: str, card: Mapping[str, Any]) -> li
         if field not in card:
             errors.append(f"AppImportJSON 缺少必填字段：{field}")
 
-    for field in EXTENDED_APP_IMPORT_LIST_FIELDS:
+    if not str(card.get("plain_summary") or "").strip():
+        errors.append("AppImportJSON 字段 plain_summary 不能为空。")
+
+    list_fields = (
+        "plot_chain",
+        "key_events",
+        "key_characters",
+        "current_chapter_foreshadowing_signals",
+        "later_association_relation_ids",
+        "quotable_fact_ids",
+        "retrieval_tags",
+        "understanding_focus",
+    )
+    for field in list_fields:
         if field in card and not isinstance(card[field], list):
+            errors.append(f"AppImportJSON 字段 {field} 必须是数组。")
+    if isinstance(card.get("plot_chain"), list) and not card["plot_chain"]:
+        errors.append("AppImportJSON 字段 plot_chain 不能为空。")
+
+    for field in EXTENDED_APP_IMPORT_LIST_FIELDS:
+        if field not in card:
+            errors.append(f"AppImportJSON 缺少必填字段：{field}")
+        elif not isinstance(card[field], list):
             errors.append(f"AppImportJSON 字段 {field} 必须是数组。")
 
     for path, text in _iter_display_text(card, DISPLAY_CARD_FIELDS):

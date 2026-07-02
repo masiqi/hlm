@@ -79,6 +79,14 @@ class ChapterReviewCard:
     quotable_fact_ids: list[str]
     retrieval_tags: list[str]
     understanding_focus: list[str]
+    characters: list[dict] = field(default_factory=list)
+    relationships: list[dict] = field(default_factory=list)
+    places: list[dict] = field(default_factory=list)
+    objects: list[dict] = field(default_factory=list)
+    literary_texts: list[dict] = field(default_factory=list)
+    modern_explanations: list[dict] = field(default_factory=list)
+    later_associations: list[dict] = field(default_factory=list)
+    annotations: list[dict] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

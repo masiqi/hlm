@@ -1,7 +1,58 @@
 import socket
+import json
 from pathlib import Path
 
 from hlm_kg.web_app import create_app_context, find_available_port, handle_api_request
+
+
+def _write_minimal_app_context_files(tmp_path: Path, review_cards: list[dict]) -> tuple[Path, Path, Path]:
+    chapter_path = tmp_path / "book" / "chapters" / "001-第一回-甄士隐梦幻识通灵 贾雨村风尘怀闺秀.txt"
+    chapter_path.parent.mkdir(parents=True)
+    chapter_path.write_text("第一回 原文", encoding="utf-8")
+    manifest_path = tmp_path / "book" / "chapters_manifest.json"
+    manifest_path.write_text(
+        json.dumps({"chapters": [{"number": 1, "title": "甄士隐梦幻识通灵 贾雨村风尘怀闺秀", "file_path": str(chapter_path)}]}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    data_dir = tmp_path / "data"
+    static_dir = tmp_path / "static"
+    data_dir.mkdir()
+    static_dir.mkdir()
+    (data_dir / "chapter_review_cards.json").write_text(json.dumps(review_cards, ensure_ascii=False), encoding="utf-8")
+    for filename in ("knowledge_cards.json", "graph_relations.json", "topics.json", "common_entries.json", "evidence.json"):
+        (data_dir / filename).write_text("[]", encoding="utf-8")
+    return manifest_path, data_dir, static_dir
+
+
+def _review_card(**overrides):
+    card = {
+        "id": "review-001",
+        "chapter": 1,
+        "source": {
+            "prompt_name": "hongloumeng_chapter_review_card",
+            "prompt_version": "2026-07-01",
+            "generated_at": "2026-07-02",
+        },
+        "plain_summary": "第一回梗概。",
+        "plot_chain": ["甄士隐梦幻识通灵"],
+        "key_events": [],
+        "key_characters": [],
+        "current_chapter_foreshadowing_signals": [],
+        "later_association_relation_ids": [],
+        "quotable_fact_ids": [],
+        "retrieval_tags": ["#第一回"],
+        "understanding_focus": ["理解真假有无。"],
+        "characters": [],
+        "relationships": [],
+        "places": [],
+        "objects": [],
+        "literary_texts": [],
+        "modern_explanations": [],
+        "later_associations": [],
+        "annotations": [],
+    }
+    card.update(overrides)
+    return card
 
 
 def test_api_chapter_returns_chapter_evidence_page_payload():
@@ -19,6 +70,25 @@ def test_api_chapter_returns_chapter_evidence_page_payload():
     assert "reviewCard" in payload
     assert "knowledgeCards" in payload
     assert "LightRAG" not in str(payload)
+
+
+def test_api_chapter_returns_extended_review_card_fields(tmp_path):
+    review_card = _review_card(
+        characters=[{"name": "袭人", "actions": ["劝慰宝玉"]}],
+        annotations=[{"text": "袭人", "kind": "person", "target": "袭人"}],
+        later_associations=[{"topic": "袭人归宿", "source_chapters": [120], "evidence": "后文章回证据"}],
+    )
+    manifest_path, data_dir, static_dir = _write_minimal_app_context_files(tmp_path, [review_card])
+    context = create_app_context(manifest_path=manifest_path, data_dir=data_dir, static_dir=static_dir)
+
+    status, payload = handle_api_request(context, "GET", "/api/chapters/1")
+
+    assert status == 200
+    assert payload["reviewCard"]["characters"] == review_card["characters"]
+    assert payload["reviewCard"]["annotations"] == review_card["annotations"]
+    assert payload["reviewCard"]["laterAssociations"] == [
+        {"topic": "袭人归宿", "sourceChapters": [120], "evidence": "后文章回证据"}
+    ]
 
 
 def test_api_chapter_returns_original_text_when_review_card_is_missing():
