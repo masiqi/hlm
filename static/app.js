@@ -19,23 +19,22 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function renderAnnotatedOriginalText(text, cards) {
-  let annotated = escapeHtml(text);
-  const sortedCards = [...cards].sort((left, right) => right.name.length - left.name.length);
-  sortedCards.forEach((card) => {
-    const escapedName = escapeHtml(card.name);
-    if (!escapedName) return;
-    const pattern = new RegExp(escapeRegExp(escapedName), "g");
-    annotated = annotated.replaceAll(
-      pattern,
-      `<button class="inline-knowledge-link" data-card-id="${escapeHtml(card.id)}">${escapedName}</button>`,
-    );
+function renderAnnotatedOriginalText(text, annotations) {
+  if (!annotations.length) return escapeHtml(text);
+  const sortedAnnotations = [...annotations]
+    .filter((item) => item.entityId && item.startOffset >= 0 && item.endOffset > item.startOffset)
+    .sort((left, right) => left.startOffset - right.startOffset || right.endOffset - left.endOffset);
+  let cursor = 0;
+  let html = "";
+  sortedAnnotations.forEach((annotation) => {
+    if (annotation.startOffset < cursor) return;
+    html += escapeHtml(text.slice(cursor, annotation.startOffset));
+    const label = text.slice(annotation.startOffset, annotation.endOffset);
+    html += `<button class="annotation-link" data-annotation-id="${escapeHtml(annotation.id)}" data-card-id="${escapeHtml(annotation.entityId)}">${escapeHtml(label)}</button>`;
+    cursor = annotation.endOffset;
   });
-  return annotated;
+  html += escapeHtml(text.slice(cursor));
+  return html;
 }
 
 function renderContinuationLinks(links = []) {
@@ -140,6 +139,16 @@ function renderKnowledgeButtons(cards) {
     .join("");
 }
 
+function renderTraceItems(traceItems = []) {
+  if (!traceItems.length) return "<li>暂无可靠资料</li>";
+  return traceItems
+    .map(
+      (item) =>
+        `<li><button class="trace-link" data-trace-chapter-number="${escapeHtml(item.chapter)}" data-trace-id="${escapeHtml(item.id)}">${escapeHtml(item.title)}</button><p>${escapeHtml(item.description)}</p></li>`,
+    )
+    .join("");
+}
+
 function panelContentSelector(targetSelector) {
   return `${targetSelector} .knowledge-panel-content`;
 }
@@ -168,6 +177,7 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
   const textUnderstanding = data.card.textUnderstanding.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   const understandingAngles = data.card.understandingAngles.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   const relationClues = data.relations.map((item) => `<li>${escapeHtml(item.description)}</li>`).join("");
+  const traceItems = renderTraceItems(data.traceItems || []);
   const sources = data.evidence
     .map((item) => `<li class="source">第 ${escapeHtml(item.chapter)} 回：${escapeHtml(item.evidenceText)}</li>`)
     .join("");
@@ -179,6 +189,8 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
     <ul>${understandingAngles || "<li>暂无可靠资料</li>"}</ul>
     <h4>关系线索</h4>
     <ul>${relationClues || "<li>暂无可靠资料</li>"}</ul>
+    <h4>全书线索</h4>
+    <ul class="trace-list">${traceItems}</ul>
     <h4>相关章回</h4>
     <ul>${sources || "<li>暂无可靠资料</li>"}</ul>
   `;
@@ -212,7 +224,7 @@ async function loadChapter(number = 27) {
     <section><h4>关键事件</h4><ul>${keyEvents}</ul></section>
     <section><h4>本回怎么读</h4><ul>${focusAngles}</ul></section>
     <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
-    <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)}</pre></section>
+    <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.annotations || [])}</pre></section>
   `;
   document.querySelector(panelContentSelector("#knowledge-panel")).innerHTML = `
     <h3>本回重点</h3>
@@ -281,6 +293,10 @@ document.addEventListener("click", (event) => {
   if (target.matches("[data-chapter-number]")) {
     showView("chapters");
     loadChapter(Number(target.dataset.chapterNumber));
+  }
+  if (target.matches("[data-trace-chapter-number]")) {
+    showView("chapters");
+    loadChapter(Number(target.dataset.traceChapterNumber));
   }
   if (target.matches("[data-panel-close]")) {
     closeKnowledgePanel(target.dataset.panelClose);

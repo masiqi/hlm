@@ -230,6 +230,30 @@ def test_static_topic_view_has_visible_knowledge_panel_target():
     assert "#topic-knowledge-panel" in js
 
 
+def test_static_chapter_view_uses_offset_annotations_not_name_replacement():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "renderAnnotatedOriginalText(text, annotations)" in js
+    assert "data-annotation-id" in js
+    assert "data-card-id" in js
+    assert "sort((left, right) => left.startOffset - right.startOffset" in js
+
+
+def test_static_knowledge_panel_renders_trace_jump_buttons():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "renderTraceItems" in js
+    assert "data-trace-chapter-number" in js
+    assert "traceItems" in js
+
+
+def test_static_styles_include_trace_and_annotation_states():
+    css = Path("static/styles.css").read_text(encoding="utf-8")
+
+    assert ".trace-list" in css
+    assert ".annotation-link" in css
+
+
 def test_find_available_port_skips_occupied_port():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.bind(("127.0.0.1", 0))
