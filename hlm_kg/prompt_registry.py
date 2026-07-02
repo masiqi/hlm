@@ -22,6 +22,7 @@ class PromptRegistry:
                 output_schema=str(item["output_schema"]),
                 evidence_rules=list(item.get("evidence_rules", [])),
                 refusal_rules=list(item.get("refusal_rules", [])),
+                content_requirements=list(item.get("content_requirements", [])),
             )
             for item in payload["prompt_definitions"]
         ]

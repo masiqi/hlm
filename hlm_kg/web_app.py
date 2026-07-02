@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import socket
 from dataclasses import asdict, dataclass
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -10,6 +11,7 @@ from urllib.parse import urlparse
 
 from hlm_kg.ask_engine import AskEngine
 from hlm_kg.content_store import ContentStore
+from hlm_kg.lightrag_client import LightRAGClient, LightRAGConfig
 
 
 @dataclass(frozen=True)
@@ -17,11 +19,22 @@ class AppContext:
     store: ContentStore
     ask_engine: AskEngine
     static_dir: Path
+    retrieval_client: Any | None = None
 
 
-def create_app_context(manifest_path: Path, data_dir: Path, static_dir: Path) -> AppContext:
+def create_app_context(
+    manifest_path: Path,
+    data_dir: Path,
+    static_dir: Path,
+    retrieval_client: Any | None = None,
+    *,
+    use_env_retrieval: bool = False,
+) -> AppContext:
     store = ContentStore.from_paths(manifest_path, data_dir)
-    return AppContext(store=store, ask_engine=AskEngine(store), static_dir=static_dir)
+    if retrieval_client is None and use_env_retrieval:
+        config = LightRAGConfig.from_env(os.environ)
+        retrieval_client = LightRAGClient(config) if config is not None else None
+    return AppContext(store=store, ask_engine=AskEngine(store), static_dir=static_dir, retrieval_client=retrieval_client)
 
 
 def handle_api_request(
@@ -77,7 +90,7 @@ def handle_api_request(
         }
     if method == "POST" and parsed_path == "/api/ask":
         question = str((body or {}).get("question", ""))
-        answer = context.ask_engine.ask(question)
+        answer = context.ask_engine.ask(question, retrieval_client=context.retrieval_client)
         return 200, _camel(asdict(answer))
     return 404, {"error": "not found"}
 
@@ -148,6 +161,7 @@ def main() -> None:
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
         static_dir=Path("static"),
+        use_env_retrieval=True,
     )
     port = find_available_port(8765)
     server = ThreadingHTTPServer(("127.0.0.1", port), make_handler(context))

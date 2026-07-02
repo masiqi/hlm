@@ -128,6 +128,28 @@ def test_static_ask_view_renders_answer_states_and_continuation_links():
     assert "data-topic-id" in js
 
 
+def test_static_ask_view_uses_student_facing_evidence_labels():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "function sourceLabel" in js
+    assert "原文依据" in js
+    assert "章节资料" in js
+    assert "关系线索" in js
+    assert "evidence.sourceType" in js
+    assert "sourceType" not in Path("static/index.html").read_text(encoding="utf-8")
+
+
+def test_static_chapter_view_renders_fast_reading_sections_from_review_card():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "本回梗概" in js
+    assert "关键情节" in js
+    assert "关键事件" in js
+    assert "本回怎么读" in js
+    assert "data.reviewCard.keyEvents" in js
+    assert "data.reviewCard.understandingFocus" in js
+
+
 def test_static_ask_view_names_source_conflict_in_student_language():
     js = Path("static/app.js").read_text(encoding="utf-8")
 

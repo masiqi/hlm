@@ -177,6 +177,7 @@ class PromptDefinition:
     output_schema: str
     evidence_rules: list[str]
     refusal_rules: list[str]
+    content_requirements: list[str] = field(default_factory=list)
 
 
 def validate_answer(answer: AskAnswer) -> None:
