@@ -52,6 +52,13 @@ function renderContinuationLinks(links = []) {
     .join("");
 }
 
+function sourceLabel(sourceType) {
+  if (sourceType === "original_text") return "原文依据";
+  if (sourceType === "processed_material" || sourceType === "knowledge_card") return "章节资料";
+  if (sourceType === "graph_relation") return "关系线索";
+  return "相关资料";
+}
+
 function renderAnswer(answer) {
   const container = document.querySelector("#answer");
   if (answer.status === "refused") {
@@ -68,7 +75,10 @@ function renderAnswer(answer) {
   }
   const claims = answer.shortConclusion.map((claim) => `<li>${escapeHtml(claim.text)}</li>`).join("");
   const sources = answer.evidence
-    .map((evidence) => `<li class="source">第 ${escapeHtml(evidence.chapter)} 回：${escapeHtml(evidence.evidenceText)}</li>`)
+    .map(
+      (evidence) =>
+        `<li class="source"><strong>${sourceLabel(evidence.sourceType)}</strong> 第 ${escapeHtml(evidence.chapter)} 回：${escapeHtml(evidence.evidenceText)}</li>`,
+    )
     .join("");
   const facts = (answer.quotableFacts?.claims || []).map((claim) => `<li>${escapeHtml(claim.text)}</li>`).join("");
   const partialNote =
@@ -188,6 +198,9 @@ async function loadChapter(number = 27) {
   const plotChain = hasReviewCard
     ? data.reviewCard.plotChain.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
     : "<li>暂无可靠资料</li>";
+  const keyEvents = hasReviewCard
+    ? data.reviewCard.keyEvents.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
+    : "<li>暂无可靠资料</li>";
   const focusAngles = hasReviewCard
     ? data.reviewCard.understandingFocus.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
     : "<li>暂无可靠资料</li>";
@@ -196,6 +209,8 @@ async function loadChapter(number = 27) {
     <p>${materialMessage}</p>
     <section><h4>本回梗概</h4><p>${plainSummary}</p></section>
     <section><h4>关键情节</h4><ul>${plotChain}</ul></section>
+    <section><h4>关键事件</h4><ul>${keyEvents}</ul></section>
+    <section><h4>本回怎么读</h4><ul>${focusAngles}</ul></section>
     <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
     <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)}</pre></section>
   `;
