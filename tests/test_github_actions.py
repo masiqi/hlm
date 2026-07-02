@@ -10,5 +10,6 @@ def test_github_actions_ci_workflow_runs_project_quality_checks():
     assert "push:" in content
     assert "branches: [main]" in content
     assert "python-version: '3.13'" in content
+    assert "python -m pip install -r requirements.txt" in content
     assert "python -m pytest -q" in content
     assert "python -m hlm_kg.validation_samples" in content

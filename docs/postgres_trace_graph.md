@@ -16,6 +16,12 @@ HLM_CONTENT_STORE=postgres
 
 ## 初始化
 
+先安装项目 Python 依赖：
+
+```bash
+python -m pip install -r requirements.txt
+```
+
 如果应用账号不是数据库 owner，需要管理员先在目标数据库执行：
 
 ```sql
