@@ -59,6 +59,30 @@ def test_content_store_exposes_seed_knowledge_cards_relations_topics_and_entries
     assert any(entry["id"] == "entry-daiyu-burying-flowers" for entry in store.common_entries)
 
 
+def test_common_entries_support_routing_targets():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+    card_ids = {card.id for card in store.knowledge_cards}
+    topic_ids = {topic.id for topic in store.topics}
+    chapter_numbers = set(range(1, 121))
+
+    assert {entry["target_type"] for entry in store.common_entries} >= {"ask", "chapter", "topic", "card"}
+    for entry in store.common_entries:
+        target_type = entry["target_type"]
+        target = entry["target"]
+        if target_type == "chapter":
+            assert int(target) in chapter_numbers
+        elif target_type == "topic":
+            assert target in topic_ids
+        elif target_type == "card":
+            assert target in card_ids
+        else:
+            assert target_type == "ask"
+            assert target
+
+
 def test_content_store_loads_evidence_lookup():
     store = ContentStore.from_paths(
         manifest_path=Path("book/chapters_manifest.json"),

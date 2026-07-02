@@ -10,5 +10,23 @@
     "label": "探春理家体现了什么性格？",
     "target_type": "ask",
     "target": "探春理家体现了什么性格？"
+  },
+  {
+    "id": "entry-read-chapter-27",
+    "label": "阅读第二十七回",
+    "target_type": "chapter",
+    "target": "27"
+  },
+  {
+    "id": "entry-topic-image-foreshadowing",
+    "label": "查看意象伏笔",
+    "target_type": "topic",
+    "target": "topic-image-foreshadowing"
+  },
+  {
+    "id": "entry-card-lindaiyu",
+    "label": "理解林黛玉",
+    "target_type": "card",
+    "target": "card-lindaiyu"
   }
 ]
