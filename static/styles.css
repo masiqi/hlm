@@ -69,6 +69,22 @@ main {
   gap: 24px;
 }
 
+.chapter-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chapter-toolbar select {
+  min-height: 40px;
+  min-width: 160px;
+  border: 1px solid #b8ad98;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f2933;
+}
+
 .knowledge-panel {
   position: sticky;
   top: 16px;
@@ -106,6 +122,15 @@ pre {
 
   .chapter-layout {
     display: block;
+  }
+
+  .chapter-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .chapter-toolbar select {
+    width: 100%;
   }
 
   .knowledge-panel {
