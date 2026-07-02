@@ -100,3 +100,18 @@ def test_static_chapter_original_text_uses_safe_inline_knowledge_links():
     assert "annotated-original" in js
     assert "renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)" in js
     assert "<pre>${escapeHtml(data.originalText)}</pre>" not in js
+
+
+def test_static_mobile_knowledge_panel_has_open_and_close_controls():
+    html = Path("static/index.html").read_text(encoding="utf-8")
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    css = Path("static/styles.css").read_text(encoding="utf-8")
+
+    assert 'data-panel-close="knowledge-panel"' in html
+    assert 'data-panel-close="topic-knowledge-panel"' in html
+    assert "openKnowledgePanel" in js
+    assert "closeKnowledgePanel" in js
+    assert "knowledge-panel open" in js
+    assert "[data-panel-close]" in js
+    assert ".knowledge-panel.open" in css
+    assert "position: fixed" in css

@@ -86,6 +86,18 @@ function renderKnowledgeButtons(cards) {
     .join("");
 }
 
+function panelContentSelector(targetSelector) {
+  return `${targetSelector} .knowledge-panel-content`;
+}
+
+function openKnowledgePanel(targetSelector) {
+  document.querySelector(targetSelector).className = "knowledge-panel open";
+}
+
+function closeKnowledgePanel(panelId) {
+  document.querySelector(`#${panelId}`).className = "knowledge-panel";
+}
+
 function initChapterSelector() {
   const chapterSelect = document.querySelector("#chapter-select");
   if (!chapterSelect || chapterSelect.options.length) return;
@@ -105,7 +117,7 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
   const sources = data.evidence
     .map((item) => `<li class="source">第 ${escapeHtml(item.chapter)} 回：${escapeHtml(item.evidenceText)}</li>`)
     .join("");
-  document.querySelector(targetSelector).innerHTML = `
+  document.querySelector(panelContentSelector(targetSelector)).innerHTML = `
     <h3>${escapeHtml(data.card.name)}</h3>
     <h4>文本理解</h4>
     <ul>${textUnderstanding || "<li>暂无可靠资料</li>"}</ul>
@@ -116,6 +128,7 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
     <h4>相关章回</h4>
     <ul>${sources || "<li>暂无可靠资料</li>"}</ul>
   `;
+  openKnowledgePanel(targetSelector);
 }
 
 async function loadChapter(number = 27) {
@@ -142,13 +155,14 @@ async function loadChapter(number = 27) {
     <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
     <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)}</pre></section>
   `;
-  document.querySelector("#knowledge-panel").innerHTML = `
+  document.querySelector(panelContentSelector("#knowledge-panel")).innerHTML = `
     <h3>本回重点</h3>
     <h4>主要人物</h4>
     <ul>${focusCards || "<li>暂无可靠资料</li>"}</ul>
     <h4>理解角度</h4>
     <ul>${focusAngles || "<li>暂无可靠资料</li>"}</ul>
   `;
+  closeKnowledgePanel("knowledge-panel");
 }
 
 async function loadTopics() {
@@ -183,7 +197,8 @@ async function loadTopicDetail(topicId) {
       <ul>${facts || "<li>暂无可靠资料</li>"}</ul>
     </article>
   `;
-  document.querySelector("#topic-knowledge-panel").innerHTML = "";
+  document.querySelector(panelContentSelector("#topic-knowledge-panel")).innerHTML = "";
+  closeKnowledgePanel("topic-knowledge-panel");
 }
 
 document.addEventListener("click", (event) => {
@@ -202,6 +217,9 @@ document.addEventListener("click", (event) => {
   }
   if (target.matches("[data-topic-id]")) {
     loadTopicDetail(target.dataset.topicId);
+  }
+  if (target.matches("[data-panel-close]")) {
+    closeKnowledgePanel(target.dataset.panelClose);
   }
 });
 
