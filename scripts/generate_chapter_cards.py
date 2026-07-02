@@ -22,6 +22,52 @@ PROMPT_NAME = "hongloumeng_chapter_review_card"
 PROMPT_VERSION = "2026-07-01"
 DEFAULT_SAMPLE_CHAPTERS = [3, 5, 8, 27, 31, 33, 56, 63, 74, 97]
 JSON_BLOCK_RE = re.compile(r"```json\s*(?P<json>\{.*?\})\s*```", re.DOTALL)
+STUDENT_FORBIDDEN_TERMS = (
+    "LightRAG",
+    "RAG",
+    "知识图谱",
+    "向量检索",
+    "置信度",
+    "模型分数",
+    "标准答案",
+    "题库",
+    "下一题",
+    "提交答案",
+    "批改",
+)
+REQUIRED_APP_IMPORT_FIELDS = (
+    "id",
+    "chapter",
+    "source",
+    "plain_summary",
+    "plot_chain",
+    "key_events",
+    "key_characters",
+    "current_chapter_foreshadowing_signals",
+    "later_association_relation_ids",
+    "quotable_fact_ids",
+    "retrieval_tags",
+    "understanding_focus",
+)
+EXTENDED_APP_IMPORT_LIST_FIELDS = (
+    "characters",
+    "relationships",
+    "places",
+    "objects",
+    "literary_texts",
+    "modern_explanations",
+    "later_associations",
+    "annotations",
+)
+DISPLAY_CARD_FIELDS = (
+    "plain_summary",
+    "plot_chain",
+    "key_events",
+    "current_chapter_foreshadowing_signals",
+    "retrieval_tags",
+    "understanding_focus",
+    *EXTENDED_APP_IMPORT_LIST_FIELDS,
+)
 
 
 class LLMConfig:
@@ -161,7 +207,22 @@ def generate_cards(
             generated_at=generated_at,
         )
         markdown = llm_client.complete(prompt)
-        card = extract_app_import_json(markdown)
+        try:
+            card = extract_app_import_json(markdown)
+        except ValueError:
+            failed_dir = output_dir / "failed"
+            failed_dir.mkdir(parents=True, exist_ok=True)
+            failed_path = failed_dir / f"{chapter_number:03d}.md"
+            failed_path.write_text(markdown, encoding="utf-8")
+            repair_prompt = build_repair_prompt(
+                chapter_number=chapter_number,
+                chapter_title=str(item["title"]),
+                generated_at=generated_at,
+                previous_output=markdown,
+            )
+            repaired = llm_client.complete(repair_prompt)
+            card = extract_app_import_json("AppImportJSON\n" + repaired)
+            markdown = markdown.rstrip() + "\n\n## AppImportJSON 修复输出\n\n" + repaired
         card["chapter"] = chapter_number
         card.setdefault("id", f"review-{chapter_number:03d}")
         card.setdefault(
@@ -172,6 +233,13 @@ def generate_cards(
                 "generated_at": generated_at,
             },
         )
+        validation_errors = validate_generated_card_output(markdown, card)
+        if validation_errors:
+            failed_dir = output_dir / "failed"
+            failed_dir.mkdir(parents=True, exist_ok=True)
+            failed_path = failed_dir / f"{chapter_number:03d}.md"
+            failed_path.write_text(markdown, encoding="utf-8")
+            raise ValueError(f"generated chapter {chapter_number:03d} failed quality gate: {'; '.join(validation_errors[:3])}")
         markdown_path.write_text(markdown, encoding="utf-8")
         json_path.write_text(json.dumps(card, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         cards.append(card)
@@ -218,13 +286,14 @@ def build_prompt(
 你必须严格遵守：
 
 1. 本回事实必须来自“本回原文”。
-2. 后文关联、跨章伏笔、命运照应必须来自“LightRAG 全书关系线索”或明确后续章回证据。
-3. 如果 LightRAG 线索不足，不要编造，写“本回暂不能确定”或“需结合后文”。
+2. 后文关联、跨章伏笔、命运照应必须来自“系统提供的全书关系线索”或明确后续章回证据。
+3. 如果系统提供的全书关系线索不足，不要编造，写“本回暂不能确定”或“需结合后文”。
 4. 不要把影视剧、续书、脂批争议内容混成本回原文事实。
 5. 输出中文。
 6. 不要写空泛套话；每个重要判断都要绑定具体情节或文本依据。
-7. AppImportJSON 的学生端可展示字段中不得出现这些词：LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。
+7. 完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现这些词：LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。
 8. 生成内容不是题库，不要设计刷题流程，不要写评分标准。
+9. 必须直接从标题行“# 第{chapter_number}回 {chapter_title} 章节复习卡”开始输出，不要输出寒暄、解释、免责声明或“好的同学”之类开场白。
 
 章节编号：
 {chapter_number}
@@ -238,12 +307,16 @@ def build_prompt(
 本回原文：
 {chapter_text}
 
-LightRAG 全书关系线索：
+系统提供的全书关系线索：
 {evidence_text}
 
 请输出两部分。
 
 第一部分：完整 Markdown 章节复习卡
+
+必须从下面标题行开始，不要在标题前添加任何文字：
+
+# 第{chapter_number}回 {chapter_title} 章节复习卡
 
 必须包含以下栏目：
 
@@ -261,7 +334,7 @@ LightRAG 全书关系线索：
 ## 8. 诗词曲文、对联、判词、灯谜、花签、题额与语言细节
 ## 9. 主题与艺术手法
 ## 10. 伏笔、照应与后文关联
-后文关联必须引用 LightRAG 全书关系线索；没有可靠线索时写“本回暂不能确定”。
+后文关联必须引用系统提供的全书关系线索；没有可靠线索时写“本回暂不能确定”。
 ## 11. 高频考点整理
 只整理考点，不要变成题库。
 ## 12. 易错点与辨析
@@ -294,14 +367,135 @@ LightRAG 全书关系线索：
   "later_association_relation_ids": [],
   "quotable_fact_ids": [],
   "retrieval_tags": ["#红楼梦", "#第{chapter_number}回", "#{chapter_title}"],
-  "understanding_focus": ["本回最该怎么读、抓什么关系、答题时注意什么"]
+  "understanding_focus": ["本回最该怎么读、抓什么关系、答题时注意什么"],
+  "characters": [
+    {{
+      "name": "人物名",
+      "aliases": ["称谓或别名"],
+      "role": "身份/关系",
+      "actions": ["本回主要行为"],
+      "traits": ["有情节支撑的性格特点"],
+      "evidence": ["具体情节或短依据"],
+      "importance": "本回作用"
+    }}
+  ],
+  "relationships": [
+    {{
+      "source": "人物/事件/物件",
+      "type": "关系类型",
+      "target": "人物/事件/物件",
+      "description": "具体关系说明",
+      "chapter_evidence": "本回依据"
+    }}
+  ],
+  "places": [
+    {{
+      "name": "地点名",
+      "scenes": ["出现的情节场景"],
+      "function": "对人物/主题/情节的作用"
+    }}
+  ],
+  "objects": [
+    {{
+      "name": "物件/意象名",
+      "context": "原文情境",
+      "meaning": "象征或作用",
+      "related_entities": ["相关人物或事件"]
+    }}
+  ],
+  "literary_texts": [
+    {{
+      "title": "诗词曲文/对联/判词/语言细节",
+      "short_quote": "不超过80字的短摘录",
+      "explanation": "现代解释",
+      "function": "作用分析"
+    }}
+  ],
+  "modern_explanations": [
+    {{
+      "quote": "原文语句",
+      "modern_text": "现代汉语解释",
+      "value": "理解重点或考查价值"
+    }}
+  ],
+  "later_associations": [
+    {{
+      "topic": "后文关联对象",
+      "description": "后文关联说明",
+      "source_chapters": [74],
+      "evidence": "必须来自系统提供的全书关系线索或明确后续章回证据",
+      "relation_id": null
+    }}
+  ],
+  "annotations": [
+    {{
+      "text": "原文中可点击的词语",
+      "kind": "person/event/object/place/foreshadowing/literary_text",
+      "target": "对应信息卡或实体名",
+      "note": "点击后展示的简要说明"
+    }}
+  ]
 }}
 ```
 
 注意：
 - AppImportJSON 必须是合法 JSON。
 - key_characters、later_association_relation_ids、quotable_fact_ids 暂时留空数组，除非输入材料明确提供了已经存在的 ID。
-- plain_summary、plot_chain、key_events、current_chapter_foreshadowing_signals、understanding_focus 中不得出现禁用词。
+- plain_summary、plot_chain、key_events、current_chapter_foreshadowing_signals、understanding_focus、characters、relationships、places、objects、literary_texts、modern_explanations、later_associations、annotations 中不得出现禁用词。
+"""
+
+
+def build_repair_prompt(*, chapter_number: int, chapter_title: str, generated_at: str, previous_output: str) -> str:
+    return f"""上一次输出没有包含可解析的 AppImportJSON。请只输出 AppImportJSON 的 JSON 代码块，不要输出解释文字。
+
+章节编号：{chapter_number}
+章节标题：{chapter_title}
+
+必须输出：
+
+```json
+{{
+  "id": "review-{chapter_number:03d}",
+  "chapter": {chapter_number},
+  "source": {{
+    "prompt_name": "{PROMPT_NAME}",
+    "prompt_version": "{PROMPT_VERSION}",
+    "generated_at": "{generated_at}"
+  }},
+  "plain_summary": "250—400 字本回梗概，不能出现禁用词",
+  "plot_chain": ["关键情节节点，按原文顺序"],
+  "key_events": ["本回关键事件"],
+  "key_characters": [],
+  "current_chapter_foreshadowing_signals": ["本回原文中能看出的伏笔或暗示"],
+  "later_association_relation_ids": [],
+  "quotable_fact_ids": [],
+  "retrieval_tags": ["#红楼梦", "#第{chapter_number}回", "#{chapter_title}"],
+  "understanding_focus": ["本回最该怎么读、抓什么关系、答题时注意什么"],
+  "characters": [],
+  "relationships": [],
+  "places": [],
+  "objects": [],
+  "literary_texts": [],
+  "modern_explanations": [],
+  "later_associations": [
+    {{
+      "topic": "后文关联对象",
+      "description": "后文关联说明",
+      "source_chapters": [],
+      "evidence": "必须来自系统提供的全书关系线索或明确后续章回证据",
+      "relation_id": null
+    }}
+  ],
+  "annotations": []
+}}
+```
+
+禁止在 plain_summary、plot_chain、key_events、current_chapter_foreshadowing_signals、understanding_focus、characters、relationships、places、objects、literary_texts、modern_explanations、later_associations、annotations 中出现：LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。
+如果没有可靠的系统提供的全书关系线索，later_associations 输出空数组，不要编造后文关联。
+
+上一次输出如下，可用于提取内容：
+
+{previous_output[:20000]}
 """
 
 
@@ -319,6 +513,45 @@ def extract_app_import_json(markdown: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("AppImportJSON must be a JSON object")
     return payload
+
+
+def validate_generated_card_output(markdown: str, card: Mapping[str, Any]) -> list[str]:
+    errors: list[str] = []
+    stripped = markdown.lstrip()
+    first_line = stripped.splitlines()[0].strip() if stripped else ""
+    if not first_line.startswith("# 第"):
+        errors.append("完整 Markdown 不得以寒暄开头，必须直接从章节标题开始。")
+
+    for term in STUDENT_FORBIDDEN_TERMS:
+        if term in markdown:
+            errors.append(f"完整 Markdown 包含学生端禁用词：{term}")
+
+    for field in REQUIRED_APP_IMPORT_FIELDS:
+        if field not in card:
+            errors.append(f"AppImportJSON 缺少必填字段：{field}")
+
+    for field in EXTENDED_APP_IMPORT_LIST_FIELDS:
+        if field in card and not isinstance(card[field], list):
+            errors.append(f"AppImportJSON 字段 {field} 必须是数组。")
+
+    for path, text in _iter_display_text(card, DISPLAY_CARD_FIELDS):
+        for term in STUDENT_FORBIDDEN_TERMS:
+            if term in text:
+                errors.append(f"AppImportJSON 学生可见字段 {path} 包含禁用词：{term}")
+    return errors
+
+
+def _iter_display_text(value: Any, display_fields: tuple[str, ...], path: str = ""):
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            key_path = f"{path}.{key}" if path else str(key)
+            if path or key in display_fields:
+                yield from _iter_display_text(item, display_fields, key_path)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from _iter_display_text(item, display_fields, f"{path}[{index}]")
+    elif isinstance(value, str):
+        yield path, value
 
 
 def _extract_balanced_json(text: str) -> str:

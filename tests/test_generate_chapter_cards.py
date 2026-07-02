@@ -69,9 +69,7 @@ class FakeLLMClient:
 
     def complete(self, prompt: str) -> str:
         self.prompts.append(prompt)
-        return """
-第一部分：
-# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
+        return """# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
 
 ## 1. 本回一句话概括
 本回主要写甄士隐梦幻识通灵与贾雨村出场。
@@ -94,10 +92,29 @@ class FakeLLMClient:
   "later_association_relation_ids": [],
   "quotable_fact_ids": [],
   "retrieval_tags": ["#红楼梦", "#第一回", "#甄士隐", "#贾雨村"],
-  "understanding_focus": ["抓住真假有无的开篇结构。"]
+  "understanding_focus": ["抓住真假有无的开篇结构。"],
+  "characters": [],
+  "relationships": [],
+  "places": [],
+  "objects": [],
+  "literary_texts": [],
+  "modern_explanations": [],
+  "later_associations": [],
+  "annotations": []
 }
 ```
 """
+
+
+class RetryLLMClient:
+    def __init__(self):
+        self.prompts = []
+
+    def complete(self, prompt: str) -> str:
+        self.prompts.append(prompt)
+        if len(self.prompts) == 1:
+            return "# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡\n\n## 1. 本回一句话概括\n本回主要写甄士隐梦幻识通灵。"
+        return FakeLLMClient().complete(prompt)
 
 
 def test_parse_chapter_selection_supports_list_and_all():
@@ -131,7 +148,7 @@ def test_generate_selected_chapter_writes_markdown_json_and_combined_json(tmp_pa
     combined = json.loads((output_dir / "chapter_review_cards.raw.json").read_text(encoding="utf-8"))
     assert [card["chapter"] for card in combined] == [1]
     assert lightrag.queries
-    assert "LightRAG 全书关系线索" in llm.prompts[0]
+    assert "系统提供的全书关系线索" in llm.prompts[0]
 
 
 def test_generate_cards_combines_existing_import_json_files(tmp_path):
@@ -175,6 +192,26 @@ def test_generate_cards_combines_existing_import_json_files(tmp_path):
     assert [card["chapter"] for card in combined] == [1, 2]
 
 
+def test_generate_cards_retries_when_app_import_json_is_missing(tmp_path):
+    module = _import_script_module()
+    manifest_path = _write_manifest(tmp_path)
+    llm = RetryLLMClient()
+
+    cards = module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=tmp_path / "generated",
+        chapters=[1],
+        lightrag_client=FakeLightRAGClient(),
+        llm_client=llm,
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+
+    assert [card["chapter"] for card in cards] == [1]
+    assert len(llm.prompts) == 2
+    assert "只输出 AppImportJSON" in llm.prompts[1]
+
+
 def test_extract_app_import_json_rejects_missing_json_block():
     module = _import_script_module()
 
@@ -186,11 +223,130 @@ def test_extract_app_import_json_rejects_missing_json_block():
         raise AssertionError("expected ValueError")
 
 
+def test_validate_generated_card_output_rejects_technical_terms_and_greeting():
+    module = _import_script_module()
+    card = {
+        "id": "review-005",
+        "chapter": 5,
+        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
+        "plain_summary": "根据LightRAG线索可知本回内容。",
+        "plot_chain": ["宝玉入梦"],
+        "key_events": ["太虚幻境"],
+        "key_characters": [],
+        "current_chapter_foreshadowing_signals": [],
+        "later_association_relation_ids": [],
+        "quotable_fact_ids": [],
+        "retrieval_tags": ["#第五回"],
+        "understanding_focus": ["理解太虚幻境"],
+    }
+
+    errors = module.validate_generated_card_output("好的，同学\n# 第5回 标题 章节复习卡", card)
+
+    assert any("不得以寒暄开头" in error for error in errors)
+    assert any("禁用词" in error and "LightRAG" in error for error in errors)
+
+
+def test_validate_generated_card_output_accepts_clean_extended_card():
+    module = _import_script_module()
+    card = {
+        "id": "review-027",
+        "chapter": 27,
+        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
+        "plain_summary": "本回主要写宝钗扑蝶和黛玉葬花。",
+        "plot_chain": ["宝钗扑蝶", "黛玉葬花"],
+        "key_events": ["宝钗扑蝶", "黛玉葬花"],
+        "key_characters": [],
+        "current_chapter_foreshadowing_signals": ["葬花情节提示黛玉身世悲感。"],
+        "later_association_relation_ids": [],
+        "quotable_fact_ids": [],
+        "retrieval_tags": ["#第二十七回"],
+        "understanding_focus": ["抓住宝钗与黛玉的对照。"],
+        "characters": [],
+        "relationships": [],
+        "places": [],
+        "objects": [],
+        "literary_texts": [],
+        "modern_explanations": [],
+        "later_associations": [],
+        "annotations": [],
+    }
+
+    assert module.validate_generated_card_output("# 第27回 标题 章节复习卡\n正文", card) == []
+
+
 def test_makefile_documents_chapter_card_generation_command():
     makefile = Path("Makefile").read_text(encoding="utf-8")
 
     assert "generate-chapter-cards:" in makefile
     assert "python scripts/generate_chapter_cards.py" in makefile
+
+
+def test_build_prompt_uses_student_facing_source_names_and_forbids_technical_terms_in_markdown():
+    module = _import_script_module()
+
+    prompt = module.build_prompt(
+        chapter_number=5,
+        chapter_title="贾宝玉神游太虚境 警幻仙曲演红楼梦",
+        source_file="book/chapters/005.txt",
+        chapter_text="第五回原文",
+        lightrag_evidence={"data": {"relationships": []}},
+        generated_at="2026-07-02",
+    )
+
+    assert "系统提供的全书关系线索" in prompt
+    assert "LightRAG 全书关系线索" not in prompt
+    assert "完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现" in prompt
+    assert "不要输出寒暄、解释、免责声明或“好的同学”之类开场白" in prompt
+
+
+def test_build_prompt_requests_structured_app_import_sections_for_website_and_database():
+    module = _import_script_module()
+
+    prompt = module.build_prompt(
+        chapter_number=27,
+        chapter_title="滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红",
+        source_file="book/chapters/027.txt",
+        chapter_text="第二十七回原文",
+        lightrag_evidence={"data": {"entities": []}},
+        generated_at="2026-07-02",
+    )
+
+    for field in (
+        '"characters"',
+        '"relationships"',
+        '"places"',
+        '"objects"',
+        '"literary_texts"',
+        '"modern_explanations"',
+        '"later_associations"',
+        '"annotations"',
+    ):
+        assert field in prompt
+
+
+def test_repair_prompt_uses_same_structured_app_import_sections():
+    module = _import_script_module()
+
+    prompt = module.build_repair_prompt(
+        chapter_number=27,
+        chapter_title="滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红",
+        generated_at="2026-07-02",
+        previous_output="# 第27回 标题 章节复习卡",
+    )
+
+    for field in (
+        '"characters"',
+        '"relationships"',
+        '"places"',
+        '"objects"',
+        '"literary_texts"',
+        '"modern_explanations"',
+        '"later_associations"',
+        '"annotations"',
+    ):
+        assert field in prompt
+    assert "系统提供的全书关系线索" in prompt
+    assert "LightRAG 全书关系线索" not in prompt
 
 
 def test_cli_help_runs_from_repo_root_without_import_error():
