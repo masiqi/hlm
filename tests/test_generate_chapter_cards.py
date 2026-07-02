@@ -134,6 +134,47 @@ def test_generate_selected_chapter_writes_markdown_json_and_combined_json(tmp_pa
     assert "LightRAG 全书关系线索" in llm.prompts[0]
 
 
+def test_generate_cards_combines_existing_import_json_files(tmp_path):
+    module = _import_script_module()
+    manifest_path = _write_manifest(tmp_path)
+    output_dir = tmp_path / "generated"
+    import_dir = output_dir / "chapter_cards_import"
+    import_dir.mkdir(parents=True)
+    (import_dir / "002.json").write_text(
+        json.dumps(
+            {
+                "id": "review-002",
+                "chapter": 2,
+                "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
+                "plain_summary": "第二回已有内容。",
+                "plot_chain": ["已有情节"],
+                "key_events": ["已有事件"],
+                "key_characters": [],
+                "current_chapter_foreshadowing_signals": ["已有伏笔"],
+                "later_association_relation_ids": [],
+                "quotable_fact_ids": [],
+                "retrieval_tags": ["#第二回"],
+                "understanding_focus": ["已有重点"],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=output_dir,
+        chapters=[1],
+        lightrag_client=FakeLightRAGClient(),
+        llm_client=FakeLLMClient(),
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+
+    combined = json.loads((output_dir / "chapter_review_cards.raw.json").read_text(encoding="utf-8"))
+    assert [card["chapter"] for card in combined] == [1, 2]
+
+
 def test_extract_app_import_json_rejects_missing_json_block():
     module = _import_script_module()
 

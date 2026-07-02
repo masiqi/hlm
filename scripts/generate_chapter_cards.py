@@ -177,8 +177,19 @@ def generate_cards(
         cards.append(card)
         print(f"generated chapter {chapter_number:03d}: {item['title']}")
 
+    combined_cards = load_generated_import_cards(import_dir)
     combined_path = output_dir / "chapter_review_cards.raw.json"
-    write_import_cards(cards, combined_path)
+    write_import_cards(combined_cards, combined_path)
+    return sorted(combined_cards, key=lambda card: int(card["chapter"]))
+
+
+def load_generated_import_cards(import_dir: Path) -> list[dict[str, Any]]:
+    cards: list[dict[str, Any]] = []
+    for path in sorted(import_dir.glob("*.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError(f"{path} must contain a JSON object")
+        cards.append(payload)
     return sorted(cards, key=lambda card: int(card["chapter"]))
 
 
