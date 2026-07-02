@@ -10,6 +10,10 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Mapping
 
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from hlm_kg.lightrag_client import LightRAGClient, LightRAGConfig
 from scripts.import_chapter_cards import load_import_cards, write_import_cards
 

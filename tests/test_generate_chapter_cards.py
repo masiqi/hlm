@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -148,3 +150,15 @@ def test_makefile_documents_chapter_card_generation_command():
 
     assert "generate-chapter-cards:" in makefile
     assert "python scripts/generate_chapter_cards.py" in makefile
+
+
+def test_cli_help_runs_from_repo_root_without_import_error():
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT_PATH), "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "Generate Hongloumeng chapter review cards" in result.stdout
