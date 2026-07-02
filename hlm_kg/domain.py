@@ -79,6 +79,42 @@ class ChapterReviewCard:
     quotable_fact_ids: list[str]
     retrieval_tags: list[str]
     understanding_focus: list[str]
+    characters: list[dict] = field(default_factory=list)
+    relationships: list[dict] = field(default_factory=list)
+    places: list[dict] = field(default_factory=list)
+    objects: list[dict] = field(default_factory=list)
+    literary_texts: list[dict] = field(default_factory=list)
+    modern_explanations: list[dict] = field(default_factory=list)
+    later_associations: list[dict] = field(default_factory=list)
+    annotations: list[dict] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class ChapterAnnotation:
+    id: str
+    chapter: int
+    start_offset: int
+    end_offset: int
+    surface_text: str
+    annotation_type: str
+    entity_id: str | None
+    relation_id: str | None
+    evidence_id: str | None
+    display_priority: int
+
+
+@dataclass(frozen=True)
+class TraceItem:
+    id: str
+    entity_id: str
+    chapter: int
+    relation_id: str | None
+    evidence_id: str | None
+    title: str
+    description: str
+    trace_type: str
+    sort_order: int
+    importance: int
 
 
 @dataclass(frozen=True)

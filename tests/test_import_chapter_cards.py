@@ -34,6 +34,14 @@ def _card(chapter: int, **overrides):
         "quotable_fact_ids": [f"ev-{chapter:03d}"],
         "retrieval_tags": [f"第{chapter}回"],
         "understanding_focus": ["人物关系"],
+        "characters": [],
+        "relationships": [],
+        "places": [],
+        "objects": [],
+        "literary_texts": [],
+        "modern_explanations": [],
+        "later_associations": [],
+        "annotations": [],
     }
     card.update(overrides)
     return card
@@ -100,6 +108,34 @@ def test_load_import_cards_validates_references_against_data_dir(tmp_path):
     assert card["key_characters"] == ["card-character-001"]
     assert card["later_association_relation_ids"] == ["rel-001"]
     assert card["quotable_fact_ids"] == ["ev-001"]
+
+
+def test_load_import_cards_preserves_extended_structured_fields(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    extended = _card(
+        1,
+        characters=[{"name": "袭人", "actions": ["劝慰宝玉"]}],
+        relationships=[{"source": "袭人", "type": "主仆", "target": "宝玉", "description": "袭人服侍宝玉"}],
+        places=[{"name": "怡红院", "scenes": ["宝玉日常生活"]}],
+        objects=[{"name": "通灵宝玉", "meaning": "身份和命运线索"}],
+        literary_texts=[{"title": "题额", "explanation": "用于理解场景"}],
+        modern_explanations=[{"quote": "原句", "modern_text": "现代解释"}],
+        later_associations=[{"topic": "袭人归宿", "source_chapters": [120], "evidence": "后文章回证据"}],
+        annotations=[{"text": "袭人", "kind": "person", "target": "袭人"}],
+    )
+    _write_input(input_path, [extended])
+
+    [card] = module.load_import_cards(input_path)
+
+    assert card["characters"] == extended["characters"]
+    assert card["relationships"] == extended["relationships"]
+    assert card["places"] == extended["places"]
+    assert card["objects"] == extended["objects"]
+    assert card["literary_texts"] == extended["literary_texts"]
+    assert card["modern_explanations"] == extended["modern_explanations"]
+    assert card["later_associations"] == extended["later_associations"]
+    assert card["annotations"] == extended["annotations"]
 
 
 @pytest.mark.parametrize(
@@ -170,6 +206,26 @@ def test_load_import_cards_rejects_non_string_list_items(tmp_path):
     _write_input(input_path, [_card(1, key_events=["有效事件", {"bad": "value"}])])
 
     with pytest.raises(ValueError, match="key_events"):
+        module.load_import_cards(input_path)
+
+
+def test_load_import_cards_rejects_missing_extended_fields(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    card = _card(1)
+    del card["annotations"]
+    _write_input(input_path, [card])
+
+    with pytest.raises(ValueError, match="annotations"):
+        module.load_import_cards(input_path)
+
+
+def test_load_import_cards_rejects_non_list_extended_fields(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    _write_input(input_path, [_card(1, annotations={"text": "袭人"})])
+
+    with pytest.raises(ValueError, match="annotations"):
         module.load_import_cards(input_path)
 
 

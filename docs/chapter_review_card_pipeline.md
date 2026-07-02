@@ -9,8 +9,10 @@
 ## Inputs
 
 - `book/chapters/`: 120 回原文，每个文件名包含章回编号、回目标号和回目标题。
-- LightRAG `/query/data`: 全书关系线索和跨章证据来源，用于后文关联、伏笔照应、人物关系和命运线索。
+- LightRAG `/query/data`: 系统内部使用的全书关系线索和跨章证据来源，用于后文关联、伏笔照应、人物关系和命运线索。生成给学生看的 Markdown 和 JSON 不得直接出现 LightRAG、RAG、知识图谱等技术名称。
 - `data/prompts/definitions.json`: 章节卡提示词契约，当前定义名为 `hongloumeng_chapter_review_card`。
+
+生成脚本不会把 `/query/data` 原始响应直接交给提示词。它先复用 `hlm_kg.evidence_adapter.normalize_query_data_response()` 归一化候选证据，再投影为学生端安全的“全书关系线索”证据包。证据包只包含标题、说明、来源章回、关系关键词和可追溯 ID 等必要字段；原始响应状态和候选数量只进入 `AppImportJSON.internal.evidence_audit`，供人审和排障使用。
 
 ## Generation Order
 
@@ -41,7 +43,9 @@
 - 本回核心知识卡片、关系线索三元组、实体清单和检索标签。
 - 本回复习建议，帮助学生知道本回最该记什么、如何联读。
 
-后文关联不能由 LLM 只凭当前回原文或模型常识补写。生成前应先用 LightRAG `/query/data` 检索与本回人物、事件、物件、地点和主题相关的全书关系线索；有可靠关系时写入后文关联，没有可靠关系时写“本回暂不能确定”或“需结合后文”。
+后文关联不能由 LLM 只凭当前回原文或模型常识补写。生成前应先用 LightRAG `/query/data` 检索与本回人物、事件、物件、地点和主题相关的系统全书关系线索；提示词收到的是归一化后的“全书关系线索”证据包。有可靠关系时写入后文关联，没有可靠关系时写“本回暂不能确定”或“需结合后文”。学生可见内容只能称为“全书关系线索”“后文关联”“相关章回”等，不展示内部技术名词。
+
+完整 Markdown 必须直接从 `# 第X回 ... 章节复习卡` 开始，不输出寒暄、解释、免责声明或“好的同学”之类开场白。
 
 ## App Import Shape
 
@@ -64,22 +68,79 @@
   "later_association_relation_ids": ["rel-daiyu-burying-flowers-fate"],
   "quotable_fact_ids": ["ev-027-daiyu-burying-flowers"],
   "retrieval_tags": ["#红楼梦", "#第二十七回", "#黛玉葬花"],
-  "understanding_focus": ["把黛玉葬花理解为人物心理、诗意表达和命运线索的交汇点。"]
+  "understanding_focus": ["把黛玉葬花理解为人物心理、诗意表达和命运线索的交汇点。"],
+  "characters": [
+    {
+      "name": "林黛玉",
+      "aliases": ["潇湘妃子"],
+      "role": "寄居贾府的外孙女",
+      "actions": ["葬花并吟咏伤春之情"],
+      "traits": ["敏感", "自尊", "才情深"],
+      "evidence": ["葬花情节表现其惜花自怜"],
+      "importance": "本回人物心理和命运意象的核心"
+    }
+  ],
+  "relationships": [
+    {
+      "source": "林黛玉",
+      "type": "情感/映照",
+      "target": "落花",
+      "description": "黛玉借落花寄托身世飘零之感。",
+      "chapter_evidence": "黛玉葬花并吟唱相关诗句。"
+    }
+  ],
+  "places": [],
+  "objects": [],
+  "literary_texts": [],
+  "modern_explanations": [],
+  "later_associations": [],
+  "annotations": []
 }
 ```
 
 `later_association_relation_ids` 和 `quotable_fact_ids` 只能引用已经存在、可回溯的关系或证据。批量导入时如果暂时没有这些 ID，可以留空，但不能伪造 ID。
 
+`later_associations` 只有在归一化证据包中存在可支持后续章回或跨章照应的候选证据时才能非空。质量门会在写入文件前检查这一点：如果生成结果写了 `later_associations`，但归一化证据包没有后续章回/关系支持，该章会被拒绝并进入失败目录；如果没有证据，`later_associations` 必须保持空数组。审计字段可以记录内部来源和计数，但学生可见字段不得出现内部技术名称。
+
+Markdown 是完整的人审内容资产，适合校对和追溯生成质量；`AppImportJSON` 是网站和 PostgreSQL 导入使用的结构化资产。网站核心交互不应依赖解析 Markdown，而应读取 JSON/PostgreSQL 中的字段。
+
 ## Quality Gate
 
 每批生成后至少检查：
 
+- Markdown 必须直接以章节标题开始，不能有寒暄、解释、免责声明或包装话术。
 - `plain_summary` 非空，且是本回内容，不是全书泛论。
 - `plot_chain` 非空，顺序与原文一致。
-- 后文关联必须有 LightRAG 关系线索或明确后续章回证据。
-- 学生端文字不能出现 `LightRAG`、`RAG`、`知识图谱`、`向量检索`、`置信度`、`模型分数`、`标准答案`、`题库`、`批改`。
+- 后文关联必须有系统全书关系线索或明确后续章回证据。
+- 非空 `later_associations` 必须能被归一化证据包中的后续章回或跨章关系候选支持；没有支持时必须为空。
+- 学生端文字不能出现 `LightRAG`、`RAG`、`知识图谱`、`向量检索`、`置信度`、`模型分数`、`标准答案`、`题库`、`下一题`、`提交答案`、`批改`。
+- `characters`、`relationships`、`places`、`objects`、`literary_texts`、`modern_explanations`、`later_associations`、`annotations` 如果出现，必须是数组，便于后续导入 PostgreSQL。
 - 不能把影视剧、续书、脂批争议内容混成本回原文事实。
 - 对资料不足的内容严格写明“不确定”或“需结合后文”，不补编。
+
+生成脚本会在写入 Markdown/JSON 前执行确定性质量门禁。门禁失败的输出会进入 `generated/failed/`，该章不会进入可导入 JSON。
+
+## Operating Sequence
+
+先生成 10 回样例：
+
+```bash
+python scripts/generate_chapter_cards.py --overwrite
+```
+
+人工检查 10 回样例通过后，再生成全量 120 回：
+
+```bash
+python scripts/generate_chapter_cards.py --all --overwrite
+```
+
+生成结果分三类：
+
+- `generated/chapter_cards_markdown/*.md`: 完整 Markdown，人审、校对和内容追溯使用。
+- `generated/chapter_cards_import/*.json`: 单回结构化结果，网站和数据库导入使用。
+- `generated/chapter_review_cards.checked.json`: 通过导入校验后的合并结构化结果。
+
+后续网站和 PostgreSQL 导入应读取结构化 JSON 字段；不要把 Markdown 当作核心交互的数据源来解析。
 
 ## Development Notes
 

@@ -8,8 +8,8 @@
       "output_schema": "ChapterReviewCard",
       "evidence_rules": [
         "必须严格依据本回原文、已处理章节资料或全书关系线索，不得编造本回没有出现的情节。",
-        "后文关联必须来自全书关系线索，并明确标注为后文关联或需结合后文。",
-        "后文关联、跨章伏笔和命运照应不能只依靠模型常识，必须由 LightRAG 全书关系线索或明确后续章回证据支撑。",
+        "后文关联必须来自系统提供的全书关系线索，并明确标注为后文关联或需结合后文。",
+        "后文关联、跨章伏笔和命运照应不能只依靠模型常识，必须由系统提供的全书关系线索或明确后续章回证据支撑。",
         "人物、事件、地点、物件、主题和伏笔结论都要尽量绑定原文依据或关系线索说明。"
       ],
       "refusal_rules": [
@@ -25,6 +25,9 @@
         "必须包含“主题与艺术手法”“伏笔、照应与后文关联”“高频考点整理”“易错点与辨析”。",
         "必须包含“关键语句现代汉语解释”“本回核心知识卡片”“关系线索三元组”“实体清单”“检索标签”和“本回复习建议”。",
         "输出结构必须能映射到 ChapterReviewCard：plain_summary、plot_chain、key_events、key_characters、current_chapter_foreshadowing_signals、later_association_relation_ids、quotable_fact_ids、retrieval_tags、understanding_focus。",
+        "AppImportJSON 还必须包含可供网站和数据库使用的扩展结构：characters、relationships、places、objects、literary_texts、modern_explanations、later_associations、annotations。",
+        "完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现 LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。",
+        "完整 Markdown 必须直接从章节标题开始，不得输出寒暄、解释、免责声明或“好的同学”之类开场白。",
         "later_association_relation_ids 只能引用全书关系线索中已经存在且可回溯的关系；没有可靠线索时留空并在待补充说明中说明。"
       ]
     },

@@ -20,6 +20,14 @@ REQUIRED_FIELDS = [
     "quotable_fact_ids",
     "retrieval_tags",
     "understanding_focus",
+    "characters",
+    "relationships",
+    "places",
+    "objects",
+    "literary_texts",
+    "modern_explanations",
+    "later_associations",
+    "annotations",
 ]
 
 REFERENCE_FIELDS = {
@@ -34,6 +42,14 @@ RENDERED_TEXT_FIELDS = [
     "key_events",
     "current_chapter_foreshadowing_signals",
     "understanding_focus",
+    "characters",
+    "relationships",
+    "places",
+    "objects",
+    "literary_texts",
+    "modern_explanations",
+    "later_associations",
+    "annotations",
 ]
 
 FORBIDDEN_STUDENT_TERMS = [
@@ -53,6 +69,10 @@ FORBIDDEN_STUDENT_TERMS = [
 
 def load_import_cards(input_path: Path, data_dir: Path | None = None) -> list[dict]:
     raw_cards = _read_cards(input_path)
+    return normalize_import_cards(raw_cards, data_dir=data_dir)
+
+
+def normalize_import_cards(raw_cards: list[Any], data_dir: Path | None = None) -> list[dict]:
     cards = [_normalize_card(raw_card, index) for index, raw_card in enumerate(raw_cards)]
     _reject_duplicate_chapters(cards)
     if data_dir is not None:
@@ -116,6 +136,14 @@ def _normalize_card(raw_card: Any, index: int) -> dict:
         "quotable_fact_ids": _normalize_list(raw_card["quotable_fact_ids"], index, "quotable_fact_ids"),
         "retrieval_tags": _normalize_list(raw_card["retrieval_tags"], index, "retrieval_tags"),
         "understanding_focus": _normalize_list(raw_card["understanding_focus"], index, "understanding_focus"),
+        "characters": _normalize_structured_list(raw_card["characters"], index, "characters"),
+        "relationships": _normalize_structured_list(raw_card["relationships"], index, "relationships"),
+        "places": _normalize_structured_list(raw_card["places"], index, "places"),
+        "objects": _normalize_structured_list(raw_card["objects"], index, "objects"),
+        "literary_texts": _normalize_structured_list(raw_card["literary_texts"], index, "literary_texts"),
+        "modern_explanations": _normalize_structured_list(raw_card["modern_explanations"], index, "modern_explanations"),
+        "later_associations": _normalize_structured_list(raw_card["later_associations"], index, "later_associations"),
+        "annotations": _normalize_structured_list(raw_card["annotations"], index, "annotations"),
     }
     _reject_forbidden_student_terms(card, index)
     return card
@@ -154,6 +182,12 @@ def _normalize_list(value: Any, index: int, field: str) -> list:
             raise ValueError(f"card[{index}] {field}[{item_index}] must be a non-empty string")
         items.append(item.strip())
     return items
+
+
+def _normalize_structured_list(value: Any, index: int, field: str) -> list:
+    if not isinstance(value, list):
+        raise ValueError(f"card[{index}] {field} must be a list")
+    return list(value)
 
 
 def _normalize_source(value: Any, index: int) -> dict:
@@ -202,11 +236,21 @@ def _load_ids(path: Path) -> set[str]:
 
 def _reject_forbidden_student_terms(card: dict, index: int) -> None:
     for field in RENDERED_TEXT_FIELDS:
-        values = card[field] if isinstance(card[field], list) else [card[field]]
-        for value in values:
+        for value in _iter_text(card[field]):
             for term in FORBIDDEN_STUDENT_TERMS:
                 if term in value:
                     raise ValueError(f"card[{index}] {field} contains forbidden student-facing term: {term}")
+
+
+def _iter_text(value: Any):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, list):
+        for item in value:
+            yield from _iter_text(item)
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from _iter_text(item)
 
 
 def main(argv: list[str] | None = None) -> int:

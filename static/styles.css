@@ -108,16 +108,38 @@ pre {
   line-height: 1.7;
 }
 
-.inline-knowledge-link {
+.inline-knowledge-link,
+.annotation-link {
   min-height: 0;
   padding: 0 2px;
   border: 0;
   border-bottom: 1px solid #8a6f3e;
   border-radius: 0;
-  background: transparent;
+  background: #fff6cc;
   color: #4e3f24;
   font: inherit;
   line-height: inherit;
+}
+
+.trace-list {
+  display: grid;
+  gap: 10px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.trace-list li {
+  border-left: 3px solid #5f7f71;
+  padding-left: 10px;
+}
+
+.trace-list p {
+  margin: 6px 0 0;
+}
+
+.trace-link {
+  min-height: 32px;
+  padding: 4px 8px;
 }
 
 @media (max-width: 760px) {

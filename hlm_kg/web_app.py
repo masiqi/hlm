@@ -12,11 +12,12 @@ from urllib.parse import urlparse
 from hlm_kg.ask_engine import AskEngine
 from hlm_kg.content_store import ContentStore
 from hlm_kg.lightrag_client import LightRAGClient, LightRAGConfig
+from hlm_kg.postgres_config import load_database_url, load_dotenv, parse_bool
 
 
 @dataclass(frozen=True)
 class AppContext:
-    store: ContentStore
+    store: Any
     ask_engine: AskEngine
     static_dir: Path
     retrieval_client: Any | None = None
@@ -29,8 +30,16 @@ def create_app_context(
     retrieval_client: Any | None = None,
     *,
     use_env_retrieval: bool = False,
+    use_postgres_store: bool = False,
 ) -> AppContext:
-    store = ContentStore.from_paths(manifest_path, data_dir)
+    json_store = ContentStore.from_paths(manifest_path, data_dir)
+    store: Any = json_store
+    postgres_enabled = use_postgres_store or parse_bool(os.environ.get("HLM_CONTENT_STORE") == "postgres")
+    if postgres_enabled:
+        database_url = load_database_url(load_dotenv()) or load_database_url()
+        if database_url is None:
+            raise RuntimeError("DATABASE_URL is not set for PostgreSQL content store")
+        store = PostgresContentStore(database_url, fallback_store=json_store)
     if retrieval_client is None and use_env_retrieval:
         config = LightRAGConfig.from_env(os.environ)
         retrieval_client = LightRAGClient(config) if config is not None else None
@@ -58,6 +67,7 @@ def handle_api_request(
             "originalText": context.store.chapter_text(number),
             "reviewCard": _camel(asdict(review_card)) if review_card is not None else None,
             "knowledgeCards": [_camel(asdict(card)) for card in knowledge_cards],
+            "annotations": [_camel(asdict(item)) for item in context.store.annotations_for_chapter(number)],
             "materialStatus": {
                 "hasReviewCard": review_card is not None,
                 "message": "章节资料已加载。" if review_card is not None else "章节资料暂未生成，可先阅读原文。",
@@ -83,10 +93,12 @@ def handle_api_request(
         evidence = [context.store.evidence(evidence_id) for evidence_id in card.evidence_ids]
         relation_by_id = {relation.id: relation for relation in context.store.graph_relations}
         relations = [relation_by_id[relation_id] for relation_id in card.graph_relation_ids]
+        trace_items = context.store.trace_items_for_entity(card_id)
         return 200, {
             "card": _camel(asdict(card)),
             "evidence": [_camel(asdict(item)) for item in evidence],
             "relations": [_camel(asdict(item)) for item in relations],
+            "traceItems": [_camel(asdict(item)) for item in trace_items],
         }
     if method == "POST" and parsed_path == "/api/ask":
         question = str((body or {}).get("question", ""))
@@ -106,6 +118,16 @@ def _camel(value: Any) -> Any:
 def _camel_key(key: str) -> str:
     head, *tail = key.split("_")
     return head + "".join(part[:1].upper() + part[1:] for part in tail)
+
+
+def PostgresContentStore(database_url: str, fallback_store: Any) -> Any:
+    try:
+        from hlm_kg.postgres_store import PostgresContentStore as Store
+    except ModuleNotFoundError as exc:
+        if exc.name == "psycopg":
+            raise RuntimeError("psycopg is required for PostgreSQL content store") from exc
+        raise
+    return Store(database_url, fallback_store=fallback_store)
 
 
 def make_handler(context: AppContext) -> type[SimpleHTTPRequestHandler]:
