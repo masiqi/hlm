@@ -1,4 +1,10 @@
-CREATE EXTENSION IF NOT EXISTS vector;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
+        CREATE EXTENSION IF NOT EXISTS vector;
+    END IF;
+END
+$$;
 
 CREATE TABLE IF NOT EXISTS chapters (
     id TEXT PRIMARY KEY,
@@ -117,7 +123,7 @@ CREATE TABLE IF NOT EXISTS embeddings (
     owner_type TEXT NOT NULL,
     owner_id TEXT NOT NULL,
     content TEXT NOT NULL,
-    embedding vector(1536),
+    embedding JSONB,
     model TEXT NOT NULL DEFAULT '',
     metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()

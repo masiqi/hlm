@@ -6,10 +6,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import psycopg
 from psycopg.types.json import Jsonb
 
-from hlm_kg.postgres_config import load_database_url
+from hlm_kg.postgres_config import load_database_url, load_dotenv
 
 
 @dataclass(frozen=True)
@@ -178,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
     manifest_path = Path(args[0]) if len(args) >= 1 else Path("book/chapters_manifest.json")
     data_dir = Path(args[1]) if len(args) >= 2 else Path("data/app")
-    database_url = load_database_url()
+    database_url = load_database_url(load_dotenv()) or load_database_url()
     if database_url is None:
         print("error: DATABASE_URL is not set", file=sys.stderr)
         return 2
