@@ -77,3 +77,15 @@ def test_static_chapter_view_handles_missing_review_card_state():
     assert "data.materialStatus?.message" in js
     assert "章节资料暂未生成，可先阅读原文。" in js
     assert "暂无可靠资料" in js
+
+
+def test_static_chapter_view_has_chapter_selector():
+    html = Path("static/index.html").read_text(encoding="utf-8")
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert 'id="chapter-select"' in html
+    assert 'for="chapter-select"' in html
+    assert "initChapterSelector" in js
+    assert "for (let number = 1; number <= 120; number += 1)" in js
+    assert 'loadChapter(Number(event.currentTarget.value))' in js
+    assert "chapterSelect.value = String(data.chapter.number)" in js

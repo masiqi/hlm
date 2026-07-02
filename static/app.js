@@ -67,6 +67,17 @@ function renderKnowledgeButtons(cards) {
     .join("");
 }
 
+function initChapterSelector() {
+  const chapterSelect = document.querySelector("#chapter-select");
+  if (!chapterSelect || chapterSelect.options.length) return;
+  for (let number = 1; number <= 120; number += 1) {
+    const option = document.createElement("option");
+    option.value = String(number);
+    option.textContent = `第 ${number} 回`;
+    chapterSelect.append(option);
+  }
+}
+
 async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
   const data = await getJson(`/api/cards/${cardId}`);
   const textUnderstanding = data.card.textUnderstanding.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
@@ -90,6 +101,8 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
 
 async function loadChapter(number = 27) {
   const data = await getJson(`/api/chapters/${number}`);
+  const chapterSelect = document.querySelector("#chapter-select");
+  if (chapterSelect) chapterSelect.value = String(data.chapter.number);
   const focusCards = data.knowledgeCards
     .map((card) => `<li><strong>${escapeHtml(card.name)}</strong>：${escapeHtml(card.brief)}</li>`)
     .join("");
@@ -173,10 +186,15 @@ document.addEventListener("click", (event) => {
   }
 });
 
+document.querySelector("#chapter-select").addEventListener("change", (event) => {
+  loadChapter(Number(event.currentTarget.value));
+});
+
 document.querySelector("#ask-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const question = new FormData(event.currentTarget).get("question");
   ask(String(question || ""));
 });
 
+initChapterSelector();
 loadHome();
