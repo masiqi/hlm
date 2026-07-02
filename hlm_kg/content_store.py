@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from hlm_kg.annotation_builder import generated_annotation_rows
 from hlm_kg.domain import (
     Chapter,
     ChapterAnnotation,
@@ -180,6 +181,15 @@ class ContentStore:
         if review_card is None:
             return []
         text = self.chapter_text(number)
+        generated_rows = generated_annotation_rows(
+            number,
+            text,
+            review_card.annotations,
+            target_lookup=self._annotation_target_lookup(),
+            keep_unresolved_target=False,
+        )
+        if generated_rows:
+            return [_annotation_from_row(row) for row in generated_rows]
         cards = [self._knowledge_cards[card_id] for card_id in review_card.key_characters if card_id in self._knowledge_cards]
         annotations: list[ChapterAnnotation] = []
         for card in sorted(cards, key=lambda item: len(item.name), reverse=True):
@@ -269,6 +279,28 @@ class ContentStore:
     def graph_relations(self) -> list[GraphRelation]:
         return list(self._graph_relations.values())
 
+    def _annotation_target_lookup(self) -> dict[str, str]:
+        lookup: dict[str, str] = {}
+        for card in self._knowledge_cards.values():
+            lookup[card.id] = card.id
+            lookup[card.name] = card.id
+        return lookup
+
 
 def _read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _annotation_from_row(row: dict[str, Any]) -> ChapterAnnotation:
+    return ChapterAnnotation(
+        id=str(row["id"]),
+        chapter=int(row["chapter_number"]),
+        start_offset=int(row["start_offset"]),
+        end_offset=int(row["end_offset"]),
+        surface_text=str(row["surface_text"]),
+        annotation_type=str(row["annotation_type"]),
+        entity_id=row.get("entity_id"),
+        relation_id=row.get("relation_id"),
+        evidence_id=row.get("evidence_id"),
+        display_priority=int(row["display_priority"]),
+    )

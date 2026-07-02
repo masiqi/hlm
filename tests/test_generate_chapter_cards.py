@@ -482,6 +482,52 @@ def test_later_associations_require_normalized_later_evidence():
     assert supported_errors == []
 
 
+def test_later_associations_must_match_supporting_evidence():
+    module = _import_script_module()
+    card = {
+        "id": "review-001",
+        "chapter": 1,
+        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
+        "plain_summary": "第一回主要写甄士隐梦幻识通灵与贾雨村出场。",
+        "plot_chain": ["甄士隐梦幻识通灵", "贾雨村出场"],
+        "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
+        "key_characters": [],
+        "current_chapter_foreshadowing_signals": ["通灵宝玉来历提示全书真假有无的叙事框架。"],
+        "later_association_relation_ids": [],
+        "quotable_fact_ids": [],
+        "retrieval_tags": ["#第一回"],
+        "understanding_focus": ["抓住真假有无的开篇结构。"],
+        "characters": [],
+        "relationships": [],
+        "places": [],
+        "objects": [],
+        "literary_texts": [],
+        "modern_explanations": [],
+        "later_associations": [
+            {
+                "topic": "贾宝玉挨打",
+                "description": "宝玉挨打与本回甄士隐梦幻结构互相照应。",
+                "source_chapters": [33],
+                "evidence": "第三十三回宝玉挨打。",
+            }
+        ],
+        "annotations": [],
+    }
+    later_pack = module.build_evidence_pack(
+        RelationshipEvidenceLightRAGClient(with_later_relationship=True).query_data("第一回", mode="hybrid"),
+        question="第1回 甄士隐命运照应",
+        chapter_number=1,
+    )
+
+    errors = module.validate_generated_card_output(
+        "# 第1回 标题 章节复习卡\n正文",
+        card,
+        evidence_pack=later_pack,
+    )
+
+    assert any("later_associations[0]" in error and "缺少匹配证据" in error for error in errors)
+
+
 def test_generate_cards_rejects_later_associations_without_normalized_later_evidence(tmp_path):
     module = _import_script_module()
     manifest_path = _write_manifest(tmp_path)

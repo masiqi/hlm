@@ -111,3 +111,46 @@ def test_sync_single_chapter_card_uses_scoped_upsert(monkeypatch, tmp_path):
     assert len(calls) == 1
     assert calls[0][0] == "postgresql://user:secret@example.local:5432/hlm"
     assert calls[0][1]["chapter_number"] == 27
+
+
+def test_replace_generated_annotations_for_single_chapter_is_scoped():
+    module = _import_script_module()
+    executed = []
+
+    class FakeCursor:
+        def execute(self, query, params=None):
+            executed.append((query, params))
+
+        def executemany(self, query, rows):
+            executed.append((query, rows))
+
+    row = _card(27, annotations=[{"text": "袭人", "kind": "person", "target": "card-xiren"}])
+
+    module.replace_generated_annotations_for_chapter(FakeCursor(), row, original_text="袭人问宝玉。袭人又来。")
+
+    assert "metadata->>'source' = 'chapter_card.annotations'" in executed[0][0]
+    assert executed[0][1] == (27,)
+    assert len(executed[1][1]) == 2
+    assert executed[1][1][0]["chapter_number"] == 27
+    assert executed[1][1][0]["entity_id"] == "card-xiren"
+
+
+def test_annotation_target_lookup_for_sync_maps_ids_and_names():
+    module = _import_script_module()
+
+    class FakeCursor:
+        def __init__(self):
+            self.query = None
+
+        def execute(self, query, params=None):
+            self.query = query
+
+        def fetchall(self):
+            return [{"id": "card-xiren", "name": "袭人"}]
+
+    cursor = FakeCursor()
+
+    lookup = module._annotation_target_lookup_for_sync(cursor)
+
+    assert "SELECT id, name FROM entities" in cursor.query
+    assert lookup == {"card-xiren": "card-xiren", "袭人": "card-xiren"}

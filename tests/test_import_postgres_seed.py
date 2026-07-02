@@ -30,6 +30,28 @@ def test_annotation_rows_for_chapter_uses_card_names_and_offsets():
     assert rows[0]["annotation_type"] == "person"
 
 
+def test_annotation_rows_for_chapter_uses_generated_review_card_annotations():
+    text = "甄士隐梦幻识通灵。梦幻照应真假。"
+    review_annotations = [
+        {
+            "text": "梦幻",
+            "kind": "event",
+            "target": "card-dream",
+            "note": "梦幻结构",
+        }
+    ]
+
+    rows = annotation_rows_for_chapter(1, text, [], review_annotations=review_annotations)
+
+    assert [row["surface_text"] for row in rows] == ["梦幻", "梦幻"]
+    assert rows[0]["id"] == "ann-001-generated-card-dream-3"
+    assert rows[0]["start_offset"] == 3
+    assert rows[0]["end_offset"] == 5
+    assert rows[0]["annotation_type"] == "event"
+    assert rows[0]["entity_id"] == "card-dream"
+    assert rows[0]["metadata"]["source"] == "chapter_card.annotations"
+
+
 def test_trace_rows_for_card_turns_relations_and_evidence_into_chapter_links():
     card = {
         "id": "card-lindaiyu",

@@ -70,6 +70,22 @@ DISPLAY_CARD_FIELDS = (
     *EXTENDED_APP_IMPORT_LIST_FIELDS,
 )
 LATER_ASSOCIATION_TERMS = ("后文", "后续", "后来", "照应", "伏笔", "命运", "关联", "跨章")
+LATER_ASSOCIATION_STOP_TERMS = {
+    "本回",
+    "后文",
+    "后续",
+    "后来",
+    "照应",
+    "伏笔",
+    "命运",
+    "关联",
+    "跨章",
+    "关系",
+    "线索",
+    "证据",
+    "情节",
+    "结构",
+}
 
 
 class LLMConfig:
@@ -651,8 +667,15 @@ def validate_generated_card_output(
                 errors.append(f"AppImportJSON 学生可见字段 {path} 包含禁用词：{term}")
     if evidence_pack is not None:
         later_associations = card.get("later_associations")
-        if isinstance(later_associations, list) and later_associations and not evidence_pack.get("later_association_evidence"):
-            errors.append("AppImportJSON 字段 later_associations 缺少规范化证据支持，必须留空。")
+        if isinstance(later_associations, list) and later_associations:
+            later_evidence = evidence_pack.get("later_association_evidence")
+            if not later_evidence:
+                errors.append("AppImportJSON 字段 later_associations 缺少规范化证据支持，必须留空。")
+            else:
+                chapter_number = _card_chapter_number(card)
+                for index, association in enumerate(later_associations):
+                    if not _later_association_supported(association, later_evidence, chapter_number=chapter_number):
+                        errors.append(f"AppImportJSON 字段 later_associations[{index}] 缺少匹配证据支持。")
     return errors
 
 
@@ -695,6 +718,74 @@ def _extract_balanced_json(text: str) -> str:
             if depth == 0:
                 return text[start : index + 1]
     raise ValueError("AppImportJSON JSON object was incomplete")
+
+
+def _card_chapter_number(card: Mapping[str, Any]) -> int | None:
+    try:
+        return int(card.get("chapter"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _later_association_supported(association: Any, evidence_items: Any, *, chapter_number: int | None) -> bool:
+    if not isinstance(association, Mapping) or not isinstance(evidence_items, list):
+        return False
+    association_chapters = _int_set(association.get("source_chapters"))
+    if not association_chapters:
+        return False
+    if chapter_number is not None and not any(chapter > chapter_number for chapter in association_chapters):
+        return False
+    association_text = _association_text(association)
+    association_terms = _support_terms(association_text)
+    if not association_terms:
+        return False
+    for evidence in evidence_items:
+        if not isinstance(evidence, Mapping):
+            continue
+        evidence_chapters = _int_set(evidence.get("source_chapters"))
+        if not association_chapters.intersection(evidence_chapters):
+            continue
+        evidence_text = _association_text(evidence)
+        if any(term in evidence_text for term in association_terms):
+            return True
+    return False
+
+
+def _int_set(value: Any) -> set[int]:
+    if not isinstance(value, list):
+        return set()
+    output: set[int] = set()
+    for item in value:
+        try:
+            output.add(int(item))
+        except (TypeError, ValueError):
+            continue
+    return output
+
+
+def _association_text(value: Mapping[str, Any]) -> str:
+    parts: list[str] = []
+    for key in ("topic", "description", "evidence", "title", "relationship_keywords", "entity_type"):
+        raw = value.get(key)
+        if isinstance(raw, str):
+            parts.append(raw)
+    return "\n".join(parts)
+
+
+def _support_terms(text: str) -> set[str]:
+    terms = set(re.findall(r"[\u4e00-\u9fffA-Za-z0-9]{2,}", text))
+    for run in re.findall(r"[\u4e00-\u9fff]{2,}", text):
+        max_size = min(4, len(run))
+        for size in range(2, max_size + 1):
+            for index in range(0, len(run) - size + 1):
+                terms.add(run[index : index + size])
+    return {
+        term
+        for term in terms
+        if term not in LATER_ASSOCIATION_STOP_TERMS
+        and not term.startswith("第")
+        and not any(stop in term for stop in LATER_ASSOCIATION_STOP_TERMS)
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

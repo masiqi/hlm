@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from hlm_kg.annotation_builder import generated_annotation_rows
 from hlm_kg.postgres_config import load_database_url, load_dotenv
 
 
@@ -54,10 +55,19 @@ def build_seed_records(manifest_path: Path, data_dir: Path) -> SeedRecords:
         )
 
     annotations = []
+    target_lookup = _annotation_target_lookup(knowledge_cards)
     for card in chapter_cards:
         chapter_number = int(card["chapter"])
         cards_for_chapter = [entity_lookup[card_id] for card_id in card.get("key_characters", []) if card_id in entity_lookup]
-        annotations.extend(annotation_rows_for_chapter(chapter_number, chapter_text_by_number[chapter_number], cards_for_chapter))
+        annotations.extend(
+            annotation_rows_for_chapter(
+                chapter_number,
+                chapter_text_by_number[chapter_number],
+                cards_for_chapter,
+                review_annotations=list(card.get("annotations", [])),
+                target_lookup=target_lookup,
+            )
+        )
 
     trace_items = []
     for card in knowledge_cards:
@@ -75,7 +85,23 @@ def build_seed_records(manifest_path: Path, data_dir: Path) -> SeedRecords:
     )
 
 
-def annotation_rows_for_chapter(chapter_number: int, original_text: str, cards: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def annotation_rows_for_chapter(
+    chapter_number: int,
+    original_text: str,
+    cards: list[dict[str, Any]],
+    *,
+    review_annotations: list[Any] | None = None,
+    target_lookup: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    generated_rows = generated_annotation_rows(
+        chapter_number,
+        original_text,
+        review_annotations or [],
+        target_lookup=target_lookup,
+        keep_unresolved_target=target_lookup is None,
+    )
+    if generated_rows:
+        return [row for row in generated_rows if row.get("entity_id")]
     rows: list[dict[str, Any]] = []
     for card in sorted(cards, key=lambda item: len(str(item["name"])), reverse=True):
         name = str(card["name"]).strip()
@@ -103,6 +129,19 @@ def annotation_rows_for_chapter(chapter_number: int, original_text: str, cards: 
             )
             start = index + len(name)
     return sorted(rows, key=lambda row: (row["start_offset"], row["end_offset"]))
+
+
+def _annotation_target_lookup(knowledge_cards: list[dict[str, Any]]) -> dict[str, str]:
+    lookup: dict[str, str] = {}
+    for card in knowledge_cards:
+        card_id = str(card.get("id") or "").strip()
+        if not card_id:
+            continue
+        lookup[card_id] = card_id
+        name = str(card.get("name") or "").strip()
+        if name:
+            lookup[name] = card_id
+    return lookup
 
 
 def trace_rows_for_card(

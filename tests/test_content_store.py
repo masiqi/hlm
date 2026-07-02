@@ -94,6 +94,52 @@ def test_content_store_preserves_extended_chapter_review_card_fields(tmp_path):
     assert card.later_associations == extended_card["later_associations"]
 
 
+def test_content_store_builds_original_text_annotations_from_review_card_annotations(tmp_path):
+    extended_card = _review_card(
+        key_characters=[],
+        annotations=[
+            {
+                "text": "梦幻",
+                "kind": "event",
+                "target": "card-dream",
+                "note": "梦幻结构",
+            }
+        ],
+    )
+    manifest_path, data_dir = _write_minimal_store_files(tmp_path, [extended_card])
+    (data_dir / "knowledge_cards.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "card-dream",
+                    "name": "梦幻",
+                    "type": "event",
+                    "brief": "梦幻结构。",
+                    "text_understanding": [],
+                    "understanding_angles": [],
+                    "graph_relation_ids": [],
+                    "evidence_ids": [],
+                    "related_card_ids": [],
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    chapter_path = tmp_path / "book" / "chapters" / "001-第一回-甄士隐梦幻识通灵 贾雨村风尘怀闺秀.txt"
+    chapter_path.write_text("甄士隐梦幻识通灵。梦幻照应真假。", encoding="utf-8")
+
+    store = ContentStore.from_paths(manifest_path=manifest_path, data_dir=data_dir)
+
+    annotations = store.annotations_for_chapter(1)
+
+    assert [annotation.surface_text for annotation in annotations] == ["梦幻", "梦幻"]
+    assert annotations[0].start_offset == 3
+    assert annotations[0].end_offset == 5
+    assert annotations[0].annotation_type == "event"
+    assert annotations[0].entity_id == "card-dream"
+
+
 def test_content_store_returns_none_for_missing_review_card():
     store = ContentStore.from_paths(
         manifest_path=Path("book/chapters_manifest.json"),
