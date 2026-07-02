@@ -45,6 +45,18 @@ make postgres-import-seed
 
 `make postgres-import-seed` 会把现有 `book/chapters_manifest.json`、`book/chapters/*.txt` 和 `data/app/*.json` 导入 PostgreSQL。导入脚本使用幂等 upsert，可以重复执行。
 
+## 单章章节卡同步
+
+章节卡生成仍先写入 `generated/`，作为人审、校对和可回滚的结构化产物。单章内容通过质量门禁后，可以只同步该章的章节卡到 PostgreSQL：
+
+```bash
+python scripts/generate_chapter_cards.py --chapters 27 --overwrite
+python scripts/import_chapter_cards.py generated/chapter_review_cards.raw.json generated/chapter_review_cards.checked.json data/app
+make sync-chapter-card-postgres CHAPTER=27 INPUT=generated/chapter_cards_import/027.json
+```
+
+单章同步只 upsert `chapter_cards` 中对应章节卡，不重建 120 章原文、知识卡、关系或证据。该命令从 `.env` 或环境变量读取 `DATABASE_URL`，错误信息不得输出连接串、密码或 API Key。
+
 ## 启动网站
 
 ```bash

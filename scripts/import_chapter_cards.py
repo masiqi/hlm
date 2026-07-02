@@ -69,6 +69,10 @@ FORBIDDEN_STUDENT_TERMS = [
 
 def load_import_cards(input_path: Path, data_dir: Path | None = None) -> list[dict]:
     raw_cards = _read_cards(input_path)
+    return normalize_import_cards(raw_cards, data_dir=data_dir)
+
+
+def normalize_import_cards(raw_cards: list[Any], data_dir: Path | None = None) -> list[dict]:
     cards = [_normalize_card(raw_card, index) for index, raw_card in enumerate(raw_cards)]
     _reject_duplicate_chapters(cards)
     if data_dir is not None:

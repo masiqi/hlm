@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run validate-samples generate-chapter-cards import-chapter-cards build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed
+.PHONY: help env split-chapters analyze-questions dry-run validate-samples generate-chapter-cards import-chapter-cards build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed sync-chapter-card-postgres
 
 help:
 	@echo "Targets:"
@@ -15,6 +15,7 @@ help:
 	@echo "  make web               Run the V1 reading assistant web app"
 	@echo "  make postgres-migrate  Apply PostgreSQL schema migration using DATABASE_URL"
 	@echo "  make postgres-import-seed  Import book/data seed content into PostgreSQL"
+	@echo "  make sync-chapter-card-postgres CHAPTER=27 INPUT=generated/chapter_cards_import/027.json"
 
 env:
 	@test -f .env || cp .env.example .env
@@ -58,3 +59,6 @@ postgres-migrate:
 
 postgres-import-seed:
 	python scripts/import_postgres_seed.py
+
+sync-chapter-card-postgres:
+	python scripts/sync_chapter_card_postgres.py --chapter $(CHAPTER) --input $(INPUT)
