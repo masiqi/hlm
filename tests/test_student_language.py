@@ -91,6 +91,18 @@ def test_static_chapter_view_has_chapter_selector():
     assert "chapterSelect.value = String(data.chapter.number)" in js
 
 
+def test_static_common_entries_route_by_target_type():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "handleCommonEntry" in js
+    assert "data-target-type" in js
+    assert "entry.targetType" in js
+    assert 'target.dataset.targetType === "ask"' in js
+    assert 'target.dataset.targetType === "chapter"' in js
+    assert 'target.dataset.targetType === "topic"' in js
+    assert 'target.dataset.targetType === "card"' in js
+
+
 def test_static_chapter_original_text_uses_safe_inline_knowledge_links():
     js = Path("static/app.js").read_text(encoding="utf-8")
 

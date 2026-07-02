@@ -76,8 +76,29 @@ async function ask(question) {
 async function loadHome() {
   const data = await getJson("/api/home");
   document.querySelector("#common-entries").innerHTML = data.commonEntries
-    .map((entry) => `<button data-question="${escapeHtml(entry.target)}">${escapeHtml(entry.label)}</button>`)
+    .map(
+      (entry) =>
+        `<button data-target-type="${escapeHtml(entry.targetType)}" data-target="${escapeHtml(entry.target)}">${escapeHtml(entry.label)}</button>`,
+    )
     .join("");
+}
+
+function handleCommonEntry(target) {
+  if (target.dataset.targetType === "ask") {
+    ask(target.dataset.target);
+  }
+  if (target.dataset.targetType === "chapter") {
+    showView("chapters");
+    loadChapter(Number(target.dataset.target));
+  }
+  if (target.dataset.targetType === "topic") {
+    showView("topics");
+    loadTopicDetail(target.dataset.target);
+  }
+  if (target.dataset.targetType === "card") {
+    showView("chapters");
+    loadKnowledgeCard(target.dataset.target);
+  }
 }
 
 function renderKnowledgeButtons(cards) {
@@ -193,8 +214,8 @@ document.addEventListener("click", (event) => {
     if (target.dataset.view === "chapters") loadChapter();
     if (target.dataset.view === "topics") loadTopics();
   }
-  if (target.matches("[data-question]")) {
-    ask(target.dataset.question);
+  if (target.matches("[data-target-type]")) {
+    handleCommonEntry(target);
   }
   if (target.matches("[data-card-id]")) {
     const panel = target.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
