@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
-
-import psycopg
-from psycopg.rows import dict_row
+from typing import Any, Protocol
 
 from hlm_kg.domain import (
     Chapter,
@@ -18,10 +15,15 @@ from hlm_kg.domain import (
 )
 
 
+class RowFetcher(Protocol):
+    def __call__(self, query: str, params: tuple[Any, ...]) -> list[dict[str, Any]]: ...
+
+
 class PostgresContentStore:
-    def __init__(self, database_url: str, fallback_store: Any | None = None) -> None:
+    def __init__(self, database_url: str, fallback_store: Any | None = None, fetcher: RowFetcher | None = None) -> None:
         self.database_url = database_url
         self.fallback_store = fallback_store
+        self._fetcher = fetcher
         self.common_entries = list(getattr(fallback_store, "common_entries", []))
 
     def chapter(self, number: int) -> Chapter:
@@ -227,6 +229,11 @@ class PostgresContentStore:
         return rows[0] if rows else None
 
     def _fetchall(self, query: str, params: tuple[Any, ...] = ()) -> list[dict[str, Any]]:
+        if self._fetcher is not None:
+            return self._fetcher(query, params)
+        import psycopg
+        from psycopg.rows import dict_row
+
         with psycopg.connect(self.database_url, row_factory=dict_row) as conn:
             with conn.cursor() as cur:
                 cur.execute(query, params)

@@ -12,8 +12,7 @@ from urllib.parse import urlparse
 from hlm_kg.ask_engine import AskEngine
 from hlm_kg.content_store import ContentStore
 from hlm_kg.lightrag_client import LightRAGClient, LightRAGConfig
-from hlm_kg.postgres_config import load_database_url, parse_bool
-from hlm_kg.postgres_store import PostgresContentStore
+from hlm_kg.postgres_config import load_database_url, load_dotenv, parse_bool
 
 
 @dataclass(frozen=True)
@@ -35,10 +34,12 @@ def create_app_context(
 ) -> AppContext:
     json_store = ContentStore.from_paths(manifest_path, data_dir)
     store: Any = json_store
-    if use_postgres_store or parse_bool(os.environ.get("HLM_CONTENT_STORE") == "postgres"):
-        database_url = load_database_url()
-        if database_url is not None:
-            store = PostgresContentStore(database_url, fallback_store=json_store)
+    postgres_enabled = use_postgres_store or parse_bool(os.environ.get("HLM_CONTENT_STORE") == "postgres")
+    if postgres_enabled:
+        database_url = load_database_url(load_dotenv()) or load_database_url()
+        if database_url is None:
+            raise RuntimeError("DATABASE_URL is not set for PostgreSQL content store")
+        store = PostgresContentStore(database_url, fallback_store=json_store)
     if retrieval_client is None and use_env_retrieval:
         config = LightRAGConfig.from_env(os.environ)
         retrieval_client = LightRAGClient(config) if config is not None else None
@@ -117,6 +118,16 @@ def _camel(value: Any) -> Any:
 def _camel_key(key: str) -> str:
     head, *tail = key.split("_")
     return head + "".join(part[:1].upper() + part[1:] for part in tail)
+
+
+def PostgresContentStore(database_url: str, fallback_store: Any) -> Any:
+    try:
+        from hlm_kg.postgres_store import PostgresContentStore as Store
+    except ModuleNotFoundError as exc:
+        if exc.name == "psycopg":
+            raise RuntimeError("psycopg is required for PostgreSQL content store") from exc
+        raise
+    return Store(database_url, fallback_store=fallback_store)
 
 
 def make_handler(context: AppContext) -> type[SimpleHTTPRequestHandler]:

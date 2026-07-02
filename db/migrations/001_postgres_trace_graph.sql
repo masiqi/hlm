@@ -1,11 +1,3 @@
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
-        CREATE EXTENSION IF NOT EXISTS vector;
-    END IF;
-END
-$$;
-
 CREATE TABLE IF NOT EXISTS chapters (
     id TEXT PRIMARY KEY,
     number INTEGER NOT NULL UNIQUE CHECK (number BETWEEN 1 AND 120),

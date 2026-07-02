@@ -60,3 +60,29 @@ def test_trace_rows_for_card_turns_relations_and_evidence_into_chapter_links():
     assert rows[0]["relation_id"] == "rel-daiyu-burying-flowers-fate"
     assert rows[0]["evidence_id"] == "ev-027-daiyu-burying-flowers"
     assert "黛玉葬花" in rows[0]["description"]
+
+
+def test_trace_rows_for_card_keeps_each_relation_chapter_jump():
+    card = {
+        "id": "card-lindaiyu",
+        "name": "林黛玉",
+        "graph_relation_ids": ["rel-daiyu-burying-flowers-fate"],
+        "evidence_ids": [],
+    }
+    relation_lookup = {
+        "rel-daiyu-burying-flowers-fate": {
+            "id": "rel-daiyu-burying-flowers-fate",
+            "description": "黛玉葬花与后文命运互相照应。",
+            "chapters": [27, 97, 98],
+            "evidence_ids": [],
+        }
+    }
+
+    rows = trace_rows_for_card(card, relation_lookup, {})
+
+    assert [row["chapter_number"] for row in rows] == [27, 97, 98]
+    assert [row["id"] for row in rows] == [
+        "trace-card-lindaiyu-rel-daiyu-burying-flowers-fate-027",
+        "trace-card-lindaiyu-rel-daiyu-burying-flowers-fate-097",
+        "trace-card-lindaiyu-rel-daiyu-burying-flowers-fate-098",
+    ]

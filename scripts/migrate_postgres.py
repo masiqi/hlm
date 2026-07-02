@@ -7,8 +7,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import psycopg
-
 from hlm_kg.postgres_config import load_database_url, load_dotenv
 
 
@@ -20,6 +18,8 @@ def load_migration_sql(path: Path) -> str:
 
 
 def run_migration(database_url: str, migration_path: Path = DEFAULT_MIGRATION) -> None:
+    import psycopg
+
     sql = load_migration_sql(migration_path)
     with psycopg.connect(database_url) as conn:
         with conn.cursor() as cur:

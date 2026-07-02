@@ -10,9 +10,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import psycopg
-from psycopg.types.json import Jsonb
-
 from hlm_kg.postgres_config import load_database_url, load_dotenv
 
 
@@ -121,25 +118,23 @@ def trace_rows_for_card(
             continue
         evidence_id = next((item for item in relation.get("evidence_ids", []) if item in evidence_lookup), None)
         evidence = evidence_lookup.get(str(evidence_id)) if evidence_id else None
-        chapter = _first_chapter(relation.get("chapters", []), evidence)
-        if chapter is None:
-            continue
-        rows.append(
-            {
-                "id": f"trace-{card['id']}-{relation['id']}",
-                "entity_id": str(card["id"]),
-                "chapter_number": chapter,
-                "relation_id": str(relation["id"]),
-                "evidence_id": str(evidence_id) if evidence_id else None,
-                "title": f"第{chapter}回线索",
-                "description": str(relation["description"]),
-                "trace_type": "relation",
-                "sort_order": order,
-                "importance": 80,
-                "metadata": {},
-            }
-        )
-        order += 1
+        for chapter in _relation_chapters(relation.get("chapters", []), evidence):
+            rows.append(
+                {
+                    "id": f"trace-{card['id']}-{relation['id']}-{chapter:03d}",
+                    "entity_id": str(card["id"]),
+                    "chapter_number": chapter,
+                    "relation_id": str(relation["id"]),
+                    "evidence_id": str(evidence_id) if evidence_id else None,
+                    "title": f"第{chapter}回线索",
+                    "description": str(relation["description"]),
+                    "trace_type": "relation",
+                    "sort_order": order,
+                    "importance": 80,
+                    "metadata": {},
+                }
+            )
+            order += 1
     for evidence_id in card.get("evidence_ids", []):
         evidence = evidence_lookup.get(str(evidence_id))
         if evidence is None or evidence.get("chapter") is None:
@@ -165,6 +160,8 @@ def trace_rows_for_card(
 
 
 def upsert_seed_records(database_url: str, records: SeedRecords) -> None:
+    import psycopg
+
     with psycopg.connect(database_url) as conn:
         with conn.cursor() as cur:
             _upsert_chapters(cur, records.chapters)
@@ -280,15 +277,17 @@ def _evidence_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _first_chapter(chapters: list[Any], evidence: dict[str, Any] | None) -> int | None:
+def _relation_chapters(chapters: list[Any], evidence: dict[str, Any] | None) -> list[int]:
     if chapters:
-        return int(chapters[0])
+        return [int(chapter) for chapter in chapters]
     if evidence is not None and evidence.get("chapter") is not None:
-        return int(evidence["chapter"])
-    return None
+        return [int(evidence["chapter"])]
+    return []
 
 
-def _jsonb(value: Any) -> Jsonb:
+def _jsonb(value: Any) -> Any:
+    from psycopg.types.json import Jsonb
+
     return Jsonb(value)
 
 

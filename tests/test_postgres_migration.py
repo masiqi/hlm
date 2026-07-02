@@ -21,9 +21,7 @@ def test_migration_sql_creates_trace_graph_tables_and_indexes():
         assert f"CREATE TABLE IF NOT EXISTS {table}" in sql
 
     assert "JSONB" in sql
-    assert "DO $$" in sql
-    assert "CREATE EXTENSION IF NOT EXISTS vector" in sql
-    assert "pg_available_extensions" in sql
+    assert "CREATE EXTENSION IF NOT EXISTS vector" not in sql
     assert "CREATE INDEX IF NOT EXISTS idx_trace_items_entity" in sql
     assert "CREATE INDEX IF NOT EXISTS idx_chapter_annotations_chapter" in sql
     assert "CREATE INDEX IF NOT EXISTS idx_entities_name" in sql
