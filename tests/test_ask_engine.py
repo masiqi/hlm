@@ -254,6 +254,89 @@ def test_ask_engine_requires_location_candidate_keywords_for_location_answer():
     assert answer.refusal.reason == "NO_EVIDENCE"
 
 
+def test_ask_engine_refuses_location_answer_from_reference_file_path_only():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [],
+            "chunks": [],
+            "references": [
+                {
+                    "reference_id": "1",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
+def test_ask_engine_refuses_location_answer_from_chunk_without_location_content():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [],
+            "chunks": [
+                {
+                    "chunk_id": "doc-003-chunk-001",
+                    "content": "林黛玉进贾府后与众人相见，贾宝玉随后出场。",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
+def test_ask_engine_refuses_single_candidate_with_multiple_chapter_sources():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "宝黛初会",
+                    "tgt_id": "第三回",
+                    "keywords": "发生章回",
+                    "description": "宝黛初会发生在第三回。",
+                    "source_id": "doc-003-chunk-001<SEP>doc-005-chunk-001",
+                    "file_path": (
+                        "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt<SEP>"
+                        "005-第五回-贾宝玉神游太虚境 警幻仙曲演红楼梦.txt"
+                    ),
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "SOURCE_CONFLICT"
+
+
 def test_ask_engine_normalized_candidates_keep_query_data_as_only_generated_source():
     response = {
         "status": "success",

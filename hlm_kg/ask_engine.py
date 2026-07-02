@@ -201,9 +201,19 @@ def _chapter_location_candidates(candidates: list[EvidenceCandidate]) -> list[Ev
 
 
 def _supports_chapter_location(candidate: EvidenceCandidate) -> bool:
-    text = f"{candidate.title}\n{candidate.description}\n{candidate.relationship_keywords or ''}"
-    return any(marker in text for marker in ("发生", "出现", "章回", "第", "回目", "出自"))
+    if candidate.kind == "reference":
+        return False
+    if candidate.kind == "chunk":
+        text = candidate.description
+    else:
+        text = f"{candidate.description}\n{candidate.relationship_keywords or ''}"
+    return any(marker in text for marker in ("发生在", "出现于", "出现在", "章回", "回目", "出自第", "发生章回"))
 
 
 def _has_conflicting_chapters(candidates: list[EvidenceCandidate]) -> bool:
-    return len({candidate.chapter_sources[0].chapter_number for candidate in candidates if candidate.chapter_sources}) > 1
+    chapters = {
+        source.chapter_number
+        for candidate in candidates
+        for source in candidate.chapter_sources
+    }
+    return len(chapters) > 1
