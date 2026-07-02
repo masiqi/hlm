@@ -201,6 +201,7 @@ def generate_cards(
     generated_at: str,
     overwrite: bool = False,
     json_only: bool = False,
+    max_evidence_candidates: int | None = None,
 ) -> list[dict[str, Any]]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     by_number = {int(item["number"]): item for item in manifest["chapters"]}
@@ -224,6 +225,7 @@ def generate_cards(
             evidence,
             question=_chapter_evidence_question(chapter_number, str(item["title"])),
             chapter_number=chapter_number,
+            max_candidates=max_evidence_candidates,
         )
         prompt = build_json_only_prompt(
             chapter_number=chapter_number,
@@ -313,8 +315,11 @@ def build_evidence_pack(
     *,
     question: str = "",
     chapter_number: int | None = None,
+    max_candidates: int | None = None,
 ) -> dict[str, Any]:
     candidates = normalize_query_data_response(query_data_response, question=question)
+    if max_candidates is not None and max_candidates > 0:
+        candidates = candidates[:max_candidates]
     safe_candidates = [_candidate_to_prompt_item(candidate) for candidate in candidates]
     later_candidates = [
         item
@@ -868,6 +873,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--generated-at", default=date.today().isoformat())
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--json-only", action="store_true", help="Only generate AppImportJSON for faster website/database trials.")
+    parser.add_argument("--max-evidence-candidates", type=int, default=None, help="Limit normalized evidence candidates passed to the LLM.")
     args = parser.parse_args(argv)
 
     try:
@@ -885,6 +891,7 @@ def main(argv: list[str] | None = None) -> int:
             generated_at=args.generated_at,
             overwrite=args.overwrite,
             json_only=args.json_only,
+            max_evidence_candidates=args.max_evidence_candidates,
         )
         checked_path = args.output_dir / "chapter_review_cards.checked.json"
         valid_cards = load_import_cards(args.output_dir / "chapter_review_cards.raw.json", data_dir=Path("data/app"))

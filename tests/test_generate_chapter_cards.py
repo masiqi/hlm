@@ -748,6 +748,35 @@ def test_build_prompt_raw_response_fallback_filters_current_chapter_association_
     assert '"later_association_evidence": []' in prompt
 
 
+def test_build_evidence_pack_can_limit_prompt_candidates():
+    module = _import_script_module()
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [
+                {"entity_name": "甄士隐", "description": "甄士隐出现在第一回。", "file_path": "001-第一回.txt"},
+                {"entity_name": "贾雨村", "description": "贾雨村出现在第一回。", "file_path": "001-第一回.txt"},
+            ],
+            "relationships": [
+                {
+                    "src_id": "甄士隐",
+                    "tgt_id": "贾雨村",
+                    "keywords": "资助",
+                    "description": "甄士隐资助贾雨村。",
+                    "file_path": "001-第一回.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+    }
+
+    pack = module.build_evidence_pack(response, question="第一回", max_candidates=1)
+
+    assert pack["candidate_count"] == 1
+    assert len(pack["candidates"]) == 1
+
+
 def test_repair_prompt_uses_same_structured_app_import_sections():
     module = _import_script_module()
 
