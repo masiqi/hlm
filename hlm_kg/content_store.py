@@ -4,7 +4,17 @@ import json
 from pathlib import Path
 from typing import Any
 
-from hlm_kg.domain import Chapter, ChapterReviewCard, Evidence, GraphRelation, KnowledgeCard, ProcessedMaterialSource, Topic
+from hlm_kg.domain import (
+    Chapter,
+    ChapterAnnotation,
+    ChapterReviewCard,
+    Evidence,
+    GraphRelation,
+    KnowledgeCard,
+    ProcessedMaterialSource,
+    Topic,
+    TraceItem,
+)
 
 
 class ContentStore:
@@ -156,6 +166,88 @@ class ContentStore:
 
     def graph_relation(self, relation_id: str) -> GraphRelation:
         return self._graph_relations[relation_id]
+
+    def annotations_for_chapter(self, number: int) -> list[ChapterAnnotation]:
+        review_card = self.maybe_review_card_for_chapter(number)
+        if review_card is None:
+            return []
+        text = self.chapter_text(number)
+        cards = [self._knowledge_cards[card_id] for card_id in review_card.key_characters if card_id in self._knowledge_cards]
+        annotations: list[ChapterAnnotation] = []
+        for card in sorted(cards, key=lambda item: len(item.name), reverse=True):
+            start = 0
+            while True:
+                index = text.find(card.name, start)
+                if index == -1:
+                    break
+                annotations.append(
+                    ChapterAnnotation(
+                        id=f"ann-{number:03d}-{card.id}-{index}",
+                        chapter=number,
+                        start_offset=index,
+                        end_offset=index + len(card.name),
+                        surface_text=card.name,
+                        annotation_type=card.type,
+                        entity_id=card.id,
+                        relation_id=None,
+                        evidence_id=None,
+                        display_priority=100,
+                    )
+                )
+                start = index + len(card.name)
+        return sorted(annotations, key=lambda item: (item.start_offset, item.end_offset))
+
+    def trace_items_for_entity(self, entity_id: str) -> list[TraceItem]:
+        card = self.knowledge_card(entity_id)
+        items: list[TraceItem] = []
+        order = 0
+        for relation_id in card.graph_relation_ids:
+            relation = self._graph_relations.get(relation_id)
+            if relation is None:
+                continue
+            evidence_id = next((item for item in relation.evidence_ids if item in self._evidence), None)
+            evidence = self._evidence.get(evidence_id) if evidence_id else None
+            chapter = relation.chapters[0] if relation.chapters else evidence.chapter if evidence else None
+            if chapter is None:
+                continue
+            items.append(
+                TraceItem(
+                    id=f"trace-{entity_id}-{relation.id}",
+                    entity_id=entity_id,
+                    chapter=int(chapter),
+                    relation_id=relation.id,
+                    evidence_id=evidence_id,
+                    title=f"第{int(chapter)}回线索",
+                    description=relation.description,
+                    trace_type="relation",
+                    sort_order=order,
+                    importance=80,
+                )
+            )
+            order += 1
+        for evidence_id in card.evidence_ids:
+            evidence = self._evidence.get(evidence_id)
+            if evidence is None or evidence.chapter is None:
+                continue
+            trace_id = f"trace-{entity_id}-{evidence.id}"
+            if any(item.id == trace_id for item in items):
+                continue
+            items.append(
+                TraceItem(
+                    id=trace_id,
+                    entity_id=entity_id,
+                    chapter=int(evidence.chapter),
+                    relation_id=evidence.relation_id,
+                    evidence_id=evidence.id,
+                    title=f"第{int(evidence.chapter)}回依据",
+                    description=evidence.evidence_text,
+                    trace_type="evidence",
+                    sort_order=order,
+                    importance=60,
+                )
+            )
+            order += 1
+        return items
 
     @property
     def topics(self) -> list[Topic]:

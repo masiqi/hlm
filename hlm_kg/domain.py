@@ -82,6 +82,34 @@ class ChapterReviewCard:
 
 
 @dataclass(frozen=True)
+class ChapterAnnotation:
+    id: str
+    chapter: int
+    start_offset: int
+    end_offset: int
+    surface_text: str
+    annotation_type: str
+    entity_id: str | None
+    relation_id: str | None
+    evidence_id: str | None
+    display_priority: int
+
+
+@dataclass(frozen=True)
+class TraceItem:
+    id: str
+    entity_id: str
+    chapter: int
+    relation_id: str | None
+    evidence_id: str | None
+    title: str
+    description: str
+    trace_type: str
+    sort_order: int
+    importance: int
+
+
+@dataclass(frozen=True)
 class GraphRelation:
     id: str
     subject_id: str

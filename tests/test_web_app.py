@@ -18,6 +18,7 @@ def test_api_chapter_returns_chapter_evidence_page_payload():
     assert "originalText" in payload
     assert "reviewCard" in payload
     assert "knowledgeCards" in payload
+    assert "annotations" in payload
     assert "LightRAG" not in str(payload)
 
 
@@ -198,6 +199,8 @@ def test_api_card_returns_student_facing_knowledge_panel_payload():
     assert "graphRelationIds" in payload["card"]
     assert payload["evidence"]
     assert payload["relations"]
+    assert payload["traceItems"]
+    assert payload["traceItems"][0]["chapter"]
     assert "LightRAG" not in str(payload)
 
 
