@@ -93,11 +93,20 @@ async function loadChapter(number = 27) {
   const focusCards = data.knowledgeCards
     .map((card) => `<li><strong>${escapeHtml(card.name)}</strong>：${escapeHtml(card.brief)}</li>`)
     .join("");
-  const focusAngles = data.reviewCard.understandingFocus.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  const hasReviewCard = Boolean(data.materialStatus?.hasReviewCard && data.reviewCard);
+  const materialMessage = escapeHtml(data.materialStatus?.message || "章节资料暂未生成，可先阅读原文。");
+  const plainSummary = hasReviewCard ? escapeHtml(data.reviewCard.plainSummary) : "暂无可靠资料";
+  const plotChain = hasReviewCard
+    ? data.reviewCard.plotChain.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
+    : "<li>暂无可靠资料</li>";
+  const focusAngles = hasReviewCard
+    ? data.reviewCard.understandingFocus.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
+    : "<li>暂无可靠资料</li>";
   document.querySelector("#chapter-content").innerHTML = `
     <h3>第 ${escapeHtml(data.chapter.number)} 回：${escapeHtml(data.chapter.title)}</h3>
-    <section><h4>本回梗概</h4><p>${escapeHtml(data.reviewCard.plainSummary)}</p></section>
-    <section><h4>关键情节</h4><ul>${data.reviewCard.plotChain.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>
+    <p>${materialMessage}</p>
+    <section><h4>本回梗概</h4><p>${plainSummary}</p></section>
+    <section><h4>关键情节</h4><ul>${plotChain}</ul></section>
     <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
     <section><h4>原文</h4><pre>${escapeHtml(data.originalText)}</pre></section>
   `;

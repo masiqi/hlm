@@ -18,6 +18,15 @@ def test_content_store_loads_seed_chapter_review_card():
     assert card.later_association_relation_ids
 
 
+def test_content_store_returns_none_for_missing_review_card():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    assert store.maybe_review_card_for_chapter(1) is None
+
+
 def test_content_store_reads_original_chapter_text():
     store = ContentStore.from_paths(
         manifest_path=Path("book/chapters_manifest.json"),
