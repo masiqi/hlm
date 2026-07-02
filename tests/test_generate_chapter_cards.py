@@ -137,12 +137,7 @@ class FakeLLMClient:
 
     def complete(self, prompt: str) -> str:
         self.prompts.append(prompt)
-        return """# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
-
-## 1. 本回一句话概括
-本回主要写甄士隐梦幻识通灵与贾雨村出场。
-
-第二部分：AppImportJSON
+        return """AppImportJSON
 ```json
 {
   "id": "review-001",
@@ -171,6 +166,11 @@ class FakeLLMClient:
   "annotations": [{"text": "甄士隐", "kind": "person", "target": "甄士隐", "note": "本回开篇人物"}]
 }
 ```
+
+# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
+
+## 1. 本回一句话概括
+本回主要写甄士隐梦幻识通灵与贾雨村出场。
 """
 
 
@@ -188,12 +188,7 @@ class RetryLLMClient:
 class EvidenceBackedAssociationLLMClient(FakeLLMClient):
     def complete(self, prompt: str) -> str:
         self.prompts.append(prompt)
-        return """# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
-
-## 1. 本回一句话概括
-本回主要写甄士隐梦幻识通灵与贾雨村出场。
-
-第二部分：AppImportJSON
+        return """AppImportJSON
 ```json
 {
   "id": "review-001",
@@ -230,6 +225,11 @@ class EvidenceBackedAssociationLLMClient(FakeLLMClient):
   "annotations": [{"text": "甄士隐", "kind": "person", "target": "甄士隐", "note": "本回开篇人物"}]
 }
 ```
+
+# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
+
+## 1. 本回一句话概括
+本回主要写甄士隐梦幻识通灵与贾雨村出场。
 """
 
 
@@ -424,7 +424,7 @@ def test_validate_generated_card_output_rejects_technical_terms_and_greeting():
 
     errors = module.validate_generated_card_output("好的，同学\n# 第5回 标题 章节复习卡", card)
 
-    assert any("不得以寒暄开头" in error for error in errors)
+    assert any("不得以寒暄开头" in error or "不得以寒暄" in error for error in errors)
     assert any("禁用词" in error and "LightRAG" in error for error in errors)
 
 
@@ -653,6 +653,7 @@ def test_build_prompt_uses_student_facing_source_names_and_forbids_technical_ter
     assert "LightRAG 全书关系线索" not in prompt
     assert "完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现" in prompt
     assert "不要输出寒暄、解释、免责声明或“好的同学”之类开场白" in prompt
+    assert "必须直接从“AppImportJSON”开始输出" in prompt
 
 
 def test_build_prompt_requests_structured_app_import_sections_for_website_and_database():

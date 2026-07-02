@@ -412,7 +412,7 @@ def build_prompt(
 6. 不要写空泛套话；每个重要判断都要绑定具体情节或文本依据。
 7. 完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现这些词：LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。
 8. 生成内容不是题库，不要设计刷题流程，不要写评分标准。
-9. 必须直接从标题行“# 第{chapter_number}回 {chapter_title} 章节复习卡”开始输出，不要输出寒暄、解释、免责声明或“好的同学”之类开场白。
+9. 必须直接从“AppImportJSON”开始输出，不要输出寒暄、解释、免责声明或“好的同学”之类开场白。
 
 章节编号：
 {chapter_number}
@@ -431,41 +431,11 @@ def build_prompt(
 
 请输出两部分。
 
-第一部分：完整 Markdown 章节复习卡
+第一部分：AppImportJSON
 
-必须从下面标题行开始，不要在标题前添加任何文字：
+必须从下面这一行开始，不要在它前面添加任何文字：
 
-# 第{chapter_number}回 {chapter_title} 章节复习卡
-
-必须包含以下栏目：
-
-# 第{chapter_number}回 {chapter_title} 章节复习卡
-
-## 1. 本回一句话概括
-## 2. 本回梗概
-250—400 字，按情节发展顺序写。
-## 3. 情节链梳理
-列出 8—15 个关键情节节点，说明涉及人物、起因、经过、结果、作用/意义、是否伏笔。
-## 4. 主要人物与本回表现
-## 5. 人物关系图谱
-## 6. 关键地点与环境描写
-## 7. 关键物件、意象与象征
-## 8. 诗词曲文、对联、判词、灯谜、花签、题额与语言细节
-## 9. 主题与艺术手法
-## 10. 伏笔、照应与后文关联
-后文关联必须引用系统提供的全书关系线索；没有可靠线索时写“本回暂不能确定”。
-## 11. 高频考点整理
-只整理考点，不要变成题库。
-## 12. 易错点与辨析
-## 13. 关键语句现代汉语解释
-## 14. 本回核心知识卡片
-## 15. 关系线索三元组
-## 16. 实体清单
-## 17. 检索标签
-## 18. 本回复习建议
-## 19. 待补充说明
-
-第二部分：AppImportJSON
+AppImportJSON
 
 输出一个 JSON 对象，字段必须完全符合下面结构：
 
@@ -554,6 +524,42 @@ def build_prompt(
 - key_characters、later_association_relation_ids、quotable_fact_ids 暂时留空数组，除非输入材料明确提供了已经存在的 ID。
 - later_associations 默认输出空数组；只有系统提供的全书关系线索或明确后续章回证据足以支撑时，才可填入对象。
 - plain_summary、plot_chain、key_events、current_chapter_foreshadowing_signals、understanding_focus、characters、relationships、places、objects、literary_texts、modern_explanations、later_associations、annotations 中不得出现禁用词。
+
+第二部分：完整 Markdown 章节复习卡
+
+AppImportJSON 输出完整后，再输出完整 Markdown 章节复习卡。
+
+Markdown 部分必须从下面标题行开始：
+
+# 第{chapter_number}回 {chapter_title} 章节复习卡
+
+Markdown 必须包含以下栏目：
+
+# 第{chapter_number}回 {chapter_title} 章节复习卡
+
+## 1. 本回一句话概括
+## 2. 本回梗概
+250—400 字，按情节发展顺序写。
+## 3. 情节链梳理
+列出 8—15 个关键情节节点，说明涉及人物、起因、经过、结果、作用/意义、是否伏笔。
+## 4. 主要人物与本回表现
+## 5. 人物关系图谱
+## 6. 关键地点与环境描写
+## 7. 关键物件、意象与象征
+## 8. 诗词曲文、对联、判词、灯谜、花签、题额与语言细节
+## 9. 主题与艺术手法
+## 10. 伏笔、照应与后文关联
+后文关联必须引用系统提供的全书关系线索；没有可靠线索时写“本回暂不能确定”。
+## 11. 高频考点整理
+只整理考点，不要变成题库。
+## 12. 易错点与辨析
+## 13. 关键语句现代汉语解释
+## 14. 本回核心知识卡片
+## 15. 关系线索三元组
+## 16. 实体清单
+## 17. 检索标签
+## 18. 本回复习建议
+## 19. 待补充说明
 """
 
 
@@ -628,8 +634,8 @@ def validate_generated_card_output(
     errors: list[str] = []
     stripped = markdown.lstrip()
     first_line = stripped.splitlines()[0].strip() if stripped else ""
-    if not first_line.startswith("# 第"):
-        errors.append("完整 Markdown 不得以寒暄开头，必须直接从章节标题开始。")
+    if not (first_line.startswith("# 第") or first_line == "AppImportJSON"):
+        errors.append("输出不得以寒暄开头，必须直接从 AppImportJSON 或章节标题开始。")
 
     for term in STUDENT_FORBIDDEN_TERMS:
         if term in markdown:
