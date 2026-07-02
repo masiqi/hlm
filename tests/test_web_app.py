@@ -216,6 +216,25 @@ def test_create_app_context_reads_postgres_database_url_from_dotenv(monkeypatch,
     assert context.store[1] == "postgresql://user:p*ss@example.local:5432/hlm"
 
 
+def test_create_app_context_enables_postgres_from_dotenv_flag(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    Path(".env").write_text(
+        "DATABASE_URL=postgresql://user:p*ss@example.local:5432/hlm\n"
+        "HLM_CONTENT_STORE=postgres\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("hlm_kg.web_app.PostgresContentStore", lambda database_url, fallback_store: ("postgres", database_url, fallback_store))
+
+    context = create_app_context(
+        manifest_path=ROOT / "book/chapters_manifest.json",
+        data_dir=ROOT / "data/app",
+        static_dir=ROOT / "static",
+    )
+
+    assert context.store[0] == "postgres"
+    assert context.store[1] == "postgresql://user:p*ss@example.local:5432/hlm"
+
+
 def test_create_app_context_fails_fast_when_postgres_enabled_without_database_url(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("DATABASE_URL", raising=False)

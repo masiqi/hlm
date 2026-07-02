@@ -32,16 +32,19 @@ def create_app_context(
     use_env_retrieval: bool = False,
     use_postgres_store: bool = False,
 ) -> AppContext:
+    dotenv = load_dotenv()
     json_store = ContentStore.from_paths(manifest_path, data_dir)
     store: Any = json_store
-    postgres_enabled = use_postgres_store or parse_bool(os.environ.get("HLM_CONTENT_STORE") == "postgres")
+    postgres_setting = str(os.environ.get("HLM_CONTENT_STORE", dotenv.get("HLM_CONTENT_STORE", ""))).strip().lower()
+    postgres_enabled = use_postgres_store or postgres_setting == "postgres" or parse_bool(postgres_setting)
     if postgres_enabled:
-        database_url = load_database_url(load_dotenv()) or load_database_url()
+        database_url = load_database_url() or load_database_url(dotenv)
         if database_url is None:
             raise RuntimeError("DATABASE_URL is not set for PostgreSQL content store")
         store = PostgresContentStore(database_url, fallback_store=json_store)
     if retrieval_client is None and use_env_retrieval:
-        config = LightRAGConfig.from_env(os.environ)
+        retrieval_env = {**dotenv, **os.environ}
+        config = LightRAGConfig.from_env(retrieval_env)
         retrieval_client = LightRAGClient(config) if config is not None else None
     return AppContext(store=store, ask_engine=AskEngine(store), static_dir=static_dir, retrieval_client=retrieval_client)
 
