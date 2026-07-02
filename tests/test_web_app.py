@@ -429,6 +429,20 @@ def test_static_knowledge_panel_renders_trace_jump_buttons():
     assert "traceItems" in js
 
 
+def test_static_chapter_page_renders_rich_sections_and_entity_popover():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    css = Path("static/styles.css").read_text(encoding="utf-8")
+
+    assert "renderEntityPopover" in js
+    assert "data-inline-entity-id" in js
+    assert "renderRichSection" in js
+    assert "characters" in js
+    assert "relationships" in js
+    assert "laterAssociations" in js
+    assert ".entity-popover" in css
+    assert ".chapter-section-grid" in css
+
+
 def test_static_styles_include_trace_and_annotation_states():
     css = Path("static/styles.css").read_text(encoding="utf-8")
 

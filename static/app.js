@@ -1,4 +1,5 @@
 const views = document.querySelectorAll(".view");
+let currentChapterPayload = null;
 
 function showView(id) {
   views.forEach((view) => view.classList.toggle("active", view.id === id));
@@ -22,7 +23,7 @@ function escapeHtml(value) {
 function renderAnnotatedOriginalText(text, annotations) {
   if (!annotations.length) return escapeHtml(text);
   const sortedAnnotations = [...annotations]
-    .filter((item) => item.entityId && item.startOffset >= 0 && item.endOffset > item.startOffset)
+    .filter((item) => (item.inlineEntityId || item.entityId) && item.startOffset >= 0 && item.endOffset > item.startOffset)
     .sort((left, right) => left.startOffset - right.startOffset || right.endOffset - left.endOffset);
   let cursor = 0;
   let html = "";
@@ -30,11 +31,90 @@ function renderAnnotatedOriginalText(text, annotations) {
     if (annotation.startOffset < cursor) return;
     html += escapeHtml(text.slice(cursor, annotation.startOffset));
     const label = text.slice(annotation.startOffset, annotation.endOffset);
-    html += `<button class="annotation-link" data-annotation-id="${escapeHtml(annotation.id)}" data-card-id="${escapeHtml(annotation.entityId)}">${escapeHtml(label)}</button>`;
+    const entityId = annotation.inlineEntityId || annotation.entityId;
+    html += `<button class="annotation-link" data-annotation-id="${escapeHtml(annotation.id)}" data-inline-entity-id="${escapeHtml(entityId)}">${escapeHtml(label)}</button>`;
     cursor = annotation.endOffset;
   });
   html += escapeHtml(text.slice(cursor));
   return html;
+}
+
+function renderList(items = [], renderItem = (item) => escapeHtml(item)) {
+  if (!items.length) return "<li>暂无可靠资料</li>";
+  return items.map((item) => `<li>${renderItem(item)}</li>`).join("");
+}
+
+function renderRichSection(title, items = [], renderItem) {
+  return `<section><h4>${escapeHtml(title)}</h4><ul>${renderList(items, renderItem)}</ul></section>`;
+}
+
+function entityTypeLabel(type) {
+  if (type === "person") return "人物";
+  if (type === "place") return "地点";
+  if (type === "object") return "物件";
+  if (type === "literary_text") return "语言";
+  if (type === "foreshadowing") return "线索";
+  return "相关信息";
+}
+
+function findInlineEntity(entityId) {
+  return (currentChapterPayload?.inlineEntities || []).find((entity) => entity.id === entityId);
+}
+
+function renderChapterJumps(jumps = []) {
+  return renderList(jumps, (jump) => {
+    const label = jump.label || `第${jump.chapter}回`;
+    return `<button data-chapter-number="${escapeHtml(jump.chapter)}">${escapeHtml(label)}</button>`;
+  });
+}
+
+function renderEntityPopover(entity) {
+  if (!entity) return "";
+  const details = renderList(entity.details || []);
+  const relations = renderList(entity.relations || [], (relation) => {
+    const endpoints = [relation.source, relation.type, relation.target].filter(Boolean).join(" — ");
+    const description = relation.description || relation.evidence || "";
+    return `<strong>${escapeHtml(endpoints || "关系")}</strong>${description ? `：${escapeHtml(description)}` : ""}`;
+  });
+  const laterClues = renderList(entity.laterClues || [], (clue) => {
+    const title = clue.topic || "后文关联";
+    const description = clue.description || clue.evidence || "";
+    return `<strong>${escapeHtml(title)}</strong>${description ? `：${escapeHtml(description)}` : ""}`;
+  });
+  return `
+    <div class="entity-popover-card">
+      <button class="panel-close entity-popover-close" data-entity-popover-close>关闭</button>
+      <p class="entity-type">${escapeHtml(entityTypeLabel(entity.type))}</p>
+      <h3>${escapeHtml(entity.name)}</h3>
+      <p>${escapeHtml(entity.summary || "暂无可靠资料")}</p>
+      <h4>本回信息</h4>
+      <ul>${details}</ul>
+      <h4>关系线索</h4>
+      <ul>${relations}</ul>
+      <h4>后文关联</h4>
+      <ul>${laterClues}</ul>
+      <h4>相关章回</h4>
+      <ul>${renderChapterJumps(entity.chapterJumps || [])}</ul>
+    </div>
+  `;
+}
+
+function openEntityPopover(entityId) {
+  const entity = findInlineEntity(entityId);
+  if (!entity) return;
+  let popover = document.querySelector("#entity-popover");
+  if (!popover) {
+    popover = document.createElement("aside");
+    popover.id = "entity-popover";
+    popover.className = "entity-popover";
+    document.body.append(popover);
+  }
+  popover.innerHTML = renderEntityPopover(entity);
+  popover.classList.add("open");
+}
+
+function closeEntityPopover() {
+  document.querySelector("#entity-popover")?.classList.remove("open");
 }
 
 function renderContinuationLinks(links = []) {
@@ -139,6 +219,16 @@ function renderKnowledgeButtons(cards) {
     .join("");
 }
 
+function renderInlineEntityButtons(entities = []) {
+  if (!entities.length) return "<p>暂无可靠资料</p>";
+  return entities
+    .map(
+      (entity) =>
+        `<button class="entity-chip" data-inline-entity-id="${escapeHtml(entity.id)}"><strong>${escapeHtml(entity.name)}</strong><span>${escapeHtml(entityTypeLabel(entity.type))}</span></button>`,
+    )
+    .join("");
+}
+
 function renderTraceItems(traceItems = []) {
   if (!traceItems.length) return "<li>暂无可靠资料</li>";
   return traceItems
@@ -199,6 +289,8 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
 
 async function loadChapter(number = 27) {
   const data = await getJson(`/api/chapters/${number}`);
+  currentChapterPayload = data;
+  closeEntityPopover();
   const chapterSelect = document.querySelector("#chapter-select");
   if (chapterSelect) chapterSelect.value = String(data.chapter.number);
   const focusCards = data.knowledgeCards
@@ -216,14 +308,23 @@ async function loadChapter(number = 27) {
   const focusAngles = hasReviewCard
     ? data.reviewCard.understandingFocus.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
     : "<li>暂无可靠资料</li>";
+  const reviewCard = data.reviewCard || {};
   document.querySelector("#chapter-content").innerHTML = `
     <h3>第 ${escapeHtml(data.chapter.number)} 回：${escapeHtml(data.chapter.title)}</h3>
     <p>${materialMessage}</p>
     <section><h4>本回梗概</h4><p>${plainSummary}</p></section>
-    <section><h4>关键情节</h4><ul>${plotChain}</ul></section>
-    <section><h4>关键事件</h4><ul>${keyEvents}</ul></section>
-    <section><h4>本回怎么读</h4><ul>${focusAngles}</ul></section>
-    <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
+    <div class="chapter-section-grid">
+      <section><h4>关键情节</h4><ul>${plotChain}</ul></section>
+      <section><h4>关键事件</h4><ul>${keyEvents}</ul></section>
+      <section><h4>本回怎么读</h4><ul>${focusAngles}</ul></section>
+      <section><h4>本回信息卡</h4><div class="entity-chip-list">${renderInlineEntityButtons(data.inlineEntities || [])}</div></section>
+      ${renderRichSection("主要人物", reviewCard.characters || [], (item) => `<button class="text-link" data-inline-entity-id="${escapeHtml((data.inlineEntities || []).find((entity) => entity.name === item.name)?.id || "")}">${escapeHtml(item.name)}</button>：${escapeHtml(item.importance || item.role || "")}<br>${escapeHtml((item.actions || []).join("；"))}`)}
+      ${renderRichSection("人物与事件关系", reviewCard.relationships || [], (item) => `${escapeHtml([item.source, item.type, item.target].filter(Boolean).join(" — "))}：${escapeHtml(item.description || item.chapterEvidence || "")}`)}
+      ${renderRichSection("地点与物件", [...(reviewCard.places || []), ...(reviewCard.objects || [])], (item) => `<strong>${escapeHtml(item.name)}</strong>：${escapeHtml(item.function || item.meaning || item.context || "")}`)}
+      ${renderRichSection("诗词语言", [...(reviewCard.literaryTexts || []), ...(reviewCard.modernExplanations || [])], (item) => `<strong>${escapeHtml(item.title || item.quote || "语言细节")}</strong>：${escapeHtml(item.explanation || item.modernText || item.function || item.value || "")}`)}
+      ${renderRichSection("后文关联", reviewCard.laterAssociations || [], (item) => `<strong>${escapeHtml(item.topic || "线索")}</strong>：${escapeHtml(item.description || item.evidence || "")}`)}
+    </div>
+    <section><h4>已有知识卡</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
     <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.annotations || [])}</pre></section>
   `;
   document.querySelector(panelContentSelector("#knowledge-panel")).innerHTML = `
@@ -285,6 +386,12 @@ document.addEventListener("click", (event) => {
   if (target.matches("[data-card-id]")) {
     const panel = target.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
     loadKnowledgeCard(target.dataset.cardId, panel);
+  }
+  if (target.matches("[data-inline-entity-id]")) {
+    openEntityPopover(target.dataset.inlineEntityId);
+  }
+  if (target.matches("[data-entity-popover-close]")) {
+    closeEntityPopover();
   }
   if (target.matches("[data-topic-id]")) {
     showView("topics");
