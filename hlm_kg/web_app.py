@@ -27,9 +27,11 @@ def create_app_context(
     data_dir: Path,
     static_dir: Path,
     retrieval_client: Any | None = None,
+    *,
+    use_env_retrieval: bool = False,
 ) -> AppContext:
     store = ContentStore.from_paths(manifest_path, data_dir)
-    if retrieval_client is None:
+    if retrieval_client is None and use_env_retrieval:
         config = LightRAGConfig.from_env(os.environ)
         retrieval_client = LightRAGClient(config) if config is not None else None
     return AppContext(store=store, ask_engine=AskEngine(store), static_dir=static_dir, retrieval_client=retrieval_client)
@@ -159,6 +161,7 @@ def main() -> None:
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
         static_dir=Path("static"),
+        use_env_retrieval=True,
     )
     port = find_available_port(8765)
     server = ThreadingHTTPServer(("127.0.0.1", port), make_handler(context))

@@ -7,7 +7,7 @@ help:
 	@echo "  make analyze-questions Parse JSONL samples and write docs/question_types.md"
 	@echo "  make dry-run           Validate local KG build flow without LightRAG API calls"
 	@echo "  make validate-samples  Validate internal calibration sample quality"
-	@echo "  make import-chapter-cards INPUT=cards.json OUTPUT=data/app/chapter_review_cards.json"
+	@echo "  make import-chapter-cards INPUT=cards.json OUTPUT=data/app/chapter_review_cards.json DATA_DIR=data/app"
 	@echo "  make lightrag-up       Start LightRAG Server/WebUI with Docker Compose"
 	@echo "  make build-kg          Run real scan/indexing flow against LightRAG"
 	@echo "  make test              Run local tests"
@@ -30,7 +30,7 @@ validate-samples:
 	python -m hlm_kg.validation_samples
 
 import-chapter-cards:
-	python scripts/import_chapter_cards.py $(INPUT) $(OUTPUT)
+	python scripts/import_chapter_cards.py $(INPUT) $(OUTPUT) $(or $(DATA_DIR),data/app)
 
 lightrag-up: env
 	docker compose up -d lightrag

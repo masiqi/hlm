@@ -101,13 +101,26 @@ def test_api_ask_uses_configured_retrieval_client_for_chapter_location():
     assert "LightRAG" not in str(payload)
 
 
-def test_create_app_context_builds_retrieval_client_from_env(monkeypatch):
+def test_create_app_context_does_not_build_retrieval_client_from_env_by_default(monkeypatch):
     monkeypatch.setenv("LIGHTRAG_BASE_URL", "http://10.1.0.246:9621")
 
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
         static_dir=Path("static"),
+    )
+
+    assert context.retrieval_client is None
+
+
+def test_create_app_context_can_build_retrieval_client_from_env_when_enabled(monkeypatch):
+    monkeypatch.setenv("LIGHTRAG_BASE_URL", "http://10.1.0.246:9621")
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        use_env_retrieval=True,
     )
 
     assert context.retrieval_client is not None

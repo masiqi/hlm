@@ -43,6 +43,22 @@ def _write_input(path: Path, cards: list[dict]) -> None:
     path.write_text(json.dumps(cards, ensure_ascii=False), encoding="utf-8")
 
 
+def _write_reference_data(data_dir: Path) -> None:
+    data_dir.mkdir()
+    (data_dir / "knowledge_cards.json").write_text(
+        json.dumps([{"id": "card-character-001"}, {"id": "card-character-002"}]),
+        encoding="utf-8",
+    )
+    (data_dir / "graph_relations.json").write_text(
+        json.dumps([{"id": "rel-001"}, {"id": "rel-002"}]),
+        encoding="utf-8",
+    )
+    (data_dir / "evidence.json").write_text(
+        json.dumps([{"id": "ev-001"}, {"id": "ev-002"}]),
+        encoding="utf-8",
+    )
+
+
 def test_load_import_cards_normalizes_defaults_and_sorts_by_chapter(tmp_path):
     module = _import_script_module()
     input_path = tmp_path / "cards.json"
@@ -70,6 +86,39 @@ def test_load_import_cards_normalizes_defaults_and_sorts_by_chapter(tmp_path):
     }
     assert cards[1]["id"] == "custom-review-003"
     assert cards[1]["source"] == provided_source
+
+
+def test_load_import_cards_validates_references_against_data_dir(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    data_dir = tmp_path / "data"
+    _write_reference_data(data_dir)
+    _write_input(input_path, [_card(1)])
+
+    [card] = module.load_import_cards(input_path, data_dir=data_dir)
+
+    assert card["key_characters"] == ["card-character-001"]
+    assert card["later_association_relation_ids"] == ["rel-001"]
+    assert card["quotable_fact_ids"] == ["ev-001"]
+
+
+@pytest.mark.parametrize(
+    ("bad_card", "message_part"),
+    [
+        (_card(1, key_characters=["card-missing"]), "key_characters"),
+        (_card(1, later_association_relation_ids=["rel-missing"]), "later_association_relation_ids"),
+        (_card(1, quotable_fact_ids=["ev-missing"]), "quotable_fact_ids"),
+    ],
+)
+def test_load_import_cards_rejects_unknown_reference_ids(tmp_path, bad_card, message_part):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    data_dir = tmp_path / "data"
+    _write_reference_data(data_dir)
+    _write_input(input_path, [bad_card])
+
+    with pytest.raises(ValueError, match=message_part):
+        module.load_import_cards(input_path, data_dir=data_dir)
 
 
 def test_write_import_cards_outputs_sorted_pretty_utf8_json(tmp_path):
@@ -104,6 +153,33 @@ def test_load_import_cards_rejects_invalid_required_values(tmp_path, bad_card, m
     message = str(exc_info.value)
     for part in message_parts:
         assert part in message
+
+
+def test_load_import_cards_rejects_duplicate_chapters(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    _write_input(input_path, [_card(1), _card(1)])
+
+    with pytest.raises(ValueError, match="duplicate chapter"):
+        module.load_import_cards(input_path)
+
+
+def test_load_import_cards_rejects_non_string_list_items(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    _write_input(input_path, [_card(1, key_events=["有效事件", {"bad": "value"}])])
+
+    with pytest.raises(ValueError, match="key_events"):
+        module.load_import_cards(input_path)
+
+
+def test_load_import_cards_rejects_forbidden_student_terms_in_rendered_fields(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    _write_input(input_path, [_card(1, plain_summary="本回通过知识图谱说明人物关系。")])
+
+    with pytest.raises(ValueError, match="forbidden student-facing term"):
+        module.load_import_cards(input_path)
 
 
 def test_cli_imports_cards_to_requested_output_path(tmp_path):

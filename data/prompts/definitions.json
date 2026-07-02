@@ -23,7 +23,7 @@
         "必须包含“主要人物与本回表现”和“人物关系图谱”，把人物、事件、性格、关系变化和答题证据连起来。",
         "必须包含“关键地点与环境描写”“关键物件、意象与象征”“诗词曲文、对联、判词、灯谜、花签、题额与语言细节”。",
         "必须包含“主题与艺术手法”“伏笔、照应与后文关联”“高频考点整理”“易错点与辨析”。",
-        "必须包含“关键语句现代汉语解释”“本回核心知识卡片”“知识图谱三元组”“实体清单”“RAG 检索标签”和“本回复习建议”。",
+        "必须包含“关键语句现代汉语解释”“本回核心知识卡片”“关系线索三元组”“实体清单”“检索标签”和“本回复习建议”。",
         "输出结构必须能映射到 ChapterReviewCard：plain_summary、plot_chain、key_events、key_characters、current_chapter_foreshadowing_signals、later_association_relation_ids、quotable_fact_ids、retrieval_tags、understanding_focus。",
         "later_association_relation_ids 只能引用全书关系线索中已经存在且可回溯的关系；没有可靠线索时留空并在待补充说明中说明。"
       ]

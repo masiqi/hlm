@@ -159,6 +159,101 @@ def test_ask_engine_refuses_when_query_data_has_no_chapter_source():
     assert "没有找到足够依据" in answer.refusal.message
 
 
+def test_ask_engine_does_not_turn_interpretive_retrieval_hit_into_location_answer():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "王熙凤",
+                    "tgt_id": "协理宁国府",
+                    "keywords": "人物表现",
+                    "description": "王熙凤协理宁国府表现其管家才干。",
+                    "source_id": "doc-013-chunk-001",
+                    "file_path": "013-第十三回-秦可卿死封龙禁尉 王熙凤协理宁国府.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("王熙凤的性格体现在哪里？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
+def test_ask_engine_refuses_location_answer_with_conflicting_chapter_sources():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "宝黛初会",
+                    "tgt_id": "第三回",
+                    "keywords": "发生章回",
+                    "description": "宝黛初会发生在第三回。",
+                    "source_id": "doc-003-chunk-001",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                },
+                {
+                    "src_id": "宝黛初会",
+                    "tgt_id": "第五回",
+                    "keywords": "发生章回",
+                    "description": "错误候选说宝黛初会发生在第五回。",
+                    "source_id": "doc-005-chunk-001",
+                    "file_path": "005-第五回-贾宝玉神游太虚境 警幻仙曲演红楼梦.txt",
+                },
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "SOURCE_CONFLICT"
+
+
+def test_ask_engine_requires_location_candidate_keywords_for_location_answer():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "宝黛初会",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "人物关系",
+                    "description": "贾宝玉和林黛玉初见相关。",
+                    "source_id": "doc-003-chunk-001",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
 def test_ask_engine_normalized_candidates_keep_query_data_as_only_generated_source():
     response = {
         "status": "success",

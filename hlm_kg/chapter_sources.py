@@ -22,8 +22,11 @@ def parse_chapter_source(file_path: str) -> ChapterSource | None:
     match = _CHAPTER_FILE_RE.match(source_file)
     if match is None:
         return None
+    chapter_number = int(match.group("padded"))
+    if chapter_number < 1 or chapter_number > 120:
+        return None
     return ChapterSource(
-        chapter_number=int(match.group("padded")),
+        chapter_number=chapter_number,
         chapter_label=match.group("label"),
         chapter_title=match.group("title"),
         source_file=source_file,

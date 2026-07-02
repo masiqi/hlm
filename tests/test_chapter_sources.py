@@ -34,6 +34,11 @@ def test_non_chapter_source_returns_none():
     assert parse_chapter_source("not-a-chapter.md") is None
 
 
+def test_out_of_range_chapter_source_returns_none():
+    assert parse_chapter_source("000-第零回-不存在.txt") is None
+    assert parse_chapter_source("999-第九百九十九回-不存在.txt") is None
+
+
 def test_parse_blank_multiple_sources_returns_empty_list():
     assert parse_chapter_sources(None) == []
     assert parse_chapter_sources("") == []

@@ -22,10 +22,41 @@ REQUIRED_FIELDS = [
     "understanding_focus",
 ]
 
+REFERENCE_FIELDS = {
+    "key_characters": "knowledge_cards.json",
+    "later_association_relation_ids": "graph_relations.json",
+    "quotable_fact_ids": "evidence.json",
+}
 
-def load_import_cards(input_path: Path) -> list[dict]:
+RENDERED_TEXT_FIELDS = [
+    "plain_summary",
+    "plot_chain",
+    "key_events",
+    "current_chapter_foreshadowing_signals",
+    "understanding_focus",
+]
+
+FORBIDDEN_STUDENT_TERMS = [
+    "LightRAG",
+    "RAG",
+    "知识图谱",
+    "向量检索",
+    "置信度",
+    "模型分数",
+    "标准答案",
+    "题库",
+    "下一题",
+    "提交答案",
+    "批改",
+]
+
+
+def load_import_cards(input_path: Path, data_dir: Path | None = None) -> list[dict]:
     raw_cards = _read_cards(input_path)
     cards = [_normalize_card(raw_card, index) for index, raw_card in enumerate(raw_cards)]
+    _reject_duplicate_chapters(cards)
+    if data_dir is not None:
+        _validate_reference_ids(cards, data_dir)
     return sorted(cards, key=lambda card: card["chapter"])
 
 
@@ -64,7 +95,7 @@ def _normalize_card(raw_card: Any, index: int) -> dict:
     if not plot_chain:
         raise ValueError(f"card[{index}] plot_chain must be non-empty")
 
-    return {
+    card = {
         "id": str(raw_card.get("id") or f"review-{chapter:03d}"),
         "chapter": chapter,
         "source": _normalize_source(raw_card.get("source"), index),
@@ -86,6 +117,8 @@ def _normalize_card(raw_card: Any, index: int) -> dict:
         "retrieval_tags": _normalize_list(raw_card["retrieval_tags"], index, "retrieval_tags"),
         "understanding_focus": _normalize_list(raw_card["understanding_focus"], index, "understanding_focus"),
     }
+    _reject_forbidden_student_terms(card, index)
+    return card
 
 
 def _require_fields(raw_card: dict, index: int) -> None:
@@ -115,7 +148,12 @@ def _normalize_plain_summary(value: Any, index: int) -> str:
 def _normalize_list(value: Any, index: int, field: str) -> list:
     if not isinstance(value, list):
         raise ValueError(f"card[{index}] {field} must be a list")
-    return list(value)
+    items: list[str] = []
+    for item_index, item in enumerate(value):
+        if not isinstance(item, str) or not item.strip():
+            raise ValueError(f"card[{index}] {field}[{item_index}] must be a non-empty string")
+        items.append(item.strip())
+    return items
 
 
 def _normalize_source(value: Any, index: int) -> dict:
@@ -130,16 +168,58 @@ def _normalize_source(value: Any, index: int) -> dict:
     return dict(value)
 
 
+def _reject_duplicate_chapters(cards: list[dict]) -> None:
+    seen: set[int] = set()
+    duplicates: list[int] = []
+    for card in cards:
+        chapter = int(card["chapter"])
+        if chapter in seen:
+            duplicates.append(chapter)
+        seen.add(chapter)
+    if duplicates:
+        raise ValueError(f"duplicate chapter cards: {duplicates}")
+
+
+def _validate_reference_ids(cards: list[dict], data_dir: Path) -> None:
+    known_ids = {field: _load_ids(data_dir / filename) for field, filename in REFERENCE_FIELDS.items()}
+    for card in cards:
+        chapter = card["chapter"]
+        for field, allowed in known_ids.items():
+            missing = [value for value in card[field] if value not in allowed]
+            if missing:
+                raise ValueError(f"chapter {chapter} {field} contains unknown ids: {missing}")
+
+
+def _load_ids(path: Path) -> set[str]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise ValueError(f"cannot read reference data {path}: {exc}") from exc
+    if not isinstance(data, list):
+        raise ValueError(f"reference data {path} must contain a JSON array")
+    return {str(item.get("id")) for item in data if isinstance(item, dict) and item.get("id")}
+
+
+def _reject_forbidden_student_terms(card: dict, index: int) -> None:
+    for field in RENDERED_TEXT_FIELDS:
+        values = card[field] if isinstance(card[field], list) else [card[field]]
+        for value in values:
+            for term in FORBIDDEN_STUDENT_TERMS:
+                if term in value:
+                    raise ValueError(f"card[{index}] {field} contains forbidden student-facing term: {term}")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
-    if len(args) != 2:
-        print("Usage: python scripts/import_chapter_cards.py INPUT_JSON OUTPUT_JSON", file=sys.stderr)
+    if len(args) not in {2, 3}:
+        print("Usage: python scripts/import_chapter_cards.py INPUT_JSON OUTPUT_JSON [DATA_DIR]", file=sys.stderr)
         return 2
 
     input_path = Path(args[0])
     output_path = Path(args[1])
+    data_dir = Path(args[2]) if len(args) == 3 else None
     try:
-        cards = load_import_cards(input_path)
+        cards = load_import_cards(input_path, data_dir=data_dir)
         write_import_cards(cards, output_path)
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)

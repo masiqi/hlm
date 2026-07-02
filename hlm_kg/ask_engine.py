@@ -58,13 +58,18 @@ class AskEngine:
         return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
 
     def _answer_from_retrieval(self, question: str, retrieval_client: Any) -> AskAnswer | None:
+        if not _is_chapter_location_question(question):
+            return None
         try:
             response = retrieval_client.query_data(question, mode="hybrid", only_need_context=True)
         except Exception:  # noqa: BLE001 - retrieval failure should not expose internals to students
             return self._refuse(question, "GRAPH_UNAVAILABLE", "关系线索暂时不可用，当前不能生成可靠回答。")
 
         candidates = normalize_query_data_response(response, question=question)
-        candidate = _best_chapter_candidate(candidates)
+        chapter_candidates = _chapter_location_candidates(candidates)
+        if _has_conflicting_chapters(chapter_candidates):
+            return self._refuse(question, "SOURCE_CONFLICT", "资料存在不一致，优先查看原文依据。")
+        candidate = chapter_candidates[0] if chapter_candidates else None
         if candidate is None:
             return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
 
@@ -187,8 +192,18 @@ class AskEngine:
         )
 
 
-def _best_chapter_candidate(candidates: list[EvidenceCandidate]) -> EvidenceCandidate | None:
-    for candidate in candidates:
-        if candidate.chapter_sources:
-            return candidate
-    return None
+def _is_chapter_location_question(question: str) -> bool:
+    return any(marker in question for marker in ("哪一回", "哪一章", "第几回", "第几章", "发生在", "出现在哪", "章回定位"))
+
+
+def _chapter_location_candidates(candidates: list[EvidenceCandidate]) -> list[EvidenceCandidate]:
+    return [candidate for candidate in candidates if candidate.chapter_sources and _supports_chapter_location(candidate)]
+
+
+def _supports_chapter_location(candidate: EvidenceCandidate) -> bool:
+    text = f"{candidate.title}\n{candidate.description}\n{candidate.relationship_keywords or ''}"
+    return any(marker in text for marker in ("发生", "出现", "章回", "第", "回目", "出自"))
+
+
+def _has_conflicting_chapters(candidates: list[EvidenceCandidate]) -> bool:
+    return len({candidate.chapter_sources[0].chapter_number for candidate in candidates if candidate.chapter_sources}) > 1
