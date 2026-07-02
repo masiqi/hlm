@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 from dataclasses import asdict, dataclass
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -62,15 +63,24 @@ def handle_api_request(
         number = int(parsed_path.rsplit("/", 1)[1])
         chapter = context.store.chapter(number)
         review_card = context.store.maybe_review_card_for_chapter(number)
+        original_text = context.store.chapter_text(number)
+        inline_entities = _inline_entities_for_review_card(review_card) if review_card is not None else []
+        annotations = _annotations_payload(
+            stored_annotations=context.store.annotations_for_chapter(number),
+            review_card=review_card,
+            original_text=original_text,
+            inline_entities=inline_entities,
+        )
         knowledge_cards = []
         if review_card is not None:
             knowledge_cards = [context.store.knowledge_card(card_id) for card_id in review_card.key_characters]
         return 200, {
             "chapter": _camel(asdict(chapter)),
-            "originalText": context.store.chapter_text(number),
+            "originalText": original_text,
             "reviewCard": _camel(asdict(review_card)) if review_card is not None else None,
             "knowledgeCards": [_camel(asdict(card)) for card in knowledge_cards],
-            "annotations": [_camel(asdict(item)) for item in context.store.annotations_for_chapter(number)],
+            "inlineEntities": _camel(inline_entities),
+            "annotations": _camel(annotations),
             "materialStatus": {
                 "hasReviewCard": review_card is not None,
                 "message": "章节资料已加载。" if review_card is not None else "章节资料暂未生成，可先阅读原文。",
@@ -121,6 +131,222 @@ def _camel(value: Any) -> Any:
 def _camel_key(key: str) -> str:
     head, *tail = key.split("_")
     return head + "".join(part[:1].upper() + part[1:] for part in tail)
+
+
+def _inline_entities_for_review_card(review_card: ChapterReviewCard) -> list[dict[str, Any]]:
+    entities: dict[str, dict[str, Any]] = {}
+
+    def ensure_entity(name: str, entity_type: str, summary: str = "", details: list[str] | None = None) -> dict[str, Any]:
+        clean_name = name.strip()
+        if not clean_name:
+            raise ValueError("inline entity name cannot be empty")
+        key = clean_name
+        entity = entities.setdefault(
+            key,
+            {
+                "id": f"chapter-{review_card.chapter:03d}-entity-{_entity_slug(clean_name)}",
+                "name": clean_name,
+                "type": entity_type,
+                "summary": summary,
+                "details": [],
+                "relations": [],
+                "laterClues": [],
+                "chapterJumps": [],
+            },
+        )
+        if summary and not entity["summary"]:
+            entity["summary"] = summary
+        if details:
+            entity["details"].extend(item for item in details if item)
+        return entity
+
+    for character in review_card.characters:
+        if not isinstance(character, dict):
+            continue
+        name = str(character.get("name") or "").strip()
+        if not name:
+            continue
+        details = _flatten_strings(
+            character.get("actions"),
+            character.get("traits"),
+            character.get("evidence"),
+            character.get("importance"),
+        )
+        ensure_entity(name, "person", str(character.get("role") or character.get("importance") or ""), details)
+
+    for place in review_card.places:
+        if not isinstance(place, dict):
+            continue
+        name = str(place.get("name") or "").strip()
+        if name:
+            ensure_entity(name, "place", str(place.get("function") or ""), _flatten_strings(place.get("scenes")))
+
+    for item in review_card.objects:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name") or "").strip()
+        if name:
+            ensure_entity(name, "object", str(item.get("meaning") or ""), _flatten_strings(item.get("context"), item.get("related_entities")))
+
+    for item in review_card.literary_texts:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("title") or "").strip()
+        if name:
+            ensure_entity(name, "literary_text", str(item.get("function") or ""), _flatten_strings(item.get("short_quote"), item.get("explanation")))
+
+    for relation in review_card.relationships:
+        if not isinstance(relation, dict):
+            continue
+        relation_summary = str(relation.get("description") or relation.get("chapter_evidence") or "").strip()
+        for endpoint in (relation.get("source"), relation.get("target")):
+            name = str(endpoint or "").strip()
+            if not name:
+                continue
+            entity = ensure_entity(name, "entity")
+            entity["relations"].append(
+                {
+                    "source": relation.get("source"),
+                    "type": relation.get("type"),
+                    "target": relation.get("target"),
+                    "description": relation_summary,
+                    "evidence": relation.get("chapter_evidence"),
+                }
+            )
+
+    for association in review_card.later_associations:
+        if not isinstance(association, dict):
+            continue
+        topic = str(association.get("topic") or "").strip()
+        description = str(association.get("description") or association.get("evidence") or "").strip()
+        chapters = _int_list(association.get("source_chapters"))
+        names = _entity_names_for_association(topic, description, entities)
+        if not names and topic:
+            names = [topic]
+        for name in names:
+            entity = ensure_entity(name, "foreshadowing" if name == topic else entities.get(name, {}).get("type", "entity"))
+            entity["laterClues"].append({"topic": topic, "description": description, "evidence": association.get("evidence")})
+            for chapter in chapters:
+                jump = {"chapter": chapter, "label": f"第{chapter}回：{topic or name}"}
+                if jump not in entity["chapterJumps"]:
+                    entity["chapterJumps"].append(jump)
+
+    for entity in entities.values():
+        entity["details"] = _unique_strings(entity["details"])
+        entity["relations"] = _unique_dicts(entity["relations"])
+        entity["laterClues"] = _unique_dicts(entity["laterClues"])
+        entity["chapterJumps"] = sorted(_unique_dicts(entity["chapterJumps"]), key=lambda item: (item.get("chapter") or 0, item.get("label") or ""))
+        if not entity["summary"] and entity["details"]:
+            entity["summary"] = entity["details"][0]
+    return list(entities.values())
+
+
+def _annotations_payload(
+    *,
+    stored_annotations: list[ChapterAnnotation],
+    review_card: ChapterReviewCard | None,
+    original_text: str,
+    inline_entities: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    entity_id_by_name = {str(entity["name"]): str(entity["id"]) for entity in inline_entities}
+    entity_id_by_id = {str(entity["id"]): str(entity["id"]) for entity in inline_entities}
+    if stored_annotations:
+        return [
+            {
+                **asdict(annotation),
+                "entity_id": entity_id_by_id.get(str(annotation.entity_id))
+                or entity_id_by_name.get(str(annotation.surface_text))
+                or annotation.entity_id,
+            }
+            for annotation in stored_annotations
+        ]
+    if review_card is None:
+        return []
+    rows: list[dict[str, Any]] = []
+    for annotation in review_card.annotations:
+        if not isinstance(annotation, dict):
+            continue
+        text = str(annotation.get("text") or "").strip()
+        if not text:
+            continue
+        target = str(annotation.get("target") or text).strip()
+        entity_id = entity_id_by_name.get(target) or entity_id_by_name.get(text) or entity_id_by_id.get(target)
+        if not entity_id:
+            continue
+        start = 0
+        while True:
+            index = original_text.find(text, start)
+            if index == -1:
+                break
+            rows.append(
+                {
+                    "id": f"ann-{review_card.chapter:03d}-{_entity_slug(entity_id)}-{index}",
+                    "chapter": review_card.chapter,
+                    "start_offset": index,
+                    "end_offset": index + len(text),
+                    "surface_text": text,
+                    "annotation_type": str(annotation.get("kind") or "entity"),
+                    "entity_id": entity_id,
+                    "relation_id": None,
+                    "evidence_id": None,
+                    "display_priority": 100,
+                }
+            )
+            start = index + len(text)
+    return rows
+
+
+def _entity_slug(value: str) -> str:
+    parts = re.findall(r"[\w\u4e00-\u9fff]+", value.lower())
+    return "-".join(parts) or "item"
+
+
+def _flatten_strings(*values: Any) -> list[str]:
+    output: list[str] = []
+    for value in values:
+        if isinstance(value, list):
+            output.extend(str(item) for item in value if str(item).strip())
+        elif value is not None and str(value).strip():
+            output.append(str(value))
+    return output
+
+
+def _unique_strings(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    output: list[str] = []
+    for value in values:
+        if value not in seen:
+            seen.add(value)
+            output.append(value)
+    return output
+
+
+def _unique_dicts(values: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: set[str] = set()
+    output: list[dict[str, Any]] = []
+    for value in values:
+        key = json.dumps(value, ensure_ascii=False, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            output.append(value)
+    return output
+
+
+def _int_list(value: Any) -> list[int]:
+    if not isinstance(value, list):
+        return []
+    output: list[int] = []
+    for item in value:
+        try:
+            output.append(int(item))
+        except (TypeError, ValueError):
+            continue
+    return output
+
+
+def _entity_names_for_association(topic: str, description: str, entities: dict[str, dict[str, Any]]) -> list[str]:
+    text = f"{topic}\n{description}"
+    return [name for name in entities if name and name in text]
 
 
 def PostgresContentStore(database_url: str, fallback_store: Any) -> Any:
