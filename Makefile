@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run validate-samples import-chapter-cards build-kg lightrag-up lightrag-down test web
+.PHONY: help env split-chapters analyze-questions dry-run validate-samples import-chapter-cards build-kg lightrag-up lightrag-down test web postgres-migrate
 
 help:
 	@echo "Targets:"
@@ -12,6 +12,7 @@ help:
 	@echo "  make build-kg          Run real scan/indexing flow against LightRAG"
 	@echo "  make test              Run local tests"
 	@echo "  make web               Run the V1 reading assistant web app"
+	@echo "  make postgres-migrate  Apply PostgreSQL schema migration using DATABASE_URL"
 
 env:
 	@test -f .env || cp .env.example .env
@@ -46,3 +47,6 @@ test:
 
 web:
 	python -m hlm_kg.web_app
+
+postgres-migrate:
+	python scripts/migrate_postgres.py
