@@ -114,3 +114,10 @@ def test_static_ask_view_renders_answer_states_and_continuation_links():
     assert "data-chapter-number" in js
     assert "data-card-id" in js
     assert "data-topic-id" in js
+
+
+def test_static_ask_view_names_source_conflict_in_student_language():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "资料存在不一致，优先查看原文依据" in js
+    assert "SOURCE_CONFLICT" not in js
