@@ -29,6 +29,31 @@ def test_prompt_registry_exposes_evidence_and_refusal_rules():
     assert "资料不足" in combined_rules
 
 
+def test_chapter_review_card_prompt_exposes_fast_reading_content_contract():
+    registry = PromptRegistry.from_path(Path("data/prompts/definitions.json"))
+
+    chapter_card = registry.get("hongloumeng_chapter_review_card")
+
+    content_contract = "\n".join(chapter_card.content_requirements)
+    assert "8小时读懂全书" in chapter_card.purpose
+    assert "本回一句话概括" in content_contract
+    assert "本回梗概" in content_contract
+    assert "情节链梳理" in content_contract
+    assert "人物关系图谱" in content_contract
+    assert "核心知识卡片" in content_contract
+
+
+def test_chapter_review_card_prompt_requires_lightrag_backed_later_associations():
+    registry = PromptRegistry.from_path(Path("data/prompts/definitions.json"))
+
+    chapter_card = registry.get("hongloumeng_chapter_review_card")
+
+    retrieval_contract = "\n".join(chapter_card.evidence_rules + chapter_card.content_requirements)
+    assert "后文关联必须来自全书关系线索" in retrieval_contract
+    assert "不能只依靠模型常识" in retrieval_contract
+    assert "later_association_relation_ids" in retrieval_contract
+
+
 def test_prompt_registry_can_find_definitions_by_rule_text():
     registry = PromptRegistry.from_path(Path("data/prompts/definitions.json"))
 

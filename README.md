@@ -22,6 +22,8 @@ make build-kg
 
 提示词定义登记在 `data/prompts/definitions.json`。这里保存提示词名称、版本、用途、输入输出 schema、证据规则和拒答规则，用于约束后续章节复习卡生成与基于证据的问答加工；学生端网页不会直接展示这些提示词定义。
 
+章节复习卡的 120 回生成、抽样检查、导入格式和质量门禁见 [docs/chapter_review_card_pipeline.md](docs/chapter_review_card_pipeline.md)。
+
 运行 V1 阅读助手网页：
 
 ```bash
