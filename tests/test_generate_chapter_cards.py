@@ -803,6 +803,16 @@ def test_normalize_generated_card_trims_long_summary_and_drops_unsupported_later
     assert card["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
 
 
+def test_normalize_generated_card_drops_non_id_key_characters():
+    module = _import_script_module()
+    card = _complete_card_with_rich_defaults(key_characters=["贾宝玉", "card-lindaiyu"])
+
+    module.normalize_generated_card_for_quality_gate(card, evidence_pack={})
+
+    assert card["key_characters"] == ["card-lindaiyu"]
+    assert card["internal"]["quality_normalization"]["key_characters"]["original_count"] == 2
+
+
 def test_repair_prompt_uses_same_structured_app_import_sections():
     module = _import_script_module()
 

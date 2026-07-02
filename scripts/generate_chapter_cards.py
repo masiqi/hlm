@@ -425,6 +425,16 @@ def normalize_generated_card_for_quality_gate(card: dict[str, Any], *, evidence_
 
     if normalization:
         internal["quality_normalization"] = normalization
+    key_characters = card.get("key_characters")
+    if isinstance(key_characters, list):
+        normalized_key_characters = [item for item in key_characters if isinstance(item, str) and item.startswith("card-")]
+        if normalized_key_characters != key_characters:
+            card["key_characters"] = normalized_key_characters
+            normalization = internal.setdefault("quality_normalization", {})
+            normalization["key_characters"] = {
+                "original_count": len(key_characters),
+                "normalized_count": len(normalized_key_characters),
+            }
 
 
 def _fit_summary_to_required_length(summary: str) -> str:
