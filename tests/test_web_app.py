@@ -57,6 +57,43 @@ def test_api_ask_returns_structured_answer():
     assert "quotableFacts" in payload
     assert payload["quotableFacts"]["title"] == "可引用事实"
     assert payload["quotableFacts"]["claims"]
+    assert payload["continuationLinks"]
+
+
+def test_api_ask_returns_partial_answer_with_refusal_and_links():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(
+        context,
+        "POST",
+        "/api/ask",
+        {"question": "黛玉葬花体现了什么？再说明一个没有资料的后文细节"},
+    )
+
+    assert status == 200
+    assert payload["status"] == "partial"
+    assert payload["shortConclusion"]
+    assert payload["refusal"]["message"]
+    assert payload["continuationLinks"]
+
+
+def test_api_ask_returns_refusal_without_internal_reason_code_in_message():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "请帮我写一篇作文"})
+
+    assert status == 200
+    assert payload["status"] == "refused"
+    assert payload["refusal"]["message"]
+    assert "OUT_OF_SCOPE" not in payload["refusal"]["message"]
 
 
 def test_api_topics_returns_five_categories():

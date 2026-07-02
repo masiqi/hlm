@@ -100,3 +100,17 @@ def test_static_chapter_original_text_uses_safe_inline_knowledge_links():
     assert "annotated-original" in js
     assert "renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)" in js
     assert "<pre>${escapeHtml(data.originalText)}</pre>" not in js
+
+
+def test_static_ask_view_renders_answer_states_and_continuation_links():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "renderContinuationLinks" in js
+    assert "短结论" in js
+    assert "已支持部分" in js
+    assert "资料不足部分" in js
+    assert "继续查看" in js
+    assert "answer.continuationLinks" in js
+    assert "data-chapter-number" in js
+    assert "data-card-id" in js
+    assert "data-topic-id" in js
