@@ -12,6 +12,8 @@
 - LightRAG `/query/data`: 系统内部使用的全书关系线索和跨章证据来源，用于后文关联、伏笔照应、人物关系和命运线索。生成给学生看的 Markdown 和 JSON 不得直接出现 LightRAG、RAG、知识图谱等技术名称。
 - `data/prompts/definitions.json`: 章节卡提示词契约，当前定义名为 `hongloumeng_chapter_review_card`。
 
+生成脚本不会把 `/query/data` 原始响应直接交给提示词。它先复用 `hlm_kg.evidence_adapter.normalize_query_data_response()` 归一化候选证据，再投影为学生端安全的“全书关系线索”证据包。证据包只包含标题、说明、来源章回、关系关键词和可追溯 ID 等必要字段；原始响应状态和候选数量只进入 `AppImportJSON.internal.evidence_audit`，供人审和排障使用。
+
 ## Generation Order
 
 全量 120 回都需要生成。为降低首批质量风险，先抽样生成并人工检查以下 10 回，再批量处理全书：
@@ -41,7 +43,7 @@
 - 本回核心知识卡片、关系线索三元组、实体清单和检索标签。
 - 本回复习建议，帮助学生知道本回最该记什么、如何联读。
 
-后文关联不能由 LLM 只凭当前回原文或模型常识补写。生成前应先用 LightRAG `/query/data` 检索与本回人物、事件、物件、地点和主题相关的系统全书关系线索；有可靠关系时写入后文关联，没有可靠关系时写“本回暂不能确定”或“需结合后文”。学生可见内容只能称为“全书关系线索”“后文关联”“相关章回”等，不展示内部技术名词。
+后文关联不能由 LLM 只凭当前回原文或模型常识补写。生成前应先用 LightRAG `/query/data` 检索与本回人物、事件、物件、地点和主题相关的系统全书关系线索；提示词收到的是归一化后的“全书关系线索”证据包。有可靠关系时写入后文关联，没有可靠关系时写“本回暂不能确定”或“需结合后文”。学生可见内容只能称为“全书关系线索”“后文关联”“相关章回”等，不展示内部技术名词。
 
 完整 Markdown 必须直接从 `# 第X回 ... 章节复习卡` 开始，不输出寒暄、解释、免责声明或“好的同学”之类开场白。
 
@@ -98,6 +100,8 @@
 
 `later_association_relation_ids` 和 `quotable_fact_ids` 只能引用已经存在、可回溯的关系或证据。批量导入时如果暂时没有这些 ID，可以留空，但不能伪造 ID。
 
+`later_associations` 只有在归一化证据包中存在可支持后续章回或跨章照应的候选证据时才能非空。质量门会在写入文件前检查这一点：如果生成结果写了 `later_associations`，但归一化证据包没有后续章回/关系支持，该章会被拒绝并进入失败目录；如果没有证据，`later_associations` 必须保持空数组。审计字段可以记录内部来源和计数，但学生可见字段不得出现内部技术名称。
+
 Markdown 是完整的人审内容资产，适合校对和追溯生成质量；`AppImportJSON` 是网站和 PostgreSQL 导入使用的结构化资产。网站核心交互不应依赖解析 Markdown，而应读取 JSON/PostgreSQL 中的字段。
 
 ## Quality Gate
@@ -108,6 +112,7 @@ Markdown 是完整的人审内容资产，适合校对和追溯生成质量；`A
 - `plain_summary` 非空，且是本回内容，不是全书泛论。
 - `plot_chain` 非空，顺序与原文一致。
 - 后文关联必须有系统全书关系线索或明确后续章回证据。
+- 非空 `later_associations` 必须能被归一化证据包中的后续章回或跨章关系候选支持；没有支持时必须为空。
 - 学生端文字不能出现 `LightRAG`、`RAG`、`知识图谱`、`向量检索`、`置信度`、`模型分数`、`标准答案`、`题库`、`下一题`、`提交答案`、`批改`。
 - `characters`、`relationships`、`places`、`objects`、`literary_texts`、`modern_explanations`、`later_associations`、`annotations` 如果出现，必须是数组，便于后续导入 PostgreSQL。
 - 不能把影视剧、续书、脂批争议内容混成本回原文事实。

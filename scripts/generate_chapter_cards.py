@@ -14,6 +14,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+from hlm_kg.evidence_adapter import EvidenceCandidate, normalize_query_data_response
 from hlm_kg.lightrag_client import LightRAGClient, LightRAGConfig
 from scripts.import_chapter_cards import load_import_cards, write_import_cards
 
@@ -68,6 +69,7 @@ DISPLAY_CARD_FIELDS = (
     "understanding_focus",
     *EXTENDED_APP_IMPORT_LIST_FIELDS,
 )
+LATER_ASSOCIATION_TERMS = ("后文", "后续", "后来", "照应", "伏笔", "命运", "关联", "跨章")
 
 
 class LLMConfig:
@@ -198,12 +200,17 @@ def generate_cards(
 
         chapter_text = Path(item["file_path"]).read_text(encoding="utf-8")
         evidence = fetch_lightrag_evidence(lightrag_client, chapter_number, str(item["title"]))
+        evidence_pack = build_evidence_pack(
+            evidence,
+            question=_chapter_evidence_question(chapter_number, str(item["title"])),
+            chapter_number=chapter_number,
+        )
         prompt = build_prompt(
             chapter_number=chapter_number,
             chapter_title=str(item["title"]),
             source_file=str(item["file_path"]),
             chapter_text=chapter_text,
-            lightrag_evidence=evidence,
+            lightrag_evidence=evidence_pack,
             generated_at=generated_at,
         )
         markdown = llm_client.complete(prompt)
@@ -233,7 +240,8 @@ def generate_cards(
                 "generated_at": generated_at,
             },
         )
-        validation_errors = validate_generated_card_output(markdown, card)
+        _attach_evidence_audit(card, evidence_pack, evidence)
+        validation_errors = validate_generated_card_output(markdown, card, evidence_pack=evidence_pack)
         if validation_errors:
             failed_dir = output_dir / "failed"
             failed_dir.mkdir(parents=True, exist_ok=True)
@@ -262,11 +270,92 @@ def load_generated_import_cards(import_dir: Path) -> list[dict[str, Any]]:
 
 
 def fetch_lightrag_evidence(lightrag_client: Any, chapter_number: int, chapter_title: str) -> dict[str, Any]:
-    query = (
+    query = _chapter_evidence_question(chapter_number, chapter_title)
+    return lightrag_client.query_data(query, mode="hybrid", only_need_context=True)
+
+
+def _chapter_evidence_question(chapter_number: int, chapter_title: str) -> str:
+    return (
         f"第{chapter_number}回 {chapter_title} 的主要人物、事件、地点、物件、意象、"
         "伏笔、后文关联、人物关系和命运线索"
     )
-    return lightrag_client.query_data(query, mode="hybrid", only_need_context=True)
+
+
+def build_evidence_pack(
+    query_data_response: Mapping[str, Any],
+    *,
+    question: str = "",
+    chapter_number: int | None = None,
+) -> dict[str, Any]:
+    candidates = normalize_query_data_response(query_data_response, question=question)
+    safe_candidates = [_candidate_to_prompt_item(candidate) for candidate in candidates]
+    later_candidates = [
+        item
+        for candidate, item in zip(candidates, safe_candidates)
+        if _candidate_supports_later_association(candidate, item, chapter_number=chapter_number)
+    ]
+    return {
+        "name": "全书关系线索",
+        "candidate_count": len(safe_candidates),
+        "candidates": safe_candidates,
+        "later_association_evidence": later_candidates,
+    }
+
+
+def _candidate_to_prompt_item(candidate: EvidenceCandidate) -> dict[str, Any]:
+    item: dict[str, Any] = {
+        "kind": candidate.kind,
+        "title": candidate.title,
+        "description": candidate.description,
+        "source_chapters": [source.chapter_number for source in candidate.chapter_sources],
+    }
+    if candidate.relationship_keywords:
+        item["relationship_keywords"] = candidate.relationship_keywords
+    if candidate.entity_type:
+        item["entity_type"] = candidate.entity_type
+    if candidate.source_ids:
+        item["source_ids"] = candidate.source_ids
+    if candidate.reference_id:
+        item["reference_id"] = candidate.reference_id
+    if candidate.chunk_id:
+        item["chunk_id"] = candidate.chunk_id
+    return item
+
+
+def _candidate_supports_later_association(
+    candidate: EvidenceCandidate,
+    item: Mapping[str, Any],
+    *,
+    chapter_number: int | None,
+) -> bool:
+    source_chapters = [source.chapter_number for source in candidate.chapter_sources]
+    has_later_chapter = chapter_number is None or any(source > chapter_number for source in source_chapters)
+    if not has_later_chapter:
+        return False
+    text = " ".join(
+        str(value)
+        for value in (
+            item.get("title"),
+            item.get("description"),
+            item.get("relationship_keywords"),
+            item.get("entity_type"),
+        )
+        if value is not None
+    )
+    return any(term in text for term in LATER_ASSOCIATION_TERMS)
+
+
+def _attach_evidence_audit(card: dict[str, Any], evidence_pack: Mapping[str, Any], raw_evidence: Mapping[str, Any]) -> None:
+    internal = card.setdefault("internal", {})
+    if not isinstance(internal, dict):
+        internal = {}
+        card["internal"] = internal
+    internal["evidence_audit"] = {
+        "source": "LightRAG /query/data",
+        "normalized_candidate_count": evidence_pack.get("candidate_count", 0),
+        "later_association_evidence_count": len(evidence_pack.get("later_association_evidence") or []),
+        "raw_response_status": raw_evidence.get("status"),
+    }
 
 
 def build_prompt(
@@ -278,7 +367,18 @@ def build_prompt(
     lightrag_evidence: Mapping[str, Any],
     generated_at: str,
 ) -> str:
-    evidence_text = json.dumps(lightrag_evidence, ensure_ascii=False, indent=2)[:30000]
+    evidence_pack = lightrag_evidence
+    if not (
+        isinstance(evidence_pack, Mapping)
+        and evidence_pack.get("name") == "全书关系线索"
+        and isinstance(evidence_pack.get("candidates"), list)
+    ):
+        evidence_pack = build_evidence_pack(
+            lightrag_evidence,
+            question=_chapter_evidence_question(chapter_number, chapter_title),
+            chapter_number=chapter_number,
+        )
+    evidence_text = json.dumps(evidence_pack, ensure_ascii=False, indent=2)[:30000]
     return f"""你是一位精通《红楼梦》整本书阅读、高中语文名著阅读命题、人物关系分析、叙事结构分析和考试答题训练的语文老师。
 
 你的任务是基于以下材料，为《红楼梦》某一回生成章节复习卡。目标是帮助高中生在有限时间内快速理解本回内容，并最终支撑“8小时读懂全书”。
@@ -500,7 +600,12 @@ def extract_app_import_json(markdown: str) -> dict[str, Any]:
     return payload
 
 
-def validate_generated_card_output(markdown: str, card: Mapping[str, Any]) -> list[str]:
+def validate_generated_card_output(
+    markdown: str,
+    card: Mapping[str, Any],
+    *,
+    evidence_pack: Mapping[str, Any] | None = None,
+) -> list[str]:
     errors: list[str] = []
     stripped = markdown.lstrip()
     first_line = stripped.splitlines()[0].strip() if stripped else ""
@@ -544,6 +649,10 @@ def validate_generated_card_output(markdown: str, card: Mapping[str, Any]) -> li
         for term in STUDENT_FORBIDDEN_TERMS:
             if term in text:
                 errors.append(f"AppImportJSON 学生可见字段 {path} 包含禁用词：{term}")
+    if evidence_pack is not None:
+        later_associations = card.get("later_associations")
+        if isinstance(later_associations, list) and later_associations and not evidence_pack.get("later_association_evidence"):
+            errors.append("AppImportJSON 字段 later_associations 缺少规范化证据支持，必须留空。")
     return errors
 
 
