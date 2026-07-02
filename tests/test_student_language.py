@@ -68,3 +68,12 @@ def test_static_ui_escapes_api_text_before_rendering_html():
         "data.card.name",
     ]:
         assert f"escapeHtml({expression}" in js
+
+
+def test_static_chapter_view_handles_missing_review_card_state():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "data.materialStatus?.hasReviewCard" in js
+    assert "data.materialStatus?.message" in js
+    assert "章节资料暂未生成，可先阅读原文。" in js
+    assert "暂无可靠资料" in js

@@ -139,6 +139,9 @@ class ContentStore:
     def review_card_for_chapter(self, number: int) -> ChapterReviewCard:
         return self._review_cards[number]
 
+    def maybe_review_card_for_chapter(self, number: int) -> ChapterReviewCard | None:
+        return self._review_cards.get(number)
+
     def evidence_by_id(self) -> dict[str, Evidence]:
         return dict(self._evidence)
 

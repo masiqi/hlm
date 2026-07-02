@@ -36,13 +36,19 @@ def handle_api_request(
     if method == "GET" and parsed_path.startswith("/api/chapters/"):
         number = int(parsed_path.rsplit("/", 1)[1])
         chapter = context.store.chapter(number)
-        review_card = context.store.review_card_for_chapter(number)
-        knowledge_cards = [context.store.knowledge_card(card_id) for card_id in review_card.key_characters]
+        review_card = context.store.maybe_review_card_for_chapter(number)
+        knowledge_cards = []
+        if review_card is not None:
+            knowledge_cards = [context.store.knowledge_card(card_id) for card_id in review_card.key_characters]
         return 200, {
             "chapter": _camel(asdict(chapter)),
             "originalText": context.store.chapter_text(number),
-            "reviewCard": _camel(asdict(review_card)),
+            "reviewCard": _camel(asdict(review_card)) if review_card is not None else None,
             "knowledgeCards": [_camel(asdict(card)) for card in knowledge_cards],
+            "materialStatus": {
+                "hasReviewCard": review_card is not None,
+                "message": "章节资料已加载。" if review_card is not None else "章节资料暂未生成，可先阅读原文。",
+            },
         }
     if method == "GET" and parsed_path.startswith("/api/topics/"):
         topic_id = parsed_path.rsplit("/", 1)[1]

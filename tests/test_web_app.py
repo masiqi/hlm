@@ -21,6 +21,27 @@ def test_api_chapter_returns_chapter_evidence_page_payload():
     assert "LightRAG" not in str(payload)
 
 
+def test_api_chapter_returns_original_text_when_review_card_is_missing():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/chapters/1")
+
+    assert status == 200
+    assert payload["chapter"]["number"] == 1
+    assert payload["originalText"]
+    assert payload["reviewCard"] is None
+    assert payload["knowledgeCards"] == []
+    assert payload["materialStatus"] == {
+        "hasReviewCard": False,
+        "message": "章节资料暂未生成，可先阅读原文。",
+    }
+    assert "LightRAG" not in str(payload)
+
+
 def test_api_ask_returns_structured_answer():
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
