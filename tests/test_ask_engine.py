@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from hlm_kg.evidence_adapter import normalize_query_data_response
 from hlm_kg.ask_engine import AskEngine
 from hlm_kg.content_store import ContentStore
 from hlm_kg.domain import Evidence, validate_answer
@@ -86,3 +87,99 @@ def test_ask_engine_refuses_determinate_answer_when_sources_conflict():
     assert answer.refusal.reason == "SOURCE_CONFLICT"
     assert "资料存在不一致，优先查看原文依据。" in answer.refusal.message
     assert answer.short_conclusion == []
+
+
+class FakeLightRAGClient:
+    def __init__(self, response):
+        self.response = response
+        self.queries = []
+
+    def query_data(self, query: str, mode: str = "hybrid", **options):
+        self.queries.append((query, mode, options))
+        return self.response
+
+
+def test_ask_engine_answers_chapter_location_from_normalized_query_data():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "宝黛初会",
+                    "tgt_id": "第三回",
+                    "keywords": "发生章回",
+                    "description": "宝黛初会发生在第三回，林黛玉进贾府后与贾宝玉在贾母处相见。",
+                    "source_id": "doc-003-chunk-001",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+    client = FakeLightRAGClient(response)
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=client)
+
+    validate_answer(answer)
+    assert client.queries == [("宝黛初会发生在哪一回？", "hybrid", {"only_need_context": True})]
+    assert answer.status == "answered"
+    assert "第三回" in answer.short_conclusion[0].text
+    assert any(evidence.chapter == 3 for evidence in answer.evidence)
+    assert any(evidence.source_type == "graph_relation" for evidence in answer.evidence)
+    assert answer.continuation_links[0].target_type == "chapter"
+    assert answer.continuation_links[0].target_id == "3"
+
+
+def test_ask_engine_refuses_when_query_data_has_no_chapter_source():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [
+                {
+                    "entity_name": "宝黛初会",
+                    "entity_type": "ChapterEpisode",
+                    "description": "只说明相关，但没有可回溯章回来源。",
+                }
+            ],
+            "relationships": [],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("宝黛初会发生在哪一回？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+    assert "没有找到足够依据" in answer.refusal.message
+
+
+def test_ask_engine_normalized_candidates_keep_query_data_as_only_generated_source():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [
+                {
+                    "entity_name": "宝黛初会",
+                    "entity_type": "ChapterEpisode",
+                    "description": "宝黛初会是宝玉和黛玉初次见面的情节。",
+                    "source_id": "doc-003-chunk-001",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "relationships": [],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    [candidate] = normalize_query_data_response(response, question="宝黛初会发生在哪一回？")
+
+    assert candidate.chapter_sources[0].chapter_number == 3
+    assert candidate.raw["file_path"].startswith("003-")

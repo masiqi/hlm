@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from uuid import uuid4
+from typing import Any
 
 from hlm_kg.content_store import ContentStore
 from hlm_kg.domain import (
@@ -13,6 +14,7 @@ from hlm_kg.domain import (
     RefusalReason,
 )
 from hlm_kg.evidence import detect_source_conflict, supported_claims
+from hlm_kg.evidence_adapter import EvidenceCandidate, normalize_query_data_response
 
 
 OUT_OF_SCOPE_TERMS = ("作文", "现实", "八卦", "数学", "英语")
@@ -22,9 +24,14 @@ class AskEngine:
     def __init__(self, store: ContentStore) -> None:
         self.store = store
 
-    def ask(self, question: str) -> AskAnswer:
+    def ask(self, question: str, retrieval_client: Any | None = None) -> AskAnswer:
         if any(term in question for term in OUT_OF_SCOPE_TERMS):
             return self._refuse(question, "OUT_OF_SCOPE", "当前产品只支持《红楼梦》阅读理解相关问题。")
+
+        if retrieval_client is not None:
+            answer = self._answer_from_retrieval(question, retrieval_client)
+            if answer is not None:
+                return answer
 
         if "没有资料" in question:
             supported = self._daiyu_answer(question)
@@ -49,6 +56,58 @@ class AskEngine:
             return self._tanchun_answer(question)
 
         return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
+
+    def _answer_from_retrieval(self, question: str, retrieval_client: Any) -> AskAnswer | None:
+        try:
+            response = retrieval_client.query_data(question, mode="hybrid", only_need_context=True)
+        except Exception:  # noqa: BLE001 - retrieval failure should not expose internals to students
+            return self._refuse(question, "GRAPH_UNAVAILABLE", "关系线索暂时不可用，当前不能生成可靠回答。")
+
+        candidates = normalize_query_data_response(response, question=question)
+        candidate = _best_chapter_candidate(candidates)
+        if candidate is None:
+            return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
+
+        return self._chapter_location_answer(question, candidate)
+
+    def _chapter_location_answer(self, question: str, candidate: EvidenceCandidate) -> AskAnswer:
+        source = candidate.chapter_sources[0]
+        evidence = Evidence(
+            id=f"ev-query-{uuid4()}",
+            source_type="graph_relation" if candidate.kind in {"relationship", "entity"} else "original_text",
+            chapter=source.chapter_number,
+            location=f"{source.chapter_label}：{source.chapter_title}",
+            quote=None,
+            evidence_text=candidate.description or candidate.title,
+            entity_ids=[],
+            relation_id=candidate.title if candidate.kind == "relationship" else None,
+            confidence="explicit",
+            provenance=source.source_file,
+            derived_from_ids=[],
+        )
+        conclusion = AnswerClaim(
+            text=f"根据可回溯资料，相关内容出现在{source.chapter_label}《{source.chapter_title}》。",
+            evidence_ids=[evidence.id],
+            claim_type="identity_relation",
+        )
+        explanation = AnswerClaim(
+            text=f"依据来自{source.source_file}，说明“{candidate.title}”与这一回相关。",
+            evidence_ids=[evidence.id],
+            claim_type="quotable_fact",
+        )
+        return AskAnswer(
+            id=f"ask-{uuid4()}",
+            question=question,
+            status="answered",
+            short_conclusion=[conclusion],
+            evidence=[evidence],
+            explanation=[AnswerSection(title="为什么", claims=[explanation])],
+            quotable_facts=AnswerSection(title="可引用事实", claims=[explanation]),
+            continuation_links=[
+                ContinuationLink(f"查看{source.chapter_label}", "chapter", str(source.chapter_number)),
+            ],
+            refusal=None,
+        )
 
     def _daiyu_answer(self, question: str) -> AskAnswer:
         evidence = [
@@ -126,3 +185,10 @@ class AskEngine:
             continuation_links=[],
             refusal=Refusal(reason=reason, message=message),
         )
+
+
+def _best_chapter_candidate(candidates: list[EvidenceCandidate]) -> EvidenceCandidate | None:
+    for candidate in candidates:
+        if candidate.chapter_sources:
+            return candidate
+    return None

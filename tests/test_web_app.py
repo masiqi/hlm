@@ -60,6 +60,60 @@ def test_api_ask_returns_structured_answer():
     assert payload["continuationLinks"]
 
 
+class FakeRetrievalClient:
+    def query_data(self, query: str, mode: str = "hybrid", **options):
+        return {
+            "status": "success",
+            "data": {
+                "entities": [],
+                "relationships": [
+                    {
+                        "src_id": "宝黛初会",
+                        "tgt_id": "第三回",
+                        "keywords": "发生章回",
+                        "description": "宝黛初会发生在第三回，林黛玉进贾府后与贾宝玉在贾母处相见。",
+                        "source_id": "doc-003-chunk-001",
+                        "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                    }
+                ],
+                "chunks": [],
+                "references": [],
+            },
+            "metadata": {"query_mode": mode},
+        }
+
+
+def test_api_ask_uses_configured_retrieval_client_for_chapter_location():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=FakeRetrievalClient(),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "宝黛初会发生在哪一回？"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    assert "第三回" in payload["shortConclusion"][0]["text"]
+    assert payload["evidence"][0]["chapter"] == 3
+    assert payload["continuationLinks"][0]["targetId"] == "3"
+    assert "LightRAG" not in str(payload)
+
+
+def test_create_app_context_builds_retrieval_client_from_env(monkeypatch):
+    monkeypatch.setenv("LIGHTRAG_BASE_URL", "http://10.1.0.246:9621")
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    assert context.retrieval_client is not None
+    assert context.retrieval_client.config.base_url == "http://10.1.0.246:9621"
+
+
 def test_api_ask_returns_partial_answer_with_refusal_and_links():
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
