@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run validate-samples import-chapter-cards build-kg lightrag-up lightrag-down test web postgres-migrate
+.PHONY: help env split-chapters analyze-questions dry-run validate-samples import-chapter-cards build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed
 
 help:
 	@echo "Targets:"
@@ -13,6 +13,7 @@ help:
 	@echo "  make test              Run local tests"
 	@echo "  make web               Run the V1 reading assistant web app"
 	@echo "  make postgres-migrate  Apply PostgreSQL schema migration using DATABASE_URL"
+	@echo "  make postgres-import-seed  Import book/data seed content into PostgreSQL"
 
 env:
 	@test -f .env || cp .env.example .env
@@ -50,3 +51,6 @@ web:
 
 postgres-migrate:
 	python scripts/migrate_postgres.py
+
+postgres-import-seed:
+	python scripts/import_postgres_seed.py
