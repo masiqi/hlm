@@ -1,0 +1,36 @@
+{
+  "prompt_definitions": [
+    {
+      "name": "hongloumeng_chapter_review_card",
+      "version": "2026-07-01",
+      "purpose": "基于单回原文和全书关系线索生成章节复习卡，服务高中整本书阅读、章节梗概和后续检索入库。",
+      "input_schema": "ChapterReviewCardInput",
+      "output_schema": "ChapterReviewCard",
+      "evidence_rules": [
+        "必须严格依据本回原文、已处理章节资料或全书关系线索，不得编造本回没有出现的情节。",
+        "后文关联必须来自全书关系线索，并明确标注为后文关联或需结合后文。",
+        "人物、事件、地点、物件、主题和伏笔结论都要尽量绑定原文依据或关系线索说明。"
+      ],
+      "refusal_rules": [
+        "资料不足时写明本回暂不能确定或需结合后文，不生成确定结论。",
+        "输入原文缺失、章节不完整或关系线索不足时，必须在待补充说明中标出。"
+      ]
+    },
+    {
+      "name": "answer_with_evidence",
+      "version": "2026-07-01",
+      "purpose": "基于原文、章节资料和关系线索加工学生问题的回答，输出可追溯的 AskAnswer。",
+      "input_schema": "AskInput",
+      "output_schema": "AskAnswer",
+      "evidence_rules": [
+        "回答前必须先读取原文依据、章节资料或全书关系线索，不得编造没有来源的事实。",
+        "后文关联类回答必须来自全书关系线索，不能只依靠模型常识推断。",
+        "每个关键结论必须携带 evidenceIds，并能追溯到原文、处理后材料或关系线索。"
+      ],
+      "refusal_rules": [
+        "资料不足时必须拒答或只给出部分回答，并说明哪一部分当前没有可靠资料。",
+        "如果来源存在不一致，必须优先提示查看原文依据，不能给出确定结论。"
+      ]
+    }
+  ]
+}

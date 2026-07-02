@@ -20,6 +20,8 @@ make build-kg
 
 完整说明见 [docs/lightrag_hongloumeng.md](docs/lightrag_hongloumeng.md)。
 
+提示词定义登记在 `data/prompts/definitions.json`。这里保存提示词名称、版本、用途、输入输出 schema、证据规则和拒答规则，用于约束后续章节复习卡生成与基于证据的问答加工；学生端网页不会直接展示这些提示词定义。
+
 运行 V1 阅读助手网页：
 
 ```bash
