@@ -60,6 +60,9 @@ EXTENDED_APP_IMPORT_LIST_FIELDS = (
     "later_associations",
     "annotations",
 )
+REQUIRED_NON_EMPTY_RICH_FIELDS = ("characters", "relationships", "annotations")
+SUMMARY_MIN_CHARS = 250
+SUMMARY_MAX_CHARS = 400
 DISPLAY_CARD_FIELDS = (
     "plain_summary",
     "plot_chain",
@@ -636,8 +639,11 @@ def validate_generated_card_output(
         if field not in card:
             errors.append(f"AppImportJSON 缺少必填字段：{field}")
 
-    if not str(card.get("plain_summary") or "").strip():
+    summary = str(card.get("plain_summary") or "").strip()
+    if not summary:
         errors.append("AppImportJSON 字段 plain_summary 不能为空。")
+    elif not SUMMARY_MIN_CHARS <= len(summary) <= SUMMARY_MAX_CHARS:
+        errors.append("AppImportJSON 字段 plain_summary 必须为 250—400 字。")
 
     list_fields = (
         "plot_chain",
@@ -660,6 +666,9 @@ def validate_generated_card_output(
             errors.append(f"AppImportJSON 缺少必填字段：{field}")
         elif not isinstance(card[field], list):
             errors.append(f"AppImportJSON 字段 {field} 必须是数组。")
+    for field in REQUIRED_NON_EMPTY_RICH_FIELDS:
+        if isinstance(card.get(field), list) and not card[field]:
+            errors.append(f"AppImportJSON 字段 {field} 不能为空，网站需要它展示人物、关系或原文链接。")
 
     for path, text in _iter_display_text(card, DISPLAY_CARD_FIELDS):
         for term in STUDENT_FORBIDDEN_TERMS:
