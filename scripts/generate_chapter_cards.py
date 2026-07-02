@@ -270,6 +270,7 @@ def generate_cards(
             },
         )
         _attach_evidence_audit(card, evidence_pack, evidence)
+        normalize_generated_card_for_quality_gate(card, evidence_pack=evidence_pack)
         validation_errors = validate_generated_card_output(markdown, card, evidence_pack=evidence_pack)
         if validation_errors:
             failed_dir = output_dir / "failed"
@@ -388,6 +389,54 @@ def _attach_evidence_audit(card: dict[str, Any], evidence_pack: Mapping[str, Any
         "later_association_evidence_count": len(evidence_pack.get("later_association_evidence") or []),
         "raw_response_status": raw_evidence.get("status"),
     }
+
+
+def normalize_generated_card_for_quality_gate(card: dict[str, Any], *, evidence_pack: Mapping[str, Any]) -> None:
+    internal = card.setdefault("internal", {})
+    if not isinstance(internal, dict):
+        internal = {}
+        card["internal"] = internal
+    normalization: dict[str, Any] = {}
+
+    summary = str(card.get("plain_summary") or "").strip()
+    fitted_summary = _fit_summary_to_required_length(summary)
+    if fitted_summary != summary:
+        card["plain_summary"] = fitted_summary
+        normalization["plain_summary"] = {
+            "original_length": len(summary),
+            "normalized_length": len(fitted_summary),
+        }
+
+    later_associations = card.get("later_associations")
+    if isinstance(later_associations, list) and later_associations:
+        later_evidence = evidence_pack.get("later_association_evidence")
+        chapter_number = _card_chapter_number(card)
+        supported = [
+            association
+            for association in later_associations
+            if _later_association_supported(association, later_evidence, chapter_number=chapter_number)
+        ]
+        if len(supported) != len(later_associations):
+            card["later_associations"] = supported
+            normalization["later_associations"] = {
+                "original_count": len(later_associations),
+                "normalized_count": len(supported),
+            }
+
+    if normalization:
+        internal["quality_normalization"] = normalization
+
+
+def _fit_summary_to_required_length(summary: str) -> str:
+    if not summary or len(summary) <= SUMMARY_MAX_CHARS:
+        return summary
+    candidate = summary[:SUMMARY_MAX_CHARS]
+    best_break = -1
+    for marker in ("。", "！", "？", "；"):
+        best_break = max(best_break, candidate.rfind(marker))
+    if best_break + 1 >= SUMMARY_MIN_CHARS:
+        return candidate[: best_break + 1]
+    return candidate.rstrip("，、；：")
 
 
 def build_prompt(

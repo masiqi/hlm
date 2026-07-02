@@ -568,25 +568,22 @@ def test_later_associations_require_machine_checkable_evidence_reference():
     assert any("later_associations[0]" in error and "证据引用" in error for error in errors)
 
 
-def test_generate_cards_rejects_later_associations_without_normalized_later_evidence(tmp_path):
+def test_generate_cards_drops_later_associations_without_normalized_later_evidence(tmp_path):
     module = _import_script_module()
     manifest_path = _write_manifest(tmp_path)
 
-    try:
-        module.generate_cards(
-            manifest_path=manifest_path,
-            output_dir=tmp_path / "generated",
-            chapters=[1],
-            lightrag_client=RelationshipEvidenceLightRAGClient(with_later_relationship=False),
-            llm_client=EvidenceBackedAssociationLLMClient(),
-            generated_at="2026-07-02",
-            overwrite=True,
-        )
-    except ValueError as exc:
-        assert "later_associations" in str(exc)
-        assert "缺少规范化证据" in str(exc)
-    else:
-        raise AssertionError("expected unsupported later_associations to fail quality gate")
+    cards = module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=tmp_path / "generated",
+        chapters=[1],
+        lightrag_client=RelationshipEvidenceLightRAGClient(with_later_relationship=False),
+        llm_client=EvidenceBackedAssociationLLMClient(),
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+
+    assert cards[0]["later_associations"] == []
+    assert cards[0]["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
 
 
 def test_generate_cards_accepts_later_associations_with_normalized_later_evidence(tmp_path):
@@ -775,6 +772,35 @@ def test_build_evidence_pack_can_limit_prompt_candidates():
 
     assert pack["candidate_count"] == 1
     assert len(pack["candidates"]) == 1
+
+
+def test_normalize_generated_card_trims_long_summary_and_drops_unsupported_later_associations():
+    module = _import_script_module()
+    long_summary = (
+        "第一回主要写甄士隐梦中见通灵宝玉来历，贾雨村也在本回出场，为全书真假有无和人物命运开端奠定基础。"
+        "本回还写英莲丢失、葫芦庙失火、甄士隐投奔岳父并最终听《好了歌》出家。"
+        "这些情节共同构成全书开篇的结构地图。"
+        "学生阅读时应先抓住神话框架，再看甄士隐与贾雨村一退一进的人生方向。"
+        "这一段故意写得比较长，用来模拟模型输出超过四百字时的归一化处理，归一化只能截短已有文字，不能补写新内容。"
+        "本句继续拉长摘要，确保它超过质量门禁上限。"
+    )
+    card = _complete_card_with_rich_defaults(
+        plain_summary=long_summary * 3,
+        later_associations=[
+            {
+                "topic": "无证据后文",
+                "description": "没有机器可核验证据的后文关联。",
+                "source_chapters": [120],
+                "evidence": "第120回",
+            }
+        ],
+    )
+
+    module.normalize_generated_card_for_quality_gate(card, evidence_pack={"later_association_evidence": []})
+
+    assert 250 <= len(card["plain_summary"]) <= 400
+    assert card["later_associations"] == []
+    assert card["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
 
 
 def test_repair_prompt_uses_same_structured_app_import_sections():
