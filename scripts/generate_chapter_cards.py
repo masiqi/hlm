@@ -200,6 +200,7 @@ def generate_cards(
     llm_client: Any,
     generated_at: str,
     overwrite: bool = False,
+    json_only: bool = False,
 ) -> list[dict[str, Any]]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     by_number = {int(item["number"]): item for item in manifest["chapters"]}
@@ -224,7 +225,14 @@ def generate_cards(
             question=_chapter_evidence_question(chapter_number, str(item["title"])),
             chapter_number=chapter_number,
         )
-        prompt = build_prompt(
+        prompt = build_json_only_prompt(
+            chapter_number=chapter_number,
+            chapter_title=str(item["title"]),
+            source_file=str(item["file_path"]),
+            chapter_text=chapter_text,
+            lightrag_evidence=evidence_pack,
+            generated_at=generated_at,
+        ) if json_only else build_prompt(
             chapter_number=chapter_number,
             chapter_title=str(item["title"]),
             source_file=str(item["file_path"]),
@@ -563,6 +571,32 @@ Markdown 必须包含以下栏目：
 """
 
 
+def build_json_only_prompt(
+    *,
+    chapter_number: int,
+    chapter_title: str,
+    source_file: str,
+    chapter_text: str,
+    lightrag_evidence: Mapping[str, Any],
+    generated_at: str,
+) -> str:
+    full_prompt = build_prompt(
+        chapter_number=chapter_number,
+        chapter_title=chapter_title,
+        source_file=source_file,
+        chapter_text=chapter_text,
+        lightrag_evidence=lightrag_evidence,
+        generated_at=generated_at,
+    )
+    marker = "第二部分：完整 Markdown 章节复习卡"
+    json_prompt = full_prompt.split(marker, 1)[0].rstrip()
+    return (
+        json_prompt
+        + "\n\n只输出第一部分 AppImportJSON，不要输出 Markdown 章节复习卡。"
+        + "\n输出必须从 AppImportJSON 开始，并包含一个合法 JSON 代码块。"
+    )
+
+
 def build_repair_prompt(*, chapter_number: int, chapter_title: str, generated_at: str, previous_output: str) -> str:
     return f"""上一次输出没有包含可解析的 AppImportJSON。请只输出 AppImportJSON 的 JSON 代码块，不要输出解释文字。
 
@@ -833,6 +867,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path, default=Path("generated"))
     parser.add_argument("--generated-at", default=date.today().isoformat())
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--json-only", action="store_true", help="Only generate AppImportJSON for faster website/database trials.")
     args = parser.parse_args(argv)
 
     try:
@@ -849,6 +884,7 @@ def main(argv: list[str] | None = None) -> int:
             llm_client=OpenAICompatibleLLMClient(LLMConfig.from_env(env)),
             generated_at=args.generated_at,
             overwrite=args.overwrite,
+            json_only=args.json_only,
         )
         checked_path = args.output_dir / "chapter_review_cards.checked.json"
         valid_cards = load_import_cards(args.output_dir / "chapter_review_cards.raw.json", data_dir=Path("data/app"))

@@ -681,6 +681,23 @@ def test_build_prompt_requests_structured_app_import_sections_for_website_and_da
         assert field in prompt
 
 
+def test_build_json_only_prompt_skips_markdown_section_for_fast_database_trials():
+    module = _import_script_module()
+
+    prompt = module.build_json_only_prompt(
+        chapter_number=1,
+        chapter_title="甄士隐梦幻识通灵 贾雨村风尘怀闺秀",
+        source_file="book/chapters/001.txt",
+        chapter_text="第一回原文",
+        lightrag_evidence={"data": {"entities": []}},
+        generated_at="2026-07-02",
+    )
+
+    assert "只输出第一部分 AppImportJSON" in prompt
+    assert "第二部分：完整 Markdown 章节复习卡" not in prompt
+    assert "## 19. 待补充说明" not in prompt
+
+
 def test_build_prompt_defaults_later_associations_to_empty_array_without_existing_ids():
     module = _import_script_module()
 
