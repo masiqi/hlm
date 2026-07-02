@@ -675,7 +675,7 @@ def validate_generated_card_output(
                 chapter_number = _card_chapter_number(card)
                 for index, association in enumerate(later_associations):
                     if not _later_association_supported(association, later_evidence, chapter_number=chapter_number):
-                        errors.append(f"AppImportJSON 字段 later_associations[{index}] 缺少匹配证据支持。")
+                        errors.append(f"AppImportJSON 字段 later_associations[{index}] 缺少匹配证据引用支持。")
     return errors
 
 
@@ -737,7 +737,8 @@ def _later_association_supported(association: Any, evidence_items: Any, *, chapt
         return False
     association_text = _association_text(association)
     association_terms = _support_terms(association_text)
-    if not association_terms:
+    association_refs = _association_reference_tokens(association)
+    if not association_refs:
         return False
     for evidence in evidence_items:
         if not isinstance(evidence, Mapping):
@@ -745,8 +746,11 @@ def _later_association_supported(association: Any, evidence_items: Any, *, chapt
         evidence_chapters = _int_set(evidence.get("source_chapters"))
         if not association_chapters.intersection(evidence_chapters):
             continue
+        evidence_refs = _association_reference_tokens(evidence)
+        if not association_refs.intersection(evidence_refs):
+            continue
         evidence_text = _association_text(evidence)
-        if any(term in evidence_text for term in association_terms):
+        if not association_terms or any(term in evidence_text for term in association_terms):
             return True
     return False
 
@@ -770,6 +774,23 @@ def _association_text(value: Mapping[str, Any]) -> str:
         if isinstance(raw, str):
             parts.append(raw)
     return "\n".join(parts)
+
+
+def _association_reference_tokens(value: Mapping[str, Any]) -> set[str]:
+    refs: set[str] = set()
+    for key in ("reference_id", "chunk_id", "evidence_id", "relation_id"):
+        raw = value.get(key)
+        if isinstance(raw, str) and raw.strip():
+            refs.add(f"{key}:{raw.strip()}")
+    for key in ("source_ids", "source_id"):
+        raw = value.get(key)
+        if isinstance(raw, str) and raw.strip():
+            refs.add(f"source_id:{raw.strip()}")
+        elif isinstance(raw, list):
+            for item in raw:
+                if isinstance(item, str) and item.strip():
+                    refs.add(f"source_id:{item.strip()}")
+    return refs
 
 
 def _support_terms(text: str) -> set[str]:
