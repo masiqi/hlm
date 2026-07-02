@@ -68,3 +68,17 @@ def test_static_ui_escapes_api_text_before_rendering_html():
         "data.card.name",
     ]:
         assert f"escapeHtml({expression}" in js
+
+
+def test_static_ask_view_renders_answer_states_and_continuation_links():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "renderContinuationLinks" in js
+    assert "短结论" in js
+    assert "已支持部分" in js
+    assert "资料不足部分" in js
+    assert "继续查看" in js
+    assert "answer.continuationLinks" in js
+    assert "data-chapter-number" in js
+    assert "data-card-id" in js
+    assert "data-topic-id" in js

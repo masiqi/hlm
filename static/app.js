@@ -19,10 +19,29 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function renderContinuationLinks(links = []) {
+  if (!links.length) return "<li>暂无可靠资料</li>";
+  return links
+    .map((link) => {
+      const label = escapeHtml(link.label);
+      const targetId = escapeHtml(link.targetId);
+      if (link.targetType === "chapter") return `<li><button data-chapter-number="${targetId}">${label}</button></li>`;
+      if (link.targetType === "card") return `<li><button data-card-id="${targetId}">${label}</button></li>`;
+      if (link.targetType === "topic") return `<li><button data-topic-id="${targetId}">${label}</button></li>`;
+      return `<li>${label}</li>`;
+    })
+    .join("");
+}
+
 function renderAnswer(answer) {
   const container = document.querySelector("#answer");
   if (answer.status === "refused") {
-    container.innerHTML = `<h3>当前资料不足</h3><p>${escapeHtml(answer.refusal.message)}</p>`;
+    container.innerHTML = `
+      <h3>当前资料不足</h3>
+      <p>${escapeHtml(answer.refusal.message)}</p>
+      <h3>继续查看</h3>
+      <ul>${renderContinuationLinks(answer.continuationLinks || [])}</ul>
+    `;
     showView("ask");
     return;
   }
@@ -32,15 +51,17 @@ function renderAnswer(answer) {
     .join("");
   const facts = (answer.quotableFacts?.claims || []).map((claim) => `<li>${escapeHtml(claim.text)}</li>`).join("");
   const partialNote =
-    answer.status === "partial" && answer.refusal ? `<h3>未回答部分</h3><p>${escapeHtml(answer.refusal.message)}</p>` : "";
+    answer.status === "partial" && answer.refusal ? `<h3>资料不足部分</h3><p>${escapeHtml(answer.refusal.message)}</p>` : "";
   container.innerHTML = `
-    <h3>${answer.status === "partial" ? "部分回答" : "短结论"}</h3>
+    <h3>${answer.status === "partial" ? "已支持部分" : "短结论"}</h3>
     <ul>${claims}</ul>
     ${partialNote}
     <h3>依据</h3>
     <ul>${sources}</ul>
     <h3>可引用事实</h3>
     <ul>${facts}</ul>
+    <h3>继续查看</h3>
+    <ul>${renderContinuationLinks(answer.continuationLinks || [])}</ul>
   `;
   showView("ask");
 }
@@ -160,7 +181,12 @@ document.addEventListener("click", (event) => {
     loadKnowledgeCard(target.dataset.cardId, panel);
   }
   if (target.matches("[data-topic-id]")) {
+    showView("topics");
     loadTopicDetail(target.dataset.topicId);
+  }
+  if (target.matches("[data-chapter-number]")) {
+    showView("chapters");
+    loadChapter(Number(target.dataset.chapterNumber));
   }
 });
 
