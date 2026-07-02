@@ -88,6 +88,18 @@ pre {
   line-height: 1.7;
 }
 
+.inline-knowledge-link {
+  min-height: 0;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 1px solid #8a6f3e;
+  border-radius: 0;
+  background: transparent;
+  color: #4e3f24;
+  font: inherit;
+  line-height: inherit;
+}
+
 @media (max-width: 760px) {
   .topbar {
     display: block;

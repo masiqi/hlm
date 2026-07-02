@@ -59,7 +59,6 @@ def test_static_ui_escapes_api_text_before_rendering_html():
         "data.chapter.title",
         "data.reviewCard.plainSummary",
         "item",
-        "data.originalText",
         "topic.title",
         "topic.description",
         "relation.description",
@@ -68,6 +67,7 @@ def test_static_ui_escapes_api_text_before_rendering_html():
         "data.card.name",
     ]:
         assert f"escapeHtml({expression}" in js
+    assert "let annotated = escapeHtml(text)" in js
 
 
 def test_static_chapter_view_handles_missing_review_card_state():
@@ -77,3 +77,14 @@ def test_static_chapter_view_handles_missing_review_card_state():
     assert "data.materialStatus?.message" in js
     assert "章节资料暂未生成，可先阅读原文。" in js
     assert "暂无可靠资料" in js
+
+
+def test_static_chapter_original_text_uses_safe_inline_knowledge_links():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "renderAnnotatedOriginalText" in js
+    assert "escapeRegExp" in js
+    assert "data-card-id" in js
+    assert "annotated-original" in js
+    assert "renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)" in js
+    assert "<pre>${escapeHtml(data.originalText)}</pre>" not in js

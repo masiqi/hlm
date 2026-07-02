@@ -19,6 +19,25 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function renderAnnotatedOriginalText(text, cards) {
+  let annotated = escapeHtml(text);
+  const sortedCards = [...cards].sort((left, right) => right.name.length - left.name.length);
+  sortedCards.forEach((card) => {
+    const escapedName = escapeHtml(card.name);
+    if (!escapedName) return;
+    const pattern = new RegExp(escapeRegExp(escapedName), "g");
+    annotated = annotated.replaceAll(
+      pattern,
+      `<button class="inline-knowledge-link" data-card-id="${escapeHtml(card.id)}">${escapedName}</button>`,
+    );
+  });
+  return annotated;
+}
+
 function renderAnswer(answer) {
   const container = document.querySelector("#answer");
   if (answer.status === "refused") {
@@ -108,7 +127,7 @@ async function loadChapter(number = 27) {
     <section><h4>本回梗概</h4><p>${plainSummary}</p></section>
     <section><h4>关键情节</h4><ul>${plotChain}</ul></section>
     <section><h4>本回主要人物</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
-    <section><h4>原文</h4><pre>${escapeHtml(data.originalText)}</pre></section>
+    <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.knowledgeCards)}</pre></section>
   `;
   document.querySelector("#knowledge-panel").innerHTML = `
     <h3>本回重点</h3>
