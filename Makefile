@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run build-kg lightrag-up lightrag-down test web
+.PHONY: help env split-chapters analyze-questions dry-run validate-samples build-kg lightrag-up lightrag-down test web
 
 help:
 	@echo "Targets:"
@@ -6,6 +6,7 @@ help:
 	@echo "  make split-chapters    Split book/红楼梦.txt into 120 chapter files"
 	@echo "  make analyze-questions Parse JSONL samples and write docs/question_types.md"
 	@echo "  make dry-run           Validate local KG build flow without LightRAG API calls"
+	@echo "  make validate-samples  Validate internal calibration sample quality"
 	@echo "  make lightrag-up       Start LightRAG Server/WebUI with Docker Compose"
 	@echo "  make build-kg          Run real scan/indexing flow against LightRAG"
 	@echo "  make test              Run local tests"
@@ -23,6 +24,9 @@ analyze-questions:
 
 dry-run:
 	python -m hlm_kg.lightrag_app --dry-run
+
+validate-samples:
+	python -m hlm_kg.validation_samples
 
 lightrag-up: env
 	docker compose up -d lightrag
