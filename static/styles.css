@@ -93,6 +93,10 @@ main {
   padding-left: 16px;
 }
 
+.panel-close {
+  display: none;
+}
+
 .source {
   border-left: 3px solid #5f7f71;
   padding-left: 10px;
@@ -146,11 +150,28 @@ pre {
   }
 
   .knowledge-panel {
+    display: none;
     position: static;
-    margin-top: 20px;
+    margin-top: 0;
     border: 1px solid #d8d2c4;
-    border-radius: 8px;
+    border-radius: 0;
     padding: 16px;
     background: #fffaf0;
+  }
+
+  .knowledge-panel.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    overflow: auto;
+    border: 0;
+    background: #fffaf0;
+  }
+
+  .knowledge-panel.open .panel-close {
+    display: block;
+    margin-left: auto;
+    margin-bottom: 16px;
   }
 }

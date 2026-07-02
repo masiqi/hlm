@@ -41,13 +41,19 @@
         </div>
         <div class="chapter-layout">
           <article id="chapter-content"></article>
-          <aside id="knowledge-panel" class="knowledge-panel"></aside>
+          <aside id="knowledge-panel" class="knowledge-panel">
+            <button class="panel-close" data-panel-close="knowledge-panel" type="button">关闭</button>
+            <div class="knowledge-panel-content"></div>
+          </aside>
         </div>
       </section>
       <section id="topics" class="view">
         <h2>看专题</h2>
         <div id="topic-list" class="topic-grid"></div>
-        <aside id="topic-knowledge-panel" class="knowledge-panel"></aside>
+        <aside id="topic-knowledge-panel" class="knowledge-panel">
+          <button class="panel-close" data-panel-close="topic-knowledge-panel" type="button">关闭</button>
+          <div class="knowledge-panel-content"></div>
+        </aside>
       </section>
     </main>
     <script src="/app.js"></script>

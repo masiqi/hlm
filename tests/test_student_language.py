@@ -133,3 +133,18 @@ def test_static_ask_view_names_source_conflict_in_student_language():
 
     assert "资料存在不一致，优先查看原文依据" in js
     assert "SOURCE_CONFLICT" not in js
+
+
+def test_static_mobile_knowledge_panel_has_open_and_close_controls():
+    html = Path("static/index.html").read_text(encoding="utf-8")
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    css = Path("static/styles.css").read_text(encoding="utf-8")
+
+    assert 'data-panel-close="knowledge-panel"' in html
+    assert 'data-panel-close="topic-knowledge-panel"' in html
+    assert "openKnowledgePanel" in js
+    assert "closeKnowledgePanel" in js
+    assert "knowledge-panel open" in js
+    assert "[data-panel-close]" in js
+    assert ".knowledge-panel.open" in css
+    assert "position: fixed" in css
