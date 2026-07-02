@@ -137,3 +137,10 @@ def test_cli_reports_validation_errors_with_nonzero_exit(tmp_path):
     assert result.returncode != 0
     assert "plot_chain" in result.stderr
     assert not output_path.exists()
+
+
+def test_makefile_documents_chapter_card_import_command():
+    makefile = Path("Makefile").read_text(encoding="utf-8")
+
+    assert "import-chapter-cards:" in makefile
+    assert "python scripts/import_chapter_cards.py" in makefile
