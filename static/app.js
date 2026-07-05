@@ -1,4 +1,126 @@
 const views = document.querySelectorAll(".view");
+const CHAPTER_TITLES = [
+  "甄士隐梦幻识通灵 贾雨村风尘怀闺秀",
+  "贾夫人仙逝扬州城 冷子兴演说荣国府",
+  "托内兄如海荐西宾 接外孙贾母惜孤女",
+  "薄命女偏逢簿命郎 葫芦僧判断葫芦案",
+  "贾宝玉神游太虚境 警幻仙曲演红楼梦",
+  "贾宝玉初试云雨情 刘老老一进荣国府",
+  "送宫花贾琏戏熙凤 宴宁府宝玉会秦钟",
+  "贾宝玉奇缘识金锁 薛宝钗巧合认通灵",
+  "训劣子李贵承申饬 嗔顽童茗烟闹书房",
+  "金寡妇贪利权受辱 张太医论病细穷源",
+  "庆寿辰宁府排家宴 见熙凤贾瑞起淫心",
+  "王熙凤毒设相思局 贾天祥正照风月鉴",
+  "秦可卿死封龙禁尉 王熙凤协理宁国府",
+  "林如海灵返苏州郡 贾宝玉路遏北静王",
+  "王凤姐弄权铁槛寺 秦鲸卿得趣馒头庵",
+  "贾元春才选凤藻宫 秦鲸卿夭逝黄泉路",
+  "大观园试才题对额 荣国府归省庆元宵",
+  "皇恩重元妃省父母 天伦乐宝玉呈才藻",
+  "情切切良宵花解语 意绵绵静日玉生香",
+  "王熙凤正言弹妒意 林黛玉俏语谑娇音",
+  "贤袭人娇嗔箴宝玉 俏平儿软语救贾琏",
+  "听曲文宝玉悟禅机 制灯迷贾政悲谶语",
+  "西厢记妙词通戏语 牡丹亭艳曲警芳心",
+  "醉金刚轻财尚义侠 痴女儿遗帕惹相思",
+  "魇魔法叔嫂逢五鬼 通灵玉蒙蔽遇双真",
+  "蜂腰桥设言传心事 潇湘馆春困发幽情",
+  "滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红",
+  "蒋玉函情赠茜香罗 薛宝钗羞笼红麝串",
+  "享福人福深还祷福 多情女情重愈斟情",
+  "宝钗借扇机带双敲 椿龄画蔷痴及局外",
+  "撕扇子作千金一笑 因麒麟伏白首双星",
+  "诉肺腑心迷活宝玉 含耻辱情烈死金钏",
+  "手足眈眈小动唇舌 不肖种种大承苔挞",
+  "情中情因情感妹妹 错里错以错劝哥哥",
+  "白玉钏亲尝莲叶羹 黄金莺巧结梅花络",
+  "绣鸳鸯梦兆绛芸轩 识分定情悟梨香院",
+  "秋爽斋偶结海棠社 蘅芜院夜拟菊花题",
+  "林潇湘魁夺菊花诗 薛蘅芜讽和螃蟹咏",
+  "村老老是信口开河 情哥哥偏寻根究底",
+  "史太君两宴大观园 金鸳鸯三宣牙牌令",
+  "贾宝玉品茶栊翠庵 刘老老醉卧怡红院",
+  "蘅芜君兰言解疑癖 潇湘子雅谑补馀音",
+  "闲取乐偶攒金庆寿 不了情暂撮土为香",
+  "变生不测凤姐泼醋 喜出望外平儿理妆",
+  "金兰契互剖金兰语 风雨夕闷制风雨词",
+  "尴尬人难免尴尬事 鸳鸯女誓绝鸳鸯偶",
+  "呆霸王调情遭苦打 冷郎君惧祸走他乡",
+  "滥情人情误思游艺 慕雅女雅集苦吟诗",
+  "琉璃世界白雪红梅 脂粉香娃割腥啖膻",
+  "芦雪庭争联即景诗 暖香坞雅制春灯谜",
+  "薛小妹新编怀古诗 胡庸医乱用虎狼药",
+  "俏平儿情掩虾须镯 勇晴雯病补孔雀裘",
+  "宁国府除夕祭宗祠 荣国府元宵开夜宴",
+  "史太君破陈腐旧套 王熙凤效戏彩斑衣",
+  "辱亲女愚妾争闲气 欺幼主刁奴蓄险心",
+  "敏探春兴利除宿弊 贤宝钗小惠全大体",
+  "慧紫鹃情辞试莽玉 慈姨妈爱语慰痴颦",
+  "杏子阴假凤泣虚凰 茜纱窗真情揆痴理",
+  "柳叶渚边嗔莺叱燕 绛芸轩里召将飞符",
+  "茉莉粉替去蔷薇硝 玫瑰露引出茯苓霜",
+  "投鼠忌器宝王瞒赃 判冤决狱平儿行权",
+  "憨湘云醉眠芍药裀 呆香菱情解石榴裙",
+  "寿怡红群芳开夜宴 死金丹独艳理亲丧",
+  "幽淑女悲题五美吟 浪荡子情遗九龙佩",
+  "贾二舍偷娶尤二姨 尤三姐思嫁柳二郎",
+  "情小妹耻情归地府 冷二郎一冷入空门",
+  "见土仪颦卿思故里 闻秘事凤姐讯家童",
+  "苦尤娘赚入大观园 酸凤姐大闹宁国府",
+  "弄小巧用借剑杀人 觉大限吞生金自逝",
+  "林黛玉重建桃花社 史湘云偶填柳絮词",
+  "嫌隙人有心生嫌隙 鸳鸯女无意遇鸳鸯",
+  "王熙凤恃强羞说病 来旺妇倚势霸成亲",
+  "痴丫头误拾绣春囊 懦小姐不问累金凤",
+  "惑奸谗抄检大观园 避嫌隙杜绝宁国府",
+  "开夜宴异兆发悲音 赏中秋新词得佳谶",
+  "凸碧堂品笛感凄清 凹晶馆联诗悲寂寞",
+  "俏丫鬟抱屈夭风流 美优怜斩情归水月",
+  "老学士闲征姽婳词 痴公子杜撰芙蓉诔",
+  "薛文起悔娶河东吼 贾迎春误嫁中山狼",
+  "美香菱屈受贪夫棒 王道士胡诌妒妇方",
+  "占旺相四美钓游鱼 奉严词两番入家塾",
+  "老学究讲义警顽心 病潇湘痴魂惊恶梦",
+  "省宫闱贾元妃染恙 闹闺阃薛宝钗吞声",
+  "试文字宝玉始提亲 探惊风贾环重结怨",
+  "贾存周报升郎中任 薛文起复惹放流刑",
+  "受私贿老官翻案牍 寄闲情淑女解琴书",
+  "感秋声抚琴悲往事 坐禅寂走火入邪魔",
+  "博庭欢宝玉赞孤儿 正家法贾珍鞭悍仆",
+  "人亡物在公子填词 蛇影杯弓颦卿绝粒",
+  "失绵衣贫女耐嗷嘈 送果品小郎惊叵测",
+  "纵淫心宝蟾工设计 步疑阵宝玉妄谈禅",
+  "评女传巧姐慕贤良 玩母珠贾政参聚散",
+  "甄家仆投靠贾家门 水月庵掀翻风月案",
+  "宴海棠贾母赏花妖 失宝玉通灵知奇祸",
+  "因讹成实元妃薨逝 以假混真宝玉疯癫",
+  "瞒消息凤姐设奇谋 泄机关颦儿迷本性",
+  "林黛玉焚稿断痴情 薛宝钗出闺成大礼",
+  "苦绛珠魂归离恨天 病神瑛泪洒相思地",
+  "守官箴恶奴同破例 阅邸报老舅自担惊",
+  "破好事香菱结深恨 悲远嫁宝玉感离情",
+  "大观园月夜警幽魂 散花寺神签惊异兆",
+  "宁国府骨肉病灾襟 大观园符水驱妖孽",
+  "施毒计金桂自焚身 昧真禅雨村空遇旧",
+  "醉金刚小鳅生大浪 痴公子馀痛触前情",
+  "锦农军查抄宁国府 骢马使弹劾平安州",
+  "王熙凤致祸抱羞惭 贾太君祷天消祸患",
+  "散馀资贾母明大义 复世职政老沐天恩",
+  "强欢笑蘅芜庆生辰 死缠绵潇湘闻鬼哭",
+  "候芳魂五儿承错爱 还孽债迎女返真元",
+  "史太君寿终归地府 王凤姐力诎失人心",
+  "鸳鸯女殉主登太虚 狗彘奴欺天招伙盗",
+  "活冤孽妙姑遭大劫 死雠仇赵妾赴冥曹",
+  "忏宿冤凤姐托村妪 释旧憾情婢感痴郎",
+  "王熙凤历幻返金陵 甄应嘉蒙恩还玉阙",
+  "惑偏私惜春矢素志 证同类宝玉失相知",
+  "得通灵幻境悟仙缘 送慈柩故乡全孝道",
+  "阻超凡佳人双护玉 欣聚党恶子独承家",
+  "记微嫌舅兄欺弱女 惊谜语妻妾谏痴人",
+  "中乡魁宝玉却尘缘 沐皇恩贾家延世泽",
+  "甄士隐详说太虚情 贾雨村归结红楼梦",
+];
 let currentChapterPayload = null;
 
 function showView(id) {
@@ -243,6 +365,10 @@ function panelContentSelector(targetSelector) {
   return `${targetSelector} .knowledge-panel-content`;
 }
 
+function chapterOptionLabel(number, title = CHAPTER_TITLES[number - 1] || "") {
+  return title ? `第 ${number} 回：${title}` : `第 ${number} 回`;
+}
+
 function openKnowledgePanel(targetSelector) {
   document.querySelector(targetSelector).className = "knowledge-panel open";
 }
@@ -257,9 +383,16 @@ function initChapterSelector() {
   for (let number = 1; number <= 120; number += 1) {
     const option = document.createElement("option");
     option.value = String(number);
-    option.textContent = `第 ${number} 回`;
+    option.textContent = chapterOptionLabel(number);
     chapterSelect.append(option);
   }
+}
+
+function updateSelectedChapterOption(chapter) {
+  const chapterSelect = document.querySelector("#chapter-select");
+  if (!chapterSelect || !chapter?.number) return;
+  const option = Array.from(chapterSelect.options).find((item) => item.value === String(chapter.number));
+  if (option) option.textContent = chapterOptionLabel(Number(chapter.number), chapter.title || "");
 }
 
 async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
@@ -293,6 +426,7 @@ async function loadChapter(number = 27) {
   closeEntityPopover();
   const chapterSelect = document.querySelector("#chapter-select");
   if (chapterSelect) chapterSelect.value = String(data.chapter.number);
+  updateSelectedChapterOption(data.chapter);
   const focusCards = data.knowledgeCards
     .map((card) => `<li><strong>${escapeHtml(card.name)}</strong>：${escapeHtml(card.brief)}</li>`)
     .join("");
