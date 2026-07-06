@@ -1,6 +1,12 @@
 from pathlib import Path
 
-from scripts.import_postgres_seed import annotation_rows_for_chapter, build_seed_records, trace_rows_for_card
+from scripts.import_postgres_seed import (
+    annotation_rows_for_chapter,
+    build_seed_records,
+    entity_graph_cache_rows,
+    entity_trace_cache_rows,
+    trace_rows_for_card,
+)
 
 
 def test_build_seed_records_loads_existing_json_and_chapters():
@@ -107,4 +113,51 @@ def test_trace_rows_for_card_keeps_each_relation_chapter_jump():
         "trace-card-lindaiyu-rel-daiyu-burying-flowers-fate-027",
         "trace-card-lindaiyu-rel-daiyu-burying-flowers-fate-097",
         "trace-card-lindaiyu-rel-daiyu-burying-flowers-fate-098",
+    ]
+
+
+def test_entity_trace_cache_rows_turn_json_cache_into_pg_rows():
+    cache = {
+        "1": {
+            "贾雨村": {
+                "trace_items": [{"chapter": 2, "label": "第2回：贾雨村复职"}],
+                "theme_extensions": [{"topic": "官场线索", "chapter_jumps": []}],
+            }
+        }
+    }
+
+    rows = entity_trace_cache_rows(cache)
+
+    assert rows == [
+        {
+            "id": "trace-cache-001-贾雨村",
+            "chapter_number": 1,
+            "entity_name": "贾雨村",
+            "trace_items": [{"chapter": 2, "label": "第2回：贾雨村复职"}],
+            "theme_extensions": [{"topic": "官场线索", "chapter_jumps": []}],
+            "metadata": {},
+        }
+    ]
+
+
+def test_entity_graph_cache_rows_turn_json_cache_into_pg_rows():
+    cache = {
+        "顽石": {
+            "description": "无才补天被弃于青埂峰下的石头。",
+            "neighbors": [{"name": "通灵宝玉", "relationship": "前世本体"}],
+            "extended_neighbors": [{"via": "通灵宝玉", "to": "贾宝玉", "depth": 2}],
+            "raw_graph": {"nodes": []},
+            "metadata": {"source": "lightrag_graph"},
+        }
+    }
+
+    assert entity_graph_cache_rows(cache) == [
+        {
+            "entity_name": "顽石",
+            "description": "无才补天被弃于青埂峰下的石头。",
+            "neighbors": [{"name": "通灵宝玉", "relationship": "前世本体"}],
+            "extended_neighbors": [{"via": "通灵宝玉", "to": "贾宝玉", "depth": 2}],
+            "raw_graph": {"nodes": []},
+            "metadata": {"source": "lightrag_graph"},
+        }
     ]

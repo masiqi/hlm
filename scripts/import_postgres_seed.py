@@ -24,6 +24,8 @@ class SeedRecords:
     evidence: list[dict[str, Any]]
     annotations: list[dict[str, Any]]
     trace_items: list[dict[str, Any]]
+    entity_trace_cache: list[dict[str, Any]]
+    entity_graph_cache: list[dict[str, Any]]
 
 
 def build_seed_records(manifest_path: Path, data_dir: Path) -> SeedRecords:
@@ -32,6 +34,10 @@ def build_seed_records(manifest_path: Path, data_dir: Path) -> SeedRecords:
     knowledge_cards = list(_read_json(data_dir / "knowledge_cards.json"))
     relations = list(_read_json(data_dir / "graph_relations.json"))
     evidence = list(_read_json(data_dir / "evidence.json"))
+    entity_trace_cache_path = data_dir / "entity_trace_cache.json"
+    entity_trace_cache = _read_json(entity_trace_cache_path) if entity_trace_cache_path.exists() else {}
+    entity_graph_cache_path = data_dir / "entity_graph_cache.json"
+    entity_graph_cache = _read_json(entity_graph_cache_path) if entity_graph_cache_path.exists() else {}
     relation_lookup = {str(row["id"]): row for row in relations}
     evidence_lookup = {str(row["id"]): row for row in evidence}
     entity_lookup = {str(row["id"]): row for row in knowledge_cards}
@@ -82,6 +88,8 @@ def build_seed_records(manifest_path: Path, data_dir: Path) -> SeedRecords:
         evidence=[_evidence_row(row) for row in evidence],
         annotations=annotations,
         trace_items=trace_items,
+        entity_trace_cache=entity_trace_cache_rows(entity_trace_cache),
+        entity_graph_cache=entity_graph_cache_rows(entity_graph_cache),
     )
 
 
@@ -198,6 +206,59 @@ def trace_rows_for_card(
     return list(unique.values())
 
 
+def entity_trace_cache_rows(cache: Any) -> list[dict[str, Any]]:
+    if not isinstance(cache, dict):
+        return []
+    rows: list[dict[str, Any]] = []
+    for chapter_key, chapter_cache in cache.items():
+        if not isinstance(chapter_cache, dict):
+            continue
+        try:
+            chapter_number = int(chapter_key)
+        except (TypeError, ValueError):
+            continue
+        for entity_name, payload in chapter_cache.items():
+            if not isinstance(payload, dict):
+                continue
+            clean_name = str(entity_name).strip()
+            if not clean_name:
+                continue
+            rows.append(
+                {
+                    "id": f"trace-cache-{chapter_number:03d}-{clean_name}",
+                    "chapter_number": chapter_number,
+                    "entity_name": clean_name,
+                    "trace_items": list(payload.get("trace_items", [])),
+                    "theme_extensions": list(payload.get("theme_extensions", [])),
+                    "metadata": {},
+                }
+            )
+    return rows
+
+
+def entity_graph_cache_rows(cache: Any) -> list[dict[str, Any]]:
+    if not isinstance(cache, dict):
+        return []
+    rows: list[dict[str, Any]] = []
+    for entity_name, payload in cache.items():
+        if not isinstance(payload, dict):
+            continue
+        clean_name = str(entity_name).strip()
+        if not clean_name:
+            continue
+        rows.append(
+            {
+                "entity_name": clean_name,
+                "description": str(payload.get("description") or ""),
+                "neighbors": list(payload.get("neighbors") or []),
+                "extended_neighbors": list(payload.get("extended_neighbors") or []),
+                "raw_graph": dict(payload.get("raw_graph") or {}),
+                "metadata": dict(payload.get("metadata") or {}),
+            }
+        )
+    return rows
+
+
 def upsert_seed_records(database_url: str, records: SeedRecords) -> None:
     import psycopg
 
@@ -211,6 +272,8 @@ def upsert_seed_records(database_url: str, records: SeedRecords) -> None:
             _upsert_evidence(cur, records.evidence)
             _upsert_annotations(cur, records.annotations)
             _upsert_trace_items(cur, records.trace_items)
+            _upsert_entity_trace_cache(cur, records.entity_trace_cache)
+            _upsert_entity_graph_cache(cur, records.entity_graph_cache)
         conn.commit()
 
 
@@ -536,6 +599,70 @@ def _upsert_trace_items(cur: Any, rows: list[dict[str, Any]]) -> None:
             metadata = EXCLUDED.metadata
         """,
         [{**row, "metadata": _jsonb(row["metadata"])} for row in rows],
+    )
+
+
+def _upsert_entity_trace_cache(cur: Any, rows: list[dict[str, Any]]) -> None:
+    if not rows:
+        return
+    cur.executemany(
+        """
+        INSERT INTO entity_trace_cache (
+            id, chapter_id, entity_name, trace_items, theme_extensions, metadata
+        )
+        VALUES (
+            %(id)s, (SELECT id FROM chapters WHERE number = %(chapter_number)s),
+            %(entity_name)s, %(trace_items)s, %(theme_extensions)s, %(metadata)s
+        )
+        ON CONFLICT (id) DO UPDATE SET
+            chapter_id = EXCLUDED.chapter_id,
+            entity_name = EXCLUDED.entity_name,
+            trace_items = EXCLUDED.trace_items,
+            theme_extensions = EXCLUDED.theme_extensions,
+            metadata = EXCLUDED.metadata,
+            updated_at = now()
+        """,
+        [
+            {
+                **row,
+                "trace_items": _jsonb(row["trace_items"]),
+                "theme_extensions": _jsonb(row["theme_extensions"]),
+                "metadata": _jsonb(row["metadata"]),
+            }
+            for row in rows
+        ],
+    )
+
+
+def _upsert_entity_graph_cache(cur: Any, rows: list[dict[str, Any]]) -> None:
+    if not rows:
+        return
+    cur.executemany(
+        """
+        INSERT INTO entity_graph_cache (
+            entity_name, description, neighbors, extended_neighbors, raw_graph, metadata
+        )
+        VALUES (
+            %(entity_name)s, %(description)s, %(neighbors)s, %(extended_neighbors)s, %(raw_graph)s, %(metadata)s
+        )
+        ON CONFLICT (entity_name) DO UPDATE SET
+            description = EXCLUDED.description,
+            neighbors = EXCLUDED.neighbors,
+            extended_neighbors = EXCLUDED.extended_neighbors,
+            raw_graph = EXCLUDED.raw_graph,
+            metadata = EXCLUDED.metadata,
+            updated_at = now()
+        """,
+        [
+            {
+                **row,
+                "neighbors": _jsonb(row["neighbors"]),
+                "extended_neighbors": _jsonb(row["extended_neighbors"]),
+                "raw_graph": _jsonb(row["raw_graph"]),
+                "metadata": _jsonb(row["metadata"]),
+            }
+            for row in rows
+        ],
     )
 
 

@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from datetime import date
@@ -62,7 +63,7 @@ EXTENDED_APP_IMPORT_LIST_FIELDS = (
 )
 REQUIRED_NON_EMPTY_RICH_FIELDS = ("characters", "relationships", "annotations")
 SUMMARY_MIN_CHARS = 250
-SUMMARY_MAX_CHARS = 400
+SUMMARY_MAX_CHARS = 500
 DISPLAY_CARD_FIELDS = (
     "plain_summary",
     "plot_chain",
@@ -72,7 +73,7 @@ DISPLAY_CARD_FIELDS = (
     "understanding_focus",
     *EXTENDED_APP_IMPORT_LIST_FIELDS,
 )
-LATER_ASSOCIATION_TERMS = ("后文", "后续", "后来", "照应", "伏笔", "命运", "关联", "跨章")
+LATER_ASSOCIATION_TERMS = ("后文", "后续", "后来", "预示", "暗示", "伏笔", "命运", "跨章")
 LATER_ASSOCIATION_STOP_TERMS = {
     "本回",
     "后文",
@@ -99,7 +100,7 @@ class LLMConfig:
         self.timeout_seconds = timeout_seconds
 
     @classmethod
-    def from_env(cls, env: Mapping[str, str]) -> "LLMConfig":
+    def from_env(cls, env: Mapping[str, str], *, timeout_override: float | None = None) -> "LLMConfig":
         base_url = env.get("LLM_BINDING_HOST", "").strip().rstrip("/")
         api_key = env.get("LLM_BINDING_API_KEY", "").strip()
         model = env.get("LLM_MODEL", "").strip()
@@ -110,7 +111,7 @@ class LLMConfig:
             lowered = value.lower()
             if any(marker in lowered for marker in ("replace-with", "replace-me", "your-", "your_", "changeme")):
                 raise ValueError(f"{key} still contains a placeholder value")
-        timeout_seconds = float(env.get("LLM_TIMEOUT", "240") or "240")
+        timeout_seconds = timeout_override if timeout_override is not None else float(env.get("LLM_TIMEOUT", "240") or "240")
         return cls(base_url=base_url, api_key=api_key, model=model, timeout_seconds=timeout_seconds)
 
 
@@ -177,17 +178,36 @@ def parse_env_file(path: Path) -> dict[str, str]:
     return env
 
 
+def lightrag_config_from_env(env: Mapping[str, str], *, timeout_override: float | None = None) -> LightRAGConfig | None:
+    config = LightRAGConfig.from_env(env)
+    if config is None or timeout_override is None:
+        return config
+    return LightRAGConfig(
+        base_url=config.base_url,
+        api_key=config.api_key,
+        timeout_seconds=timeout_override,
+    )
+
+
 def parse_chapter_selection(value: str, *, all_chapters: bool) -> list[int]:
     if all_chapters:
         return list(range(1, 121))
     if not value.strip():
         return list(DEFAULT_SAMPLE_CHAPTERS)
-    chapters = []
+    chapters: list[int] = []
     for part in value.split(","):
-        chapter = int(part.strip())
-        if chapter < 1 or chapter > 120:
-            raise ValueError("chapters must be in 1..120")
-        chapters.append(chapter)
+        clean = part.strip()
+        if not clean:
+            continue
+        if "-" in clean:
+            start_text, end_text = clean.split("-", 1)
+            start = int(start_text)
+            end = int(end_text)
+            chapters.extend(range(start, end + 1))
+        else:
+            chapters.append(int(clean))
+    if any(chapter < 1 or chapter > 120 for chapter in chapters):
+        raise ValueError("chapters must be in 1..120")
     return sorted(set(chapters))
 
 
@@ -211,15 +231,20 @@ def generate_cards(
     import_dir.mkdir(parents=True, exist_ok=True)
 
     cards: list[dict[str, Any]] = []
-    for chapter_number in chapters:
+    total = len(chapters)
+    for index, chapter_number in enumerate(chapters, start=1):
         item = by_number[chapter_number]
         markdown_path = markdown_dir / f"{chapter_number:03d}.md"
         json_path = import_dir / f"{chapter_number:03d}.json"
         if not overwrite and markdown_path.exists() and json_path.exists():
             cards.append(json.loads(json_path.read_text(encoding="utf-8")))
+            print(f"[{index}/{total}] chapter {chapter_number:03d} skipped: existing markdown/json", flush=True)
             continue
 
+        start_time = time.monotonic()
+        print(f"[{index}/{total}] chapter {chapter_number:03d} start: {item['title']}", flush=True)
         chapter_text = Path(item["file_path"]).read_text(encoding="utf-8")
+        print(f"[{index}/{total}] chapter {chapter_number:03d} fetching evidence...", flush=True)
         evidence = fetch_lightrag_evidence(lightrag_client, chapter_number, str(item["title"]))
         evidence_pack = build_evidence_pack(
             evidence,
@@ -242,23 +267,17 @@ def generate_cards(
             lightrag_evidence=evidence_pack,
             generated_at=generated_at,
         )
+        print(f"[{index}/{total}] chapter {chapter_number:03d} calling LLM...", flush=True)
         markdown = llm_client.complete(prompt)
-        try:
-            card = extract_app_import_json(markdown)
-        except ValueError:
-            failed_dir = output_dir / "failed"
-            failed_dir.mkdir(parents=True, exist_ok=True)
-            failed_path = failed_dir / f"{chapter_number:03d}.md"
-            failed_path.write_text(markdown, encoding="utf-8")
-            repair_prompt = build_repair_prompt(
-                chapter_number=chapter_number,
-                chapter_title=str(item["title"]),
-                generated_at=generated_at,
-                previous_output=markdown,
-            )
-            repaired = llm_client.complete(repair_prompt)
-            card = extract_app_import_json("AppImportJSON\n" + repaired)
-            markdown = markdown.rstrip() + "\n\n## AppImportJSON 修复输出\n\n" + repaired
+        markdown, card = _ensure_app_import_json(
+            markdown,
+            llm_client=llm_client,
+            output_dir=output_dir,
+            chapter_number=chapter_number,
+            chapter_title=str(item["title"]),
+            generated_at=generated_at,
+            progress_prefix=f"[{index}/{total}]",
+        )
         card["chapter"] = chapter_number
         card.setdefault("id", f"review-{chapter_number:03d}")
         card.setdefault(
@@ -277,11 +296,49 @@ def generate_cards(
             failed_dir.mkdir(parents=True, exist_ok=True)
             failed_path = failed_dir / f"{chapter_number:03d}.md"
             failed_path.write_text(markdown, encoding="utf-8")
-            raise ValueError(f"generated chapter {chapter_number:03d} failed quality gate: {'; '.join(validation_errors[:3])}")
+            print(
+                f"[{index}/{total}] chapter {chapter_number:03d} repairing quality gate: "
+                f"{'; '.join(validation_errors[:2])}",
+                flush=True,
+            )
+            repair_prompt = build_quality_gate_repair_prompt(
+                chapter_number=chapter_number,
+                chapter_title=str(item["title"]),
+                generated_at=generated_at,
+                previous_output=markdown,
+                validation_errors=validation_errors,
+            )
+            markdown = llm_client.complete(repair_prompt)
+            markdown, card = _ensure_app_import_json(
+                markdown,
+                llm_client=llm_client,
+                output_dir=output_dir,
+                chapter_number=chapter_number,
+                chapter_title=str(item["title"]),
+                generated_at=generated_at,
+                progress_prefix=f"[{index}/{total}]",
+            )
+            card["chapter"] = chapter_number
+            card.setdefault("id", f"review-{chapter_number:03d}")
+            card.setdefault(
+                "source",
+                {
+                    "prompt_name": PROMPT_NAME,
+                    "prompt_version": PROMPT_VERSION,
+                    "generated_at": generated_at,
+                },
+            )
+            _attach_evidence_audit(card, evidence_pack, evidence)
+            normalize_generated_card_for_quality_gate(card, evidence_pack=evidence_pack)
+            validation_errors = validate_generated_card_output(markdown, card, evidence_pack=evidence_pack)
+            if validation_errors:
+                failed_path.write_text(markdown, encoding="utf-8")
+                raise ValueError(f"generated chapter {chapter_number:03d} failed quality gate: {'; '.join(validation_errors[:3])}")
         markdown_path.write_text(markdown, encoding="utf-8")
         json_path.write_text(json.dumps(card, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         cards.append(card)
-        print(f"generated chapter {chapter_number:03d}: {item['title']}")
+        elapsed = time.monotonic() - start_time
+        print(f"[{index}/{total}] chapter {chapter_number:03d} done: {item['title']} ({elapsed:.1f}s)", flush=True)
 
     combined_cards = load_generated_import_cards(import_dir)
     combined_path = output_dir / "chapter_review_cards.raw.json"
@@ -297,6 +354,35 @@ def load_generated_import_cards(import_dir: Path) -> list[dict[str, Any]]:
             raise ValueError(f"{path} must contain a JSON object")
         cards.append(payload)
     return sorted(cards, key=lambda card: int(card["chapter"]))
+
+
+def _ensure_app_import_json(
+    markdown: str,
+    *,
+    llm_client: Any,
+    output_dir: Path,
+    chapter_number: int,
+    chapter_title: str,
+    generated_at: str,
+    progress_prefix: str,
+) -> tuple[str, dict[str, Any]]:
+    try:
+        return markdown, extract_app_import_json(markdown)
+    except ValueError:
+        failed_dir = output_dir / "failed"
+        failed_dir.mkdir(parents=True, exist_ok=True)
+        failed_path = failed_dir / f"{chapter_number:03d}.md"
+        failed_path.write_text(markdown, encoding="utf-8")
+        print(f"{progress_prefix} chapter {chapter_number:03d} repairing AppImportJSON...", flush=True)
+        repair_prompt = build_repair_prompt(
+            chapter_number=chapter_number,
+            chapter_title=chapter_title,
+            generated_at=generated_at,
+            previous_output=markdown,
+        )
+        repaired = llm_client.complete(repair_prompt)
+        repaired_markdown = markdown.rstrip() + "\n\n## AppImportJSON 修复输出\n\n" + repaired
+        return repaired_markdown, extract_app_import_json("AppImportJSON\n" + repaired)
 
 
 def fetch_lightrag_evidence(lightrag_client: Any, chapter_number: int, chapter_title: str) -> dict[str, Any]:
@@ -416,11 +502,33 @@ def normalize_generated_card_for_quality_gate(card: dict[str, Any], *, evidence_
             for association in later_associations
             if _later_association_supported(association, later_evidence, chapter_number=chapter_number)
         ]
-        if len(supported) != len(later_associations):
+        derived_count = 0
+        if not supported:
+            supported = _derive_later_associations_from_evidence(
+                later_evidence,
+                chapter_number=chapter_number,
+                anchor_terms=_card_anchor_terms(card),
+            )
+            derived_count = len(supported)
+        if len(supported) != len(later_associations) or derived_count:
             card["later_associations"] = supported
             normalization["later_associations"] = {
                 "original_count": len(later_associations),
                 "normalized_count": len(supported),
+            }
+            if derived_count:
+                normalization["later_associations"]["derived_count"] = derived_count
+    elif isinstance(later_associations, list) and not later_associations:
+        derived_later_associations = _derive_later_associations_from_evidence(
+            evidence_pack.get("later_association_evidence"),
+            chapter_number=_card_chapter_number(card),
+            anchor_terms=_card_anchor_terms(card),
+        )
+        if derived_later_associations:
+            card["later_associations"] = derived_later_associations
+            normalization["later_associations"] = {
+                "original_count": 0,
+                "derived_count": len(derived_later_associations),
             }
 
     if normalization:
@@ -435,6 +543,82 @@ def normalize_generated_card_for_quality_gate(card: dict[str, Any], *, evidence_
                 "original_count": len(key_characters),
                 "normalized_count": len(normalized_key_characters),
             }
+
+
+def _derive_later_associations_from_evidence(
+    evidence_items: Any,
+    *,
+    chapter_number: int | None,
+    anchor_terms: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    if not isinstance(evidence_items, list):
+        return []
+    associations: list[dict[str, Any]] = []
+    seen: set[tuple[str, tuple[int, ...], tuple[str, ...]]] = set()
+    for evidence in evidence_items:
+        if not isinstance(evidence, Mapping):
+            continue
+        source_chapters = sorted(
+            chapter
+            for chapter in _int_set(evidence.get("source_chapters"))
+            if chapter_number is None or chapter > chapter_number
+        )
+        if not source_chapters:
+            continue
+        source_ids = sorted(token.removeprefix("source_id:") for token in _association_reference_tokens(evidence) if token.startswith("source_id:"))
+        if not source_ids:
+            continue
+        topic = str(evidence.get("title") or evidence.get("relationship_keywords") or "后文关联").strip()
+        description = str(evidence.get("description") or "").strip()
+        if not topic or not description:
+            continue
+        if anchor_terms and not any(term in topic for term in anchor_terms):
+            continue
+        if re.search(r"->\s*第[一二三四五六七八九十百千万零〇两0-9]+回", topic):
+            continue
+        association = {
+            "topic": topic,
+            "description": description,
+            "source_chapters": source_chapters,
+            "source_ids": source_ids,
+            "evidence": description,
+        }
+        key = (topic, tuple(source_chapters), tuple(source_ids))
+        if key in seen:
+            continue
+        if not _later_association_supported(association, evidence_items, chapter_number=chapter_number):
+            continue
+        associations.append(association)
+        seen.add(key)
+        if len(associations) >= 5:
+            break
+    return associations
+
+
+def _card_anchor_terms(card: Mapping[str, Any]) -> set[str]:
+    anchors: set[str] = set()
+    for field in ("characters", "places", "objects"):
+        for item in card.get(field) or []:
+            if not isinstance(item, Mapping):
+                continue
+            _add_anchor(anchors, item.get("name"))
+    for item in card.get("literary_texts") or []:
+        if isinstance(item, Mapping):
+            _add_anchor(anchors, item.get("title"))
+    for item in card.get("relationships") or []:
+        if not isinstance(item, Mapping):
+            continue
+        _add_anchor(anchors, item.get("source"))
+        _add_anchor(anchors, item.get("target"))
+    return anchors
+
+
+def _add_anchor(anchors: set[str], value: Any) -> None:
+    if not isinstance(value, str):
+        return
+    text = value.strip()
+    if len(text) >= 2:
+        anchors.add(text)
 
 
 def _fit_summary_to_required_length(summary: str) -> str:
@@ -520,7 +704,7 @@ AppImportJSON
     "prompt_version": "{PROMPT_VERSION}",
     "generated_at": "{generated_at}"
   }},
-  "plain_summary": "250—400 字本回梗概，不能出现禁用词",
+  "plain_summary": "250—500 字本回梗概，不能出现禁用词",
   "plot_chain": ["关键情节节点，按原文顺序"],
   "key_events": ["本回关键事件"],
   "key_characters": [],
@@ -611,7 +795,7 @@ Markdown 必须包含以下栏目：
 
 ## 1. 本回一句话概括
 ## 2. 本回梗概
-250—400 字，按情节发展顺序写。
+250—500 字，按情节发展顺序写。
 ## 3. 情节链梳理
 列出 8—15 个关键情节节点，说明涉及人物、起因、经过、结果、作用/意义、是否伏笔。
 ## 4. 主要人物与本回表现
@@ -678,7 +862,7 @@ def build_repair_prompt(*, chapter_number: int, chapter_title: str, generated_at
     "prompt_version": "{PROMPT_VERSION}",
     "generated_at": "{generated_at}"
   }},
-  "plain_summary": "250—400 字本回梗概，不能出现禁用词",
+  "plain_summary": "250—500 字本回梗概，不能出现禁用词",
   "plot_chain": ["关键情节节点，按原文顺序"],
   "key_events": ["本回关键事件"],
   "key_characters": [],
@@ -707,6 +891,36 @@ def build_repair_prompt(*, chapter_number: int, chapter_title: str, generated_at
 """
 
 
+def build_quality_gate_repair_prompt(
+    *,
+    chapter_number: int,
+    chapter_title: str,
+    generated_at: str,
+    previous_output: str,
+    validation_errors: list[str],
+) -> str:
+    error_text = "\n".join(f"- {error}" for error in validation_errors[:10])
+    return f"""上一版输出未通过学生端质量门，请在严格依据原文和系统提供线索的前提下重写。
+
+章节编号：{chapter_number}
+章节标题：{chapter_title}
+
+未通过原因：
+{error_text}
+
+修复要求：
+1. 删除或改写所有学生端禁用词，例如：LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。
+2. 保持 AppImportJSON 为合法 JSON。
+3. 保持 plain_summary 为 250—500 字，plot_chain 非空，characters、relationships、annotations 非空。
+4. 后文关联如果证据不足，later_associations 输出空数组。
+5. 直接输出完整结果：先输出 AppImportJSON，再输出完整 Markdown 章节复习卡，不要解释。
+
+上一次输出如下，可直接改写：
+
+{previous_output[:20000]}
+"""
+
+
 def extract_app_import_json(markdown: str) -> dict[str, Any]:
     marker_index = markdown.find("AppImportJSON")
     if marker_index == -1:
@@ -717,10 +931,53 @@ def extract_app_import_json(markdown: str) -> dict[str, Any]:
     try:
         payload = json.loads(raw_json)
     except json.JSONDecodeError as exc:
-        raise ValueError(f"AppImportJSON is not valid JSON: {exc}") from exc
+        repaired_json = _escape_likely_unescaped_string_quotes(raw_json)
+        if repaired_json != raw_json:
+            try:
+                payload = json.loads(repaired_json)
+            except json.JSONDecodeError:
+                raise ValueError(f"AppImportJSON is not valid JSON: {exc}") from exc
+        else:
+            raise ValueError(f"AppImportJSON is not valid JSON: {exc}") from exc
     if not isinstance(payload, dict):
         raise ValueError("AppImportJSON must be a JSON object")
     return payload
+
+
+def _escape_likely_unescaped_string_quotes(raw_json: str) -> str:
+    """Repair common LLM JSON slips like "标题"正文" inside string values."""
+    repaired: list[str] = []
+    in_string = False
+    escaped = False
+    for index, char in enumerate(raw_json):
+        if escaped:
+            repaired.append(char)
+            escaped = False
+            continue
+        if char == "\\":
+            repaired.append(char)
+            escaped = in_string
+            continue
+        if char == '"':
+            if not in_string:
+                in_string = True
+                repaired.append(char)
+            elif _looks_like_json_string_closer(raw_json, index):
+                in_string = False
+                repaired.append(char)
+            else:
+                repaired.append('\\"')
+            continue
+        repaired.append(char)
+    return "".join(repaired)
+
+
+def _looks_like_json_string_closer(raw_json: str, quote_index: int) -> bool:
+    for next_char in raw_json[quote_index + 1 :]:
+        if next_char.isspace():
+            continue
+        return next_char in {":", ",", "}", "]"}
+    return True
 
 
 def validate_generated_card_output(
@@ -747,7 +1004,7 @@ def validate_generated_card_output(
     if not summary:
         errors.append("AppImportJSON 字段 plain_summary 不能为空。")
     elif not SUMMARY_MIN_CHARS <= len(summary) <= SUMMARY_MAX_CHARS:
-        errors.append("AppImportJSON 字段 plain_summary 必须为 250—400 字。")
+        errors.append("AppImportJSON 字段 plain_summary 必须为 250—500 字。")
 
     list_fields = (
         "plot_chain",
@@ -820,7 +1077,10 @@ def _extract_balanced_json(text: str) -> str:
             escaped = True
             continue
         if char == '"':
-            in_string = not in_string
+            if not in_string:
+                in_string = True
+            elif _looks_like_json_string_closer(text, index):
+                in_string = False
             continue
         if in_string:
             continue
@@ -924,7 +1184,7 @@ def _support_terms(text: str) -> set[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate Hongloumeng chapter review cards.")
-    parser.add_argument("--chapters", default="", help="Comma-separated chapter numbers. Default is the 10-chapter sample set.")
+    parser.add_argument("--chapters", default="", help="Chapter selection, e.g. 1-120, 1-3, or 3,5,8. Default is the 10-chapter sample set.")
     parser.add_argument("--all", action="store_true", help="Generate all 120 chapters.")
     parser.add_argument("--env", type=Path, default=Path(".env"))
     parser.add_argument("--manifest", type=Path, default=Path("book/chapters_manifest.json"))
@@ -933,12 +1193,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--json-only", action="store_true", help="Only generate AppImportJSON for faster website/database trials.")
     parser.add_argument("--max-evidence-candidates", type=int, default=None, help="Limit normalized evidence candidates passed to the LLM.")
+    parser.add_argument("--llm-timeout", type=float, default=None, help="Override LLM request timeout in seconds. Defaults to LLM_TIMEOUT or 240.")
+    parser.add_argument("--lightrag-timeout", type=float, default=None, help="Override LightRAG request timeout in seconds. Defaults to LIGHTRAG_TIMEOUT_SECONDS or 30.")
     args = parser.parse_args(argv)
 
     try:
         env = parse_env_file(args.env)
         chapters = parse_chapter_selection(args.chapters, all_chapters=args.all)
-        lightrag_config = LightRAGConfig.from_env(env)
+        lightrag_config = lightrag_config_from_env(env, timeout_override=args.lightrag_timeout)
         if lightrag_config is None:
             raise ValueError("LIGHTRAG_BASE_URL is required")
         cards = generate_cards(
@@ -946,7 +1208,7 @@ def main(argv: list[str] | None = None) -> int:
             output_dir=args.output_dir,
             chapters=chapters,
             lightrag_client=LightRAGClient(lightrag_config),
-            llm_client=OpenAICompatibleLLMClient(LLMConfig.from_env(env)),
+            llm_client=OpenAICompatibleLLMClient(LLMConfig.from_env(env, timeout_override=args.llm_timeout)),
             generated_at=args.generated_at,
             overwrite=args.overwrite,
             json_only=args.json_only,

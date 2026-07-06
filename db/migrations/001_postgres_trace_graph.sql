@@ -110,6 +110,32 @@ CREATE TABLE IF NOT EXISTS trace_items (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS entity_trace_cache (
+    id TEXT PRIMARY KEY,
+    chapter_id TEXT NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+    entity_name TEXT NOT NULL,
+    trace_items JSONB NOT NULL DEFAULT '[]'::jsonb,
+    theme_extensions JSONB NOT NULL DEFAULT '[]'::jsonb,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (chapter_id, entity_name)
+);
+
+CREATE TABLE IF NOT EXISTS entity_graph_cache (
+    entity_name TEXT PRIMARY KEY,
+    description TEXT NOT NULL DEFAULT '',
+    neighbors JSONB NOT NULL DEFAULT '[]'::jsonb,
+    extended_neighbors JSONB NOT NULL DEFAULT '[]'::jsonb,
+    raw_graph JSONB NOT NULL DEFAULT '{}'::jsonb,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE entity_graph_cache
+    ADD COLUMN IF NOT EXISTS extended_neighbors JSONB NOT NULL DEFAULT '[]'::jsonb;
+
 CREATE TABLE IF NOT EXISTS embeddings (
     id TEXT PRIMARY KEY,
     owner_type TEXT NOT NULL,
@@ -131,3 +157,5 @@ CREATE INDEX IF NOT EXISTS idx_chapter_annotations_chapter ON chapter_annotation
 CREATE INDEX IF NOT EXISTS idx_chapter_annotations_entity ON chapter_annotations(entity_id);
 CREATE INDEX IF NOT EXISTS idx_trace_items_entity ON trace_items(entity_id, sort_order);
 CREATE INDEX IF NOT EXISTS idx_trace_items_chapter ON trace_items(chapter_id);
+CREATE INDEX IF NOT EXISTS idx_entity_trace_cache_lookup ON entity_trace_cache(chapter_id, entity_name);
+CREATE INDEX IF NOT EXISTS idx_entity_graph_cache_name ON entity_graph_cache(entity_name);

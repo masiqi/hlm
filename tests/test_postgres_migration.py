@@ -16,6 +16,8 @@ def test_migration_sql_creates_trace_graph_tables_and_indexes():
         "evidence",
         "chapter_annotations",
         "trace_items",
+        "entity_trace_cache",
+        "entity_graph_cache",
         "embeddings",
     ]:
         assert f"CREATE TABLE IF NOT EXISTS {table}" in sql
@@ -23,6 +25,9 @@ def test_migration_sql_creates_trace_graph_tables_and_indexes():
     assert "JSONB" in sql
     assert "CREATE EXTENSION IF NOT EXISTS vector" not in sql
     assert "CREATE INDEX IF NOT EXISTS idx_trace_items_entity" in sql
+    assert "CREATE INDEX IF NOT EXISTS idx_entity_trace_cache_lookup" in sql
+    assert "CREATE INDEX IF NOT EXISTS idx_entity_graph_cache_name" in sql
+    assert "extended_neighbors JSONB NOT NULL DEFAULT '[]'::jsonb" in sql
     assert "CREATE INDEX IF NOT EXISTS idx_chapter_annotations_chapter" in sql
     assert "CREATE INDEX IF NOT EXISTS idx_entities_name" in sql
 

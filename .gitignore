@@ -8,9 +8,22 @@ __pycache__/
 data/rag_storage/
 data/inputs/
 
+# Local CodeGraph index and editor-generated rules.
+.codegraph/
+.cursor/
+
+# Generated material pipeline outputs.
+generated/
+
+# Large generated graph cache; sync this cache into Postgres instead.
+data/app/entity_graph_cache.json
+
 # Local logs and temporary files.
 *.log
 *.tmp
+
+# Generated static reading-page cache.
+static/chapter_cache/
 
 # Superpowers brainstorming companion output.
 .superpowers/

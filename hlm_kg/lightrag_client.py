@@ -59,6 +59,15 @@ class LightRAGClient:
             return bool(response["exists"])
         raise LightRAGError("Expected boolean existence result from /graph/entity/exists.")
 
+    def graph(self, label: str, max_depth: int = 3, max_nodes: int = 1000) -> dict[str, Any]:
+        response = self._get_json(
+            "/graphs",
+            {"label": label, "max_depth": str(max_depth), "max_nodes": str(max_nodes)},
+        )
+        if isinstance(response, dict):
+            return response
+        raise LightRAGError("Expected JSON object from /graphs.")
+
     def _get_json(self, path: str, params: Mapping[str, str]) -> Any:
         query = urllib.parse.urlencode(params)
         url = f"{self.config.base_url}{path}"

@@ -118,6 +118,106 @@ def test_postgres_store_reads_trace_items_from_query_rows():
     ]
 
 
+def test_postgres_store_reads_entity_trace_payload_cache():
+    queries = []
+
+    def fetcher(query, params):
+        queries.append((query, params))
+        assert params == ("贾雨村", 1)
+        return [
+            {
+                "trace_items": [
+                    {
+                        "chapter": 2,
+                        "label": "第2回：贾雨村复职",
+                        "description": "贾雨村后来复职。",
+                        "importance": 90,
+                    }
+                ],
+                "theme_extensions": [
+                    {
+                        "topic": "官场线索",
+                        "description": "贾雨村线索映照官场升沉。",
+                        "chapter_jumps": [{"chapter": 4, "label": "第4回：葫芦案"}],
+                    }
+                ],
+            }
+        ]
+
+    store = PostgresContentStore("postgresql://unused", fetcher=fetcher)
+
+    payload = store.entity_trace_payload("贾雨村", 1)
+
+    assert "entity_trace_cache" in queries[0][0]
+    assert payload["trace_items"][0]["chapter"] == 2
+    assert payload["theme_extensions"][0]["topic"] == "官场线索"
+
+
+def test_postgres_store_reads_entity_trace_payloads_for_chapter_once_and_caches():
+    calls = []
+
+    def fetcher(query, params):
+        calls.append((query, params))
+        assert params == (1,)
+        return [
+            {
+                "entity_name": "大荒山无稽崖青埂峰",
+                "trace_items": [],
+                "theme_extensions": [],
+            },
+            {
+                "entity_name": "贾雨村",
+                "trace_items": [{"chapter": 2, "label": "第2回：贾雨村复职"}],
+                "theme_extensions": [],
+            },
+        ]
+
+    store = PostgresContentStore("postgresql://unused", fetcher=fetcher)
+
+    first = store.entity_trace_payloads_for_chapter(1)
+    second = store.entity_trace_payloads_for_chapter(1)
+
+    assert len(calls) == 1
+    assert "entity_trace_cache" in calls[0][0]
+    assert first["大荒山无稽崖青埂峰"] == {"trace_items": [], "theme_extensions": []}
+    assert first["贾雨村"]["trace_items"][0]["chapter"] == 2
+    assert second == first
+
+
+def test_postgres_store_reads_entity_graph_payloads_for_names():
+    calls = []
+
+    def fetcher(query, params):
+        calls.append((query, params))
+        assert params == (["顽石", "通灵宝玉"],)
+        return [
+            {
+                "entity_name": "顽石",
+                "description": "无才补天被弃于青埂峰下的石头。",
+                "neighbors": [{"name": "通灵宝玉", "relationship": "前世本体"}],
+                "extended_neighbors": [{"via": "通灵宝玉", "to": "贾宝玉", "depth": 2}],
+                "raw_graph": {"nodes": []},
+                "metadata": {"source": "lightrag_graph"},
+            }
+        ]
+
+    store = PostgresContentStore("postgresql://unused", fetcher=fetcher)
+
+    payloads = store.entity_graph_payloads_for_names(["顽石", "通灵宝玉"])
+
+    assert len(calls) == 1
+    assert "entity_graph_cache" in calls[0][0]
+    assert payloads == {
+        "顽石": {
+            "description": "无才补天被弃于青埂峰下的石头。",
+            "neighbors": [{"name": "通灵宝玉", "relationship": "前世本体"}],
+            "extended_neighbors": [{"via": "通灵宝玉", "to": "贾宝玉", "depth": 2}],
+            "raw_graph": {"nodes": []},
+            "metadata": {"source": "lightrag_graph"},
+        }
+    }
+
+
 def test_postgres_store_preserves_expanded_review_card_fields_from_raw_card():
     raw_card = {
         "id": "review-008",
@@ -180,3 +280,51 @@ def test_postgres_store_preserves_expanded_review_card_fields_from_raw_card():
     assert card.modern_explanations == raw_card["modern_explanations"]
     assert card.later_associations == raw_card["later_associations"]
     assert card.annotations == raw_card["annotations"]
+
+
+def test_postgres_store_bulk_review_card_scan_fetches_once_and_caches():
+    calls = []
+    raw_card = {
+        "characters": [{"name": "林黛玉", "actions": ["随雨村读书"]}],
+        "relationships": [],
+        "places": [],
+        "objects": [],
+        "literary_texts": [],
+        "modern_explanations": [],
+        "later_associations": [],
+        "annotations": [],
+    }
+
+    def fetcher(query, params):
+        calls.append((query, params))
+        assert params == ()
+        return [
+            {
+                "id": "review-002",
+                "chapter_number": 2,
+                "summary": "第二回梗概。",
+                "plot_chain": ["雨村任西席"],
+                "key_events": ["贾雨村任林黛玉西席"],
+                "key_characters": [],
+                "foreshadowing": [],
+                "later_association_relation_ids": [],
+                "quotable_fact_ids": [],
+                "retrieval_tags": ["#第二回"],
+                "understanding_focus": ["理解林家线索"],
+                "raw_card": raw_card,
+                "prompt_name": "hongloumeng_chapter_review_card",
+                "prompt_version": "2026-07-01",
+                "generated_at": "2026-07-02",
+            }
+        ]
+
+    store = PostgresContentStore("postgresql://unused", fetcher=fetcher)
+
+    first = store.review_cards_for_trace_scan()
+    second = store.review_cards_for_trace_scan()
+
+    assert len(calls) == 1
+    assert "ORDER BY c.number" in calls[0][0]
+    assert first[0].chapter == 2
+    assert first[0].characters == raw_card["characters"]
+    assert second[0].chapter == 2

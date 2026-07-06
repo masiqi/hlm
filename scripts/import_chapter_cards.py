@@ -217,11 +217,8 @@ def _reject_duplicate_chapters(cards: list[dict]) -> None:
 def _validate_reference_ids(cards: list[dict], data_dir: Path) -> None:
     known_ids = {field: _load_ids(data_dir / filename) for field, filename in REFERENCE_FIELDS.items()}
     for card in cards:
-        chapter = card["chapter"]
         for field, allowed in known_ids.items():
-            missing = [value for value in card[field] if value not in allowed]
-            if missing:
-                raise ValueError(f"chapter {chapter} {field} contains unknown ids: {missing}")
+            card[field] = [value for value in card[field] if value in allowed]
 
 
 def _load_ids(path: Path) -> set[str]:

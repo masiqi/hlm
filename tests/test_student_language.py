@@ -53,18 +53,21 @@ def test_static_ui_escapes_api_text_before_rendering_html():
         "claim.text",
         "evidence.evidenceText",
         "entry.target",
-        "entry.label",
-        "card.name",
-        "card.brief",
-        "data.chapter.title",
-        "data.reviewCard.plainSummary",
-        "item",
+            "entry.label",
+            "card.name",
+            "item.name",
+            "item.importance || item.role || \"\"",
+            "data.chapter.title",
+            "data.reviewCard.plainSummary",
+            "item",
         "topic.title",
         "topic.description",
         "relation.description",
         "data.topic.title",
         "data.topic.description",
         "data.card.name",
+        "extension.topic",
+        "extension.description",
     ]:
         assert f"escapeHtml({expression}" in js
     assert "html += escapeHtml(text.slice(cursor))" in js
@@ -75,8 +78,9 @@ def test_static_chapter_view_handles_missing_review_card_state():
     js = Path("static/app.js").read_text(encoding="utf-8")
 
     assert "data.materialStatus?.hasReviewCard" in js
-    assert "data.materialStatus?.message" in js
-    assert "章节资料暂未生成，可先阅读原文。" in js
+    assert "data.materialStatus?.message" not in js
+    assert "章节资料暂未生成，可先阅读原文。" not in js
+    assert "章节资料已加载" not in js
     assert "暂无可靠资料" in js
 
 
@@ -85,13 +89,17 @@ def test_static_chapter_view_has_chapter_selector():
     js = Path("static/app.js").read_text(encoding="utf-8")
 
     assert 'id="chapter-select"' in html
+    assert 'id="previous-chapter"' in html
+    assert 'id="next-chapter"' in html
     assert 'for="chapter-select"' in html
     assert "initChapterSelector" in js
     assert "for (let number = 1; number <= 120; number += 1)" in js
     assert 'loadChapter(Number(event.currentTarget.value))' in js
     assert "chapterSelect.value = String(data.chapter.number)" in js
-
-
+    assert "async function loadChapter(number = 1)" in js
+    assert "updateChapterNavigation" in js
+    assert "previousChapterButton.disabled = chapterNumber <= 1" in js
+    assert "nextChapterButton.disabled = chapterNumber >= 120" in js
 
 
 def test_static_chapter_selector_labels_include_chapter_titles():
@@ -103,6 +111,7 @@ def test_static_chapter_selector_labels_include_chapter_titles():
     assert 'option.textContent = chapterOptionLabel(number)' in js
     assert "`第 ${number} 回：${title}`" in js
     assert "`第 ${number} 回`" in js
+
 
 def test_static_common_entries_route_by_target_type():
     js = Path("static/app.js").read_text(encoding="utf-8")
@@ -141,6 +150,105 @@ def test_static_ask_view_renders_answer_states_and_continuation_links():
     assert "data-topic-id" in js
 
 
+def test_static_entity_popover_renders_theme_extensions_separately():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "主题延展" in js
+    assert "themeExtensions" in js
+
+
+def test_static_entity_popover_renders_extended_neighbors_separately():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "延伸关联" in js
+    assert "extendedNeighbors" in js
+    assert "由${escapeHtml(neighbor.via)}延伸到" in js
+    function_body = js.split("function renderExtendedNeighbors", 1)[1].split("function renderEntityPopover", 1)[0]
+    assert " -> " not in function_body
+    assert "renderThemeExtensions" in js
+    assert "mergeThemeExtensions" in js
+
+
+def test_static_entity_popover_renders_previous_and_later_chapter_clues():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "前文关联" in js
+    assert "后文关联" in js
+    assert "previousChapterJumps" in js
+    assert "laterChapterJumps" in js
+
+
+def test_static_entity_popover_uses_prefetched_trace_before_live_request():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "hasPrefetchedEntityTrace" in js
+    assert "if (hasPrefetchedEntityTrace(entity)) return" in js
+
+
+def test_static_entity_popover_does_not_treat_static_jumps_as_prefetched_trace():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    start = js.index("function hasPrefetchedEntityTrace")
+    end = js.index("async function loadEntityTrace", start)
+    function_body = js[start:end]
+
+    assert "entity.tracePrefetched" in function_body
+    assert "chapterJumps" not in function_body
+    assert "laterChapterJumps" not in function_body
+    assert "previousChapterJumps" not in function_body
+
+
+def test_static_entity_trace_does_not_merge_static_jumps_into_related_chapters():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    start = js.index("function mergeTraceItems")
+    end = js.index("function mergeThemeExtensions", start)
+    function_body = js[start:end]
+
+    assert "let later = entity.laterChapterJumps || [];" in function_body
+    assert "entity.chapterJumps || []" not in function_body
+
+
+def test_static_entity_popover_ignores_stale_trace_responses():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "activeEntityPopoverId" in js
+    assert "activeEntityPopoverId = entityId" in js
+    assert "if (activeEntityPopoverId !== entity.id) return" in js
+
+
+def test_static_click_handlers_use_closest_for_nested_entity_buttons():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert 'target.closest("[data-inline-entity-id]")' in js
+    assert 'target.matches("[data-inline-entity-id]")' not in js
+
+
+def test_static_entity_popover_marks_active_entity_controls():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "function markActiveEntityControls" in js
+    assert "aria-pressed" in js
+    assert "entity-chip-active" in js
+    assert "annotation-link-active" in js
+
+
+def test_static_entity_popover_hides_prefetched_empty_trace_status():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "traceStatusText" not in js
+    assert "已加载" not in js
+    assert "暂无更多线索" not in js
+
+
+def test_static_entity_chapter_jumps_do_not_repeat_description_below_button():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    start = js.index("function renderChapterJumps")
+    end = js.index("function mergeTraceItems", start)
+    function_body = js[start:end]
+
+    assert "jump.description ? `<p>" not in function_body
+    assert "${description}" not in function_body
+
+
 def test_static_ask_view_uses_student_facing_evidence_labels():
     js = Path("static/app.js").read_text(encoding="utf-8")
 
@@ -155,12 +263,45 @@ def test_static_ask_view_uses_student_facing_evidence_labels():
 def test_static_chapter_view_renders_fast_reading_sections_from_review_card():
     js = Path("static/app.js").read_text(encoding="utf-8")
 
+    assert 'let activeChapterTab = "plot"' in js
+    assert "renderChapterTabs" in js
+    assert "setActiveChapterTab" in js
+    assert "data-chapter-tab" in js
+    assert "renderChapterSummary" in js
+    assert "展示全部" in js
     assert "本回梗概" in js
     assert "关键情节" in js
     assert "关键事件" in js
     assert "本回怎么读" in js
     assert "data.reviewCard.keyEvents" in js
     assert "data.reviewCard.understandingFocus" in js
+    assert '{ id: "summary"' not in js
+
+
+def test_static_chapter_loader_prefers_static_cache_and_falls_back_to_api():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "chapterCacheUrl" in js
+    assert 'return `/chapter_cache/${String(number).padStart(3, "0")}.json`' in js
+    assert "loadChapterPayload" in js
+    assert "getJson(chapterCacheUrl(number))" in js
+    assert "getJson(`/api/chapters/${number}`)" in js
+
+
+def test_static_chapter_view_supports_best_effort_source_scrolling():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "scrollOriginalTextToNeedle" in js
+    assert "data-source-needle" in js
+    assert "original-hit-highlight" in js
+
+
+def test_static_chapter_loading_ignores_stale_responses():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "let chapterLoadRequestId = 0" in js
+    assert "const requestId = ++chapterLoadRequestId" in js
+    assert "if (requestId !== chapterLoadRequestId) return" in js
 
 
 def test_static_ask_view_names_source_conflict_in_student_language():

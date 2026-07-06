@@ -123,6 +123,29 @@ def test_entity_exists_gets_encoded_name_and_returns_bool(monkeypatch):
     )
 
 
+def test_graph_gets_encoded_label_depth_and_node_limit(monkeypatch):
+    captured = {}
+    graph = {"nodes": [{"id": "好了歌"}], "edges": [], "is_truncated": False}
+
+    def fake_urlopen(request, timeout):
+        captured["request"] = request
+        captured["timeout"] = timeout
+        return FakeResponse(json.dumps(graph, ensure_ascii=False).encode("utf-8"))
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    client = LightRAGClient(LightRAGConfig(base_url="http://lightrag.example", timeout_seconds=9.0))
+
+    assert client.graph("好了歌", max_depth=3, max_nodes=1000) == graph
+
+    request = captured["request"]
+    assert request.full_url == (
+        "http://lightrag.example/graphs?"
+        "label=%E5%A5%BD%E4%BA%86%E6%AD%8C&max_depth=3&max_nodes=1000"
+    )
+    assert request.get_method() == "GET"
+    assert captured["timeout"] == 9.0
+
+
 def test_http_error_raises_lightrag_error_without_sensitive_headers(monkeypatch):
     def fake_urlopen(request, timeout):
         raise urllib.error.HTTPError(
