@@ -29,6 +29,8 @@ class ContentStore:
         topics: dict[str, Topic],
         common_entries: list[dict[str, Any]],
         evidence: dict[str, Evidence],
+        entity_trace_cache: dict[str, dict[str, dict[str, Any]]] | None = None,
+        entity_graph_cache: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         self._chapters = chapters
         self._review_cards = review_cards
@@ -37,6 +39,8 @@ class ContentStore:
         self._topics = topics
         self.common_entries = common_entries
         self._evidence = evidence
+        self._entity_trace_cache = entity_trace_cache or {}
+        self._entity_graph_cache = entity_graph_cache or {}
 
     @classmethod
     def from_paths(cls, manifest_path: Path, data_dir: Path) -> ContentStore:
@@ -139,6 +143,10 @@ class ContentStore:
             )
             for item in _read_json(data_dir / "evidence.json")
         }
+        trace_cache_path = data_dir / "entity_trace_cache.json"
+        entity_trace_cache = _read_json(trace_cache_path) if trace_cache_path.exists() else {}
+        graph_cache_path = data_dir / "entity_graph_cache.json"
+        entity_graph_cache = _read_json(graph_cache_path) if graph_cache_path.exists() else {}
         return cls(
             chapters=chapters,
             review_cards=review_cards,
@@ -147,6 +155,8 @@ class ContentStore:
             topics=topics,
             common_entries=common_entries,
             evidence=evidence,
+            entity_trace_cache=entity_trace_cache,
+            entity_graph_cache=entity_graph_cache,
         )
 
     def chapter(self, number: int) -> Chapter:
@@ -160,6 +170,9 @@ class ContentStore:
 
     def maybe_review_card_for_chapter(self, number: int) -> ChapterReviewCard | None:
         return self._review_cards.get(number)
+
+    def review_cards_for_trace_scan(self) -> list[ChapterReviewCard]:
+        return [self._review_cards[number] for number in sorted(self._review_cards)]
 
     def evidence_by_id(self) -> dict[str, Evidence]:
         return dict(self._evidence)
@@ -266,6 +279,43 @@ class ContentStore:
             )
             order += 1
         return items
+
+    def entity_trace_payload(self, name: str, current_chapter: int | None) -> dict[str, Any] | None:
+        chapter_cache = self._entity_trace_cache.get(str(current_chapter or ""))
+        if not isinstance(chapter_cache, dict):
+            return None
+        cached = chapter_cache.get(name)
+        if not isinstance(cached, dict):
+            return None
+        return {
+            "trace_items": list(cached.get("trace_items", [])),
+            "theme_extensions": list(cached.get("theme_extensions", [])),
+        }
+
+    def entity_trace_payloads_for_chapter(self, current_chapter: int | None) -> dict[str, dict[str, Any]] | None:
+        chapter_cache = self._entity_trace_cache.get(str(current_chapter or ""))
+        if not isinstance(chapter_cache, dict):
+            return None
+        payloads: dict[str, dict[str, Any]] = {}
+        for name, cached in chapter_cache.items():
+            if not isinstance(cached, dict):
+                continue
+            payloads[str(name)] = {
+                "trace_items": list(cached.get("trace_items", [])),
+                "theme_extensions": list(cached.get("theme_extensions", [])),
+            }
+        return payloads
+
+    def entity_graph_payloads_for_names(self, names: list[str]) -> dict[str, dict[str, Any]]:
+        payloads: dict[str, dict[str, Any]] = {}
+        for name in names:
+            clean_name = str(name or "").strip()
+            if not clean_name:
+                continue
+            payload = self._entity_graph_cache.get(clean_name)
+            if isinstance(payload, dict):
+                payloads[clean_name] = dict(payload)
+        return payloads
 
     @property
     def topics(self) -> list[Topic]:

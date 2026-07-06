@@ -122,6 +122,9 @@ const CHAPTER_TITLES = [
   "甄士隐详说太虚情 贾雨村归结红楼梦",
 ];
 let currentChapterPayload = null;
+let chapterLoadRequestId = 0;
+let activeEntityPopoverId = null;
+let activeChapterTab = "plot";
 
 function showView(id) {
   views.forEach((view) => view.classList.toggle("active", view.id === id));
@@ -131,6 +134,18 @@ async function getJson(url, options) {
   const response = await fetch(url, options);
   if (!response.ok) throw new Error(`请求失败：${response.status}`);
   return response.json();
+}
+
+function chapterCacheUrl(number) {
+  return `/chapter_cache/${String(number).padStart(3, "0")}.json`;
+}
+
+async function loadChapterPayload(number) {
+  try {
+    return await getJson(chapterCacheUrl(number));
+  } catch (error) {
+    return getJson(`/api/chapters/${number}`);
+  }
 }
 
 function escapeHtml(value) {
@@ -154,11 +169,35 @@ function renderAnnotatedOriginalText(text, annotations) {
     html += escapeHtml(text.slice(cursor, annotation.startOffset));
     const label = text.slice(annotation.startOffset, annotation.endOffset);
     const entityId = annotation.inlineEntityId || annotation.entityId;
-    html += `<button class="annotation-link" data-annotation-id="${escapeHtml(annotation.id)}" data-inline-entity-id="${escapeHtml(entityId)}">${escapeHtml(label)}</button>`;
+    html += `<button class="annotation-link" data-annotation-id="${escapeHtml(annotation.id)}" data-inline-entity-id="${escapeHtml(entityId)}" data-surface-text="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
     cursor = annotation.endOffset;
   });
   html += escapeHtml(text.slice(cursor));
   return html;
+}
+
+function normalizeSearchText(value) {
+  return String(value || "").replace(/[，。、“”‘’：；！？\s]/g, "");
+}
+
+function highlightOriginalTarget(target) {
+  document.querySelectorAll(".original-hit-highlight").forEach((item) => item.classList.remove("original-hit-highlight"));
+  target.classList.add("original-hit-highlight");
+  window.setTimeout(() => target.classList.remove("original-hit-highlight"), 1800);
+}
+
+function scrollOriginalTextToNeedle(needle) {
+  const original = document.querySelector(".annotated-original");
+  if (!original) return;
+  const normalizedNeedle = normalizeSearchText(needle);
+  if (!normalizedNeedle) return;
+  const annotationTarget = Array.from(original.querySelectorAll("[data-surface-text]")).find((item) => {
+    const normalizedSurface = normalizeSearchText(item.dataset.surfaceText || item.textContent || "");
+    return normalizedSurface && (normalizedNeedle.includes(normalizedSurface) || normalizedSurface.includes(normalizedNeedle));
+  });
+  const target = annotationTarget || original;
+  target.scrollIntoView({ behavior: "smooth", block: "center" });
+  highlightOriginalTarget(target);
 }
 
 function renderList(items = [], renderItem = (item) => escapeHtml(item)) {
@@ -168,6 +207,58 @@ function renderList(items = [], renderItem = (item) => escapeHtml(item)) {
 
 function renderRichSection(title, items = [], renderItem) {
   return `<section><h4>${escapeHtml(title)}</h4><ul>${renderList(items, renderItem)}</ul></section>`;
+}
+
+function renderSourceList(items = [], sourceText = (item) => item) {
+  if (!items.length) return "<li>暂无可靠资料</li>";
+  return items
+    .map((item) => {
+      const text = String(sourceText(item) || item || "").trim();
+      if (!text) return "<li>暂无可靠资料</li>";
+      return `<li><button class="text-link source-jump-link" data-source-needle="${escapeHtml(text)}">${escapeHtml(text)}</button></li>`;
+    })
+    .join("");
+}
+
+function renderChapterTabs(tabs = []) {
+  return `
+    <div class="chapter-tabs" role="tablist" aria-label="本回资料">
+      ${tabs
+        .map(
+          (tab) =>
+            `<button class="chapter-tab${tab.id === activeChapterTab ? " active" : ""}" type="button" role="tab" aria-selected="${tab.id === activeChapterTab ? "true" : "false"}" data-chapter-tab="${escapeHtml(tab.id)}">${escapeHtml(tab.label)}</button>`,
+        )
+        .join("")}
+    </div>
+    <div class="chapter-tab-panels">
+      ${tabs
+        .map(
+          (tab) =>
+            `<section class="chapter-tab-panel${tab.id === activeChapterTab ? " active" : ""}" role="tabpanel" data-chapter-tab-panel="${escapeHtml(tab.id)}">${tab.html}</section>`,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function setActiveChapterTab(tabId) {
+  activeChapterTab = tabId || "plot";
+  document.querySelectorAll("[data-chapter-tab]").forEach((tab) => {
+    const active = tab.dataset.chapterTab === activeChapterTab;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  document.querySelectorAll("[data-chapter-tab-panel]").forEach((panel) => {
+    panel.classList.toggle("active", panel.dataset.chapterTabPanel === activeChapterTab);
+  });
+}
+
+function sourceNeedleFromParts(...parts) {
+  return parts
+    .flat()
+    .filter(Boolean)
+    .map((part) => String(part).trim())
+    .find(Boolean) || "";
 }
 
 function entityTypeLabel(type) {
@@ -187,6 +278,95 @@ function renderChapterJumps(jumps = []) {
   return renderList(jumps, (jump) => {
     const label = jump.label || `第${jump.chapter}回`;
     return `<button data-chapter-number="${escapeHtml(jump.chapter)}">${escapeHtml(label)}</button>`;
+  });
+}
+
+function sortChapterJumps(jumps = []) {
+  return jumps.sort(
+    (left, right) => (Number(right.importance || 0) - Number(left.importance || 0)) || (Number(left.chapter || 0) - Number(right.chapter || 0)),
+  );
+}
+
+function jumpRank(jump, entity) {
+  const label = jump.label || "";
+  const nameOnlyLabel = `第${jump.chapter}回：${entity.name}`;
+  return [
+    label === nameOnlyLabel ? 0 : 1,
+    Number(jump.importance || 0),
+    String(jump.description || "").length,
+  ];
+}
+
+function shouldReplaceJump(existing, incoming, entity) {
+  const currentRank = jumpRank(existing, entity);
+  const nextRank = jumpRank(incoming, entity);
+  for (let index = 0; index < nextRank.length; index += 1) {
+    if (nextRank[index] > currentRank[index]) return true;
+    if (nextRank[index] < currentRank[index]) return false;
+  }
+  return false;
+}
+
+function mergeChapterJumpList(existing = [], jump, entity) {
+  const index = existing.findIndex((item) => Number(item.chapter || 0) === Number(jump.chapter || 0));
+  if (index === -1) return sortChapterJumps([...existing, jump]);
+  if (shouldReplaceJump(existing[index], jump, entity)) {
+    const next = [...existing];
+    next[index] = jump;
+    return sortChapterJumps(next);
+  }
+  return sortChapterJumps(existing);
+}
+
+function mergeTraceItems(entity, traceItems = []) {
+  const currentChapter = Number(currentChapterPayload?.chapter?.number || 0);
+  let previous = entity.previousChapterJumps || [];
+  let later = entity.laterChapterJumps || [];
+  traceItems.forEach((item) => {
+    const jump = {
+      chapter: item.chapter,
+      label: item.label || `第${item.chapter}回：${item.topic || entity.name}`,
+      description: item.description || "",
+      importance: item.importance || 0,
+    };
+    if (currentChapter && Number(jump.chapter || 0) < currentChapter) {
+      previous = mergeChapterJumpList(previous, jump, entity);
+    } else if (!currentChapter || Number(jump.chapter || 0) > currentChapter) {
+      later = mergeChapterJumpList(later, jump, entity);
+    }
+  });
+  entity.previousChapterJumps = previous;
+  entity.laterChapterJumps = later;
+  entity.chapterJumps = later;
+}
+
+function mergeThemeExtensions(entity, themeExtensions = []) {
+  const existing = entity.themeExtensions || [];
+  const seen = new Set(existing.map((extension) => `${extension.topic}|${extension.description || ""}`));
+  themeExtensions.forEach((extension) => {
+    const key = `${extension.topic}|${extension.description || ""}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      existing.push(extension);
+    }
+  });
+  entity.themeExtensions = existing;
+}
+
+function renderThemeExtensions(extensions = []) {
+  return renderList(extensions, (extension) => {
+    const jumps = renderChapterJumps(extension.chapterJumps || []);
+    return `<strong>${escapeHtml(extension.topic || "主题线索")}</strong>${extension.description ? `：${escapeHtml(extension.description)}` : ""}<ul>${jumps}</ul>`;
+  });
+}
+
+function renderExtendedNeighbors(neighbors = []) {
+  return renderList(neighbors, (neighbor) => {
+    const target = neighbor.to || "相关线索";
+    const title = neighbor.via ? `由${escapeHtml(neighbor.via)}延伸到${escapeHtml(target)}` : escapeHtml(target);
+    const relationship = neighbor.relationship || "关联";
+    const description = neighbor.description || "";
+    return `<strong>${title}</strong>${relationship ? `（${escapeHtml(relationship)}）` : ""}${description ? `：${escapeHtml(description)}` : ""}`;
   });
 }
 
@@ -213,30 +393,73 @@ function renderEntityPopover(entity) {
       <ul>${details}</ul>
       <h4>关系线索</h4>
       <ul>${relations}</ul>
+      <h4>延伸关联</h4>
+      <ul>${renderExtendedNeighbors(entity.extendedNeighbors || [])}</ul>
       <h4>后文关联</h4>
       <ul>${laterClues}</ul>
+      <h4>前文关联</h4>
+      <ul>${renderChapterJumps(entity.previousChapterJumps || [])}</ul>
       <h4>相关章回</h4>
-      <ul>${renderChapterJumps(entity.chapterJumps || [])}</ul>
+      <ul>${renderChapterJumps(entity.laterChapterJumps || entity.chapterJumps || [])}</ul>
+      <h4>主题延展</h4>
+      <ul>${renderThemeExtensions(entity.themeExtensions || [])}</ul>
     </div>
   `;
+}
+
+function hasPrefetchedEntityTrace(entity) {
+  return Boolean(entity.tracePrefetched);
+}
+
+async function loadEntityTrace(entity) {
+  if (hasPrefetchedEntityTrace(entity)) return;
+  if (activeEntityPopoverId !== entity.id) return;
+  const currentChapter = currentChapterPayload?.chapter?.number || "";
+  try {
+    const data = await getJson(
+      `/api/entity-trace?name=${encodeURIComponent(entity.name)}&chapter=${encodeURIComponent(currentChapter)}&type=${encodeURIComponent(entity.type || "")}`,
+    );
+    if (activeEntityPopoverId !== entity.id) return;
+    mergeTraceItems(entity, data.traceItems || []);
+    mergeThemeExtensions(entity, data.themeExtensions || []);
+    const popover = document.querySelector("#entity-popover.open");
+    if (popover) popover.innerHTML = renderEntityPopover(entity);
+  } catch (error) {
+    // Keep the existing evidence-only content if the supplemental trace cannot be loaded.
+  }
+}
+
+function markActiveEntityControls(entityId) {
+  document.querySelectorAll("[data-inline-entity-id]").forEach((control) => {
+    const active = control.dataset.inlineEntityId === entityId;
+    control.classList.toggle("entity-chip-active", active && control.classList.contains("entity-chip"));
+    control.classList.toggle("annotation-link-active", active && control.classList.contains("annotation-link"));
+    control.classList.toggle("text-link-active", active && control.classList.contains("text-link"));
+    control.setAttribute("aria-pressed", active ? "true" : "false");
+  });
 }
 
 function openEntityPopover(entityId) {
   const entity = findInlineEntity(entityId);
   if (!entity) return;
+  activeEntityPopoverId = entityId;
   let popover = document.querySelector("#entity-popover");
   if (!popover) {
     popover = document.createElement("aside");
     popover.id = "entity-popover";
-    popover.className = "entity-popover";
+    popover.className = "entity-popover entity-popover-backdrop";
     document.body.append(popover);
   }
   popover.innerHTML = renderEntityPopover(entity);
   popover.classList.add("open");
+  markActiveEntityControls(entityId);
+  loadEntityTrace(entity);
 }
 
 function closeEntityPopover() {
+  activeEntityPopoverId = null;
   document.querySelector("#entity-popover")?.classList.remove("open");
+  markActiveEntityControls(null);
 }
 
 function renderContinuationLinks(links = []) {
@@ -395,6 +618,101 @@ function updateSelectedChapterOption(chapter) {
   if (option) option.textContent = chapterOptionLabel(Number(chapter.number), chapter.title || "");
 }
 
+function updateChapterNavigation(chapterNumber) {
+  const previousChapterButton = document.querySelector("#previous-chapter");
+  const nextChapterButton = document.querySelector("#next-chapter");
+  if (previousChapterButton) previousChapterButton.disabled = chapterNumber <= 1;
+  if (nextChapterButton) nextChapterButton.disabled = chapterNumber >= 120;
+}
+
+function inlineEntityIdForName(entities = [], name = "") {
+  return (entities || []).find((entity) => entity.name === name)?.id || "";
+}
+
+function renderCharacterRows(characters = [], inlineEntities = []) {
+  return renderList(characters, (item) => {
+    const entityId = inlineEntityIdForName(inlineEntities, item.name);
+    const name = entityId
+      ? `<button class="text-link" data-inline-entity-id="${escapeHtml(entityId)}">${escapeHtml(item.name)}</button>`
+      : `<strong>${escapeHtml(item.name || "人物")}</strong>`;
+    return `${name}：${escapeHtml(item.importance || item.role || "")}<br>${escapeHtml((item.actions || []).join("；"))}`;
+  });
+}
+
+function renderRelationshipRows(relationships = []) {
+  return renderList(relationships, (item) => {
+    const title = [item.source, item.type, item.target].filter(Boolean).join(" — ");
+    const description = item.description || item.chapterEvidence || "";
+    return `${escapeHtml(title || "关系线索")}：${escapeHtml(description)}`;
+  });
+}
+
+function renderNamedRows(items = [], valueForItem = (item) => item.function || item.meaning || item.context || "") {
+  return renderList(items, (item) => {
+    const name = item.name || item.title || item.quote || "相关信息";
+    const value = valueForItem(item);
+    return `<button class="text-link source-jump-link" data-source-needle="${escapeHtml(sourceNeedleFromParts(name, value))}"><strong>${escapeHtml(name)}</strong></button>：${escapeHtml(value)}`;
+  });
+}
+
+function renderChapterSummary(data, hasReviewCard) {
+  const plainSummary = hasReviewCard ? escapeHtml(data.reviewCard.plainSummary) : "暂无可靠资料";
+  return `<section class="chapter-summary"><h4>本回梗概</h4><p>${plainSummary}</p></section>`;
+}
+
+function renderChapterReviewTabs(data, hasReviewCard) {
+  const reviewCard = data.reviewCard || {};
+  const inlineEntities = data.inlineEntities || [];
+  const plotChain = hasReviewCard ? renderSourceList(data.reviewCard.plotChain) : "<li>暂无可靠资料</li>";
+  const keyEvents = hasReviewCard ? renderSourceList(data.reviewCard.keyEvents) : "<li>暂无可靠资料</li>";
+  const focusAngles = hasReviewCard ? renderSourceList(data.reviewCard.understandingFocus) : "<li>暂无可靠资料</li>";
+  const sections = {
+    plot: `<section><h4>关键情节</h4><ul>${plotChain}</ul></section>`,
+    events: `<section><h4>关键事件</h4><ul>${keyEvents}</ul></section>`,
+    focus: `<section><h4>本回怎么读</h4><ul>${focusAngles}</ul></section>`,
+    characters: `<section><h4>主要人物</h4><ul>${renderCharacterRows(reviewCard.characters || [], inlineEntities)}</ul></section>`,
+    relationships: `<section><h4>人物与事件关系</h4><ul>${renderRelationshipRows(reviewCard.relationships || [])}</ul></section>`,
+    places: `<section><h4>地点与物件</h4><ul>${renderNamedRows([...(reviewCard.places || []), ...(reviewCard.objects || [])])}</ul></section>`,
+    literary: `<section><h4>诗词语言</h4><ul>${renderNamedRows(
+      [...(reviewCard.literaryTexts || []), ...(reviewCard.modernExplanations || [])],
+      (item) => item.explanation || item.modernText || item.function || item.value || "",
+    )}</ul></section>`,
+    later: renderRichSection(
+      "后文关联",
+      reviewCard.laterAssociations || [],
+      (item) => `<strong>${escapeHtml(item.topic || "线索")}</strong>：${escapeHtml(item.description || item.evidence || "")}`,
+    ),
+    cards: `<section><h4>本回信息卡</h4><div class="entity-chip-list">${renderInlineEntityButtons(inlineEntities)}</div></section>`,
+  };
+  const allSections = [
+    `<div class="chapter-section-grid">${[
+      sections.plot,
+      sections.events,
+      sections.focus,
+      sections.cards,
+      sections.characters,
+      sections.relationships,
+      sections.places,
+      sections.literary,
+      sections.later,
+    ].join("")}</div>`,
+  ].join("");
+  const tabs = [
+    { id: "plot", label: "关键情节", html: sections.plot },
+    { id: "events", label: "关键事件", html: sections.events },
+    { id: "focus", label: "本回怎么读", html: sections.focus },
+    { id: "characters", label: "主要人物", html: sections.characters },
+    { id: "relationships", label: "人物与事件关系", html: sections.relationships },
+    { id: "places", label: "地点与物件", html: sections.places },
+    { id: "literary", label: "诗词语言", html: sections.literary },
+    { id: "later", label: "后文关联", html: sections.later },
+    { id: "cards", label: "本回信息卡", html: sections.cards },
+    { id: "all", label: "展示全部", html: allSections },
+  ];
+  if (!tabs.some((tab) => tab.id === activeChapterTab)) activeChapterTab = "plot";
+  return renderChapterTabs(tabs);
+}
+
 async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
   const data = await getJson(`/api/cards/${cardId}`);
   const textUnderstanding = data.card.textUnderstanding.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
@@ -420,44 +738,28 @@ async function loadKnowledgeCard(cardId, targetSelector = "#knowledge-panel") {
   openKnowledgePanel(targetSelector);
 }
 
-async function loadChapter(number = 27) {
-  const data = await getJson(`/api/chapters/${number}`);
+async function loadChapter(number = 1) {
+  const requestId = ++chapterLoadRequestId;
+  const data = await loadChapterPayload(number);
+  if (requestId !== chapterLoadRequestId) return;
   currentChapterPayload = data;
   closeEntityPopover();
   const chapterSelect = document.querySelector("#chapter-select");
   if (chapterSelect) chapterSelect.value = String(data.chapter.number);
   updateSelectedChapterOption(data.chapter);
-  const focusCards = data.knowledgeCards
-    .map((card) => `<li><strong>${escapeHtml(card.name)}</strong>：${escapeHtml(card.brief)}</li>`)
-    .join("");
+  updateChapterNavigation(Number(data.chapter.number));
   const hasReviewCard = Boolean(data.materialStatus?.hasReviewCard && data.reviewCard);
-  const materialMessage = escapeHtml(data.materialStatus?.message || "章节资料暂未生成，可先阅读原文。");
-  const plainSummary = hasReviewCard ? escapeHtml(data.reviewCard.plainSummary) : "暂无可靠资料";
-  const plotChain = hasReviewCard
-    ? data.reviewCard.plotChain.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
-    : "<li>暂无可靠资料</li>";
-  const keyEvents = hasReviewCard
-    ? data.reviewCard.keyEvents.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
-    : "<li>暂无可靠资料</li>";
+  const reviewCard = data.reviewCard || {};
   const focusAngles = hasReviewCard
     ? data.reviewCard.understandingFocus.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
     : "<li>暂无可靠资料</li>";
-  const reviewCard = data.reviewCard || {};
+  const focusCards = (reviewCard.characters || [])
+    .map((item) => `<li><strong>${escapeHtml(item.name)}</strong>：${escapeHtml(item.importance || item.role || "")}</li>`)
+    .join("");
   document.querySelector("#chapter-content").innerHTML = `
     <h3>第 ${escapeHtml(data.chapter.number)} 回：${escapeHtml(data.chapter.title)}</h3>
-    <p>${materialMessage}</p>
-    <section><h4>本回梗概</h4><p>${plainSummary}</p></section>
-    <div class="chapter-section-grid">
-      <section><h4>关键情节</h4><ul>${plotChain}</ul></section>
-      <section><h4>关键事件</h4><ul>${keyEvents}</ul></section>
-      <section><h4>本回怎么读</h4><ul>${focusAngles}</ul></section>
-      <section><h4>本回信息卡</h4><div class="entity-chip-list">${renderInlineEntityButtons(data.inlineEntities || [])}</div></section>
-      ${renderRichSection("主要人物", reviewCard.characters || [], (item) => `<button class="text-link" data-inline-entity-id="${escapeHtml((data.inlineEntities || []).find((entity) => entity.name === item.name)?.id || "")}">${escapeHtml(item.name)}</button>：${escapeHtml(item.importance || item.role || "")}<br>${escapeHtml((item.actions || []).join("；"))}`)}
-      ${renderRichSection("人物与事件关系", reviewCard.relationships || [], (item) => `${escapeHtml([item.source, item.type, item.target].filter(Boolean).join(" — "))}：${escapeHtml(item.description || item.chapterEvidence || "")}`)}
-      ${renderRichSection("地点与物件", [...(reviewCard.places || []), ...(reviewCard.objects || [])], (item) => `<strong>${escapeHtml(item.name)}</strong>：${escapeHtml(item.function || item.meaning || item.context || "")}`)}
-      ${renderRichSection("诗词语言", [...(reviewCard.literaryTexts || []), ...(reviewCard.modernExplanations || [])], (item) => `<strong>${escapeHtml(item.title || item.quote || "语言细节")}</strong>：${escapeHtml(item.explanation || item.modernText || item.function || item.value || "")}`)}
-      ${renderRichSection("后文关联", reviewCard.laterAssociations || [], (item) => `<strong>${escapeHtml(item.topic || "线索")}</strong>：${escapeHtml(item.description || item.evidence || "")}`)}
-    </div>
+    ${renderChapterSummary(data, hasReviewCard)}
+    ${renderChapterReviewTabs(data, hasReviewCard)}
     <section><h4>已有知识卡</h4><div>${renderKnowledgeButtons(data.knowledgeCards)}</div></section>
     <section><h4>原文</h4><pre class="annotated-original">${renderAnnotatedOriginalText(data.originalText, data.annotations || [])}</pre></section>
   `;
@@ -509,39 +811,70 @@ async function loadTopicDetail(topicId) {
 
 document.addEventListener("click", (event) => {
   const target = event.target;
-  if (target.matches("[data-view]")) {
-    showView(target.dataset.view);
-    if (target.dataset.view === "chapters") loadChapter();
-    if (target.dataset.view === "topics") loadTopics();
+  const viewTarget = target.closest("[data-view]");
+  const commonTarget = target.closest("[data-target-type]");
+  const cardTarget = target.closest("[data-card-id]");
+  const inlineEntityTarget = target.closest("[data-inline-entity-id]");
+  const popoverCloseTarget = target.closest("[data-entity-popover-close]");
+  const popoverBackdropTarget = target.id === "entity-popover" ? target : null;
+  const topicTarget = target.closest("[data-topic-id]");
+  const chapterTarget = target.closest("[data-chapter-number]");
+  const chapterStepTarget = target.closest("[data-chapter-step]");
+  const chapterTabTarget = target.closest("[data-chapter-tab]");
+  const sourceNeedleTarget = target.closest("[data-source-needle]");
+  const traceChapterTarget = target.closest("[data-trace-chapter-number]");
+  const panelCloseTarget = target.closest("[data-panel-close]");
+  if (viewTarget) {
+    showView(viewTarget.dataset.view);
+    if (viewTarget.dataset.view === "chapters") loadChapter();
+    if (viewTarget.dataset.view === "topics") loadTopics();
   }
-  if (target.matches("[data-target-type]")) {
-    handleCommonEntry(target);
+  if (commonTarget) {
+    handleCommonEntry(commonTarget);
   }
-  if (target.matches("[data-card-id]")) {
-    const panel = target.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
-    loadKnowledgeCard(target.dataset.cardId, panel);
+  if (cardTarget) {
+    const panel = cardTarget.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
+    loadKnowledgeCard(cardTarget.dataset.cardId, panel);
   }
-  if (target.matches("[data-inline-entity-id]")) {
-    openEntityPopover(target.dataset.inlineEntityId);
+  if (inlineEntityTarget) {
+    openEntityPopover(inlineEntityTarget.dataset.inlineEntityId);
   }
-  if (target.matches("[data-entity-popover-close]")) {
+  if (popoverCloseTarget) {
     closeEntityPopover();
   }
-  if (target.matches("[data-topic-id]")) {
+  if (popoverBackdropTarget) {
+    closeEntityPopover();
+  }
+  if (topicTarget) {
     showView("topics");
-    loadTopicDetail(target.dataset.topicId);
+    loadTopicDetail(topicTarget.dataset.topicId);
   }
-  if (target.matches("[data-chapter-number]")) {
+  if (chapterTarget) {
     showView("chapters");
-    loadChapter(Number(target.dataset.chapterNumber));
+    loadChapter(Number(chapterTarget.dataset.chapterNumber));
   }
-  if (target.matches("[data-trace-chapter-number]")) {
+  if (chapterStepTarget) {
+    const currentNumber = Number(currentChapterPayload?.chapter?.number || document.querySelector("#chapter-select")?.value || 1);
+    const nextNumber = Math.min(120, Math.max(1, currentNumber + Number(chapterStepTarget.dataset.chapterStep || 0)));
+    loadChapter(nextNumber);
+  }
+  if (chapterTabTarget) {
+    setActiveChapterTab(chapterTabTarget.dataset.chapterTab);
+  }
+  if (sourceNeedleTarget) {
+    scrollOriginalTextToNeedle(sourceNeedleTarget.dataset.sourceNeedle);
+  }
+  if (traceChapterTarget) {
     showView("chapters");
-    loadChapter(Number(target.dataset.traceChapterNumber));
+    loadChapter(Number(traceChapterTarget.dataset.traceChapterNumber));
   }
-  if (target.matches("[data-panel-close]")) {
-    closeKnowledgePanel(target.dataset.panelClose);
+  if (panelCloseTarget) {
+    closeKnowledgePanel(panelCloseTarget.dataset.panelClose);
   }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeEntityPopover();
 });
 
 document.querySelector("#chapter-select").addEventListener("change", (event) => {

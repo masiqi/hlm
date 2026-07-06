@@ -75,7 +75,7 @@ def test_content_store_loads_seed_chapter_review_card():
     assert card.source.prompt_name == "hongloumeng_chapter_review_card"
     assert card.source.prompt_version == "2026-07-01"
     assert "黛玉葬花" in card.plain_summary
-    assert card.later_association_relation_ids
+    assert card.later_associations
 
 
 def test_content_store_preserves_extended_chapter_review_card_fields(tmp_path):
@@ -92,6 +92,31 @@ def test_content_store_preserves_extended_chapter_review_card_fields(tmp_path):
     assert card.characters == extended_card["characters"]
     assert card.annotations == extended_card["annotations"]
     assert card.later_associations == extended_card["later_associations"]
+
+
+def test_content_store_loads_entity_graph_cache_by_name(tmp_path):
+    manifest_path, data_dir = _write_minimal_store_files(tmp_path, [_review_card()])
+    (data_dir / "entity_graph_cache.json").write_text(
+        json.dumps(
+            {
+                "顽石": {
+                    "description": "无才补天被弃于青埂峰下的石头。",
+                    "neighbors": [{"name": "通灵宝玉", "relationship": "前世本体"}],
+                }
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    store = ContentStore.from_paths(manifest_path=manifest_path, data_dir=data_dir)
+
+    assert store.entity_graph_payloads_for_names(["顽石", "不存在"]) == {
+        "顽石": {
+            "description": "无才补天被弃于青埂峰下的石头。",
+            "neighbors": [{"name": "通灵宝玉", "relationship": "前世本体"}],
+        }
+    }
 
 
 def test_content_store_builds_original_text_annotations_from_review_card_annotations(tmp_path):
@@ -140,11 +165,9 @@ def test_content_store_builds_original_text_annotations_from_review_card_annotat
     assert annotations[0].entity_id == "card-dream"
 
 
-def test_content_store_returns_none_for_missing_review_card():
-    store = ContentStore.from_paths(
-        manifest_path=Path("book/chapters_manifest.json"),
-        data_dir=Path("data/app"),
-    )
+def test_content_store_returns_none_for_missing_review_card(tmp_path):
+    manifest_path, data_dir = _write_minimal_store_files(tmp_path, [])
+    store = ContentStore.from_paths(manifest_path=manifest_path, data_dir=data_dir)
 
     assert store.maybe_review_card_for_chapter(1) is None
 

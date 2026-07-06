@@ -153,8 +153,33 @@ def test_load_import_cards_rejects_unknown_reference_ids(tmp_path, bad_card, mes
     _write_reference_data(data_dir)
     _write_input(input_path, [bad_card])
 
-    with pytest.raises(ValueError, match=message_part):
-        module.load_import_cards(input_path, data_dir=data_dir)
+    [card] = module.load_import_cards(input_path, data_dir=data_dir)
+
+    assert card[message_part] == []
+
+
+def test_load_import_cards_filters_llm_descriptions_from_reference_id_fields(tmp_path):
+    module = _import_script_module()
+    input_path = tmp_path / "cards.json"
+    data_dir = tmp_path / "data"
+    _write_reference_data(data_dir)
+    _write_input(
+        input_path,
+        [
+            _card(
+                1,
+                key_characters=["card-character-001", "王熙凤"],
+                later_association_relation_ids=["rel-001", "攒金庆寿 -> 王熙凤"],
+                quotable_fact_ids=["ev-001", "第四十三回事实依据"],
+            )
+        ],
+    )
+
+    [card] = module.load_import_cards(input_path, data_dir=data_dir)
+
+    assert card["key_characters"] == ["card-character-001"]
+    assert card["later_association_relation_ids"] == ["rel-001"]
+    assert card["quotable_fact_ids"] == ["ev-001"]
 
 
 def test_write_import_cards_outputs_sorted_pretty_utf8_json(tmp_path):

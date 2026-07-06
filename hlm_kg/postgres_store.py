@@ -25,6 +25,9 @@ class PostgresContentStore:
         self.fallback_store = fallback_store
         self._fetcher = fetcher
         self.common_entries = list(getattr(fallback_store, "common_entries", []))
+        self._review_card_scan_cache: list[ChapterReviewCard] | None = None
+        self._entity_trace_chapter_cache: dict[int, dict[str, dict[str, Any]]] = {}
+        self._entity_graph_cache: dict[str, dict[str, Any]] = {}
 
     def chapter(self, number: int) -> Chapter:
         row = self._fetchone("SELECT * FROM chapters WHERE number = %s", (number,))
@@ -58,33 +61,20 @@ class PostgresContentStore:
         )
         if row is None:
             return None
-        raw_card = dict(row.get("raw_card") or {})
-        return ChapterReviewCard(
-            id=str(row["id"]),
-            chapter=int(row["chapter_number"]),
-            source=ProcessedMaterialSource(
-                prompt_name=str(row["prompt_name"]),
-                prompt_version=str(row["prompt_version"]),
-                generated_at=row.get("generated_at"),
-            ),
-            plain_summary=str(row["summary"]),
-            plot_chain=list(row["plot_chain"] or []),
-            key_events=list(row["key_events"] or []),
-            key_characters=list(row["key_characters"] or []),
-            current_chapter_foreshadowing_signals=list(row["foreshadowing"] or []),
-            later_association_relation_ids=list(row["later_association_relation_ids"] or []),
-            quotable_fact_ids=list(row["quotable_fact_ids"] or []),
-            retrieval_tags=list(row["retrieval_tags"] or []),
-            understanding_focus=list(row["understanding_focus"] or []),
-            characters=list(raw_card.get("characters", [])),
-            relationships=list(raw_card.get("relationships", [])),
-            places=list(raw_card.get("places", [])),
-            objects=list(raw_card.get("objects", [])),
-            literary_texts=list(raw_card.get("literary_texts", [])),
-            modern_explanations=list(raw_card.get("modern_explanations", [])),
-            later_associations=list(raw_card.get("later_associations", [])),
-            annotations=list(raw_card.get("annotations", [])),
-        )
+        return _review_card_from_row(row)
+
+    def review_cards_for_trace_scan(self) -> list[ChapterReviewCard]:
+        if self._review_card_scan_cache is None:
+            rows = self._fetchall(
+                """
+                SELECT cc.*, c.number AS chapter_number
+                FROM chapter_cards cc
+                JOIN chapters c ON c.id = cc.chapter_id
+                ORDER BY c.number
+                """
+            )
+            self._review_card_scan_cache = [_review_card_from_row(row) for row in rows]
+        return list(self._review_card_scan_cache)
 
     def evidence_by_id(self) -> dict[str, Evidence]:
         return {item.id: item for item in self._all_evidence()}
@@ -179,6 +169,75 @@ class PostgresContentStore:
             for row in rows
         ]
 
+    def entity_trace_payload(self, name: str, current_chapter: int | None) -> dict[str, Any] | None:
+        if current_chapter is None:
+            return None
+        row = self._maybe_one(
+            """
+            SELECT etc.trace_items, etc.theme_extensions
+            FROM entity_trace_cache etc
+            JOIN chapters c ON c.id = etc.chapter_id
+            WHERE etc.entity_name = %s AND c.number = %s
+            """,
+            (name, current_chapter),
+        )
+        if row is None:
+            return None
+        return {
+            "trace_items": list(row.get("trace_items") or []),
+            "theme_extensions": list(row.get("theme_extensions") or []),
+        }
+
+    def entity_trace_payloads_for_chapter(self, current_chapter: int | None) -> dict[str, dict[str, Any]] | None:
+        if current_chapter is None:
+            return None
+        chapter = int(current_chapter)
+        if chapter not in self._entity_trace_chapter_cache:
+            rows = self._fetchall(
+                """
+                SELECT etc.entity_name, etc.trace_items, etc.theme_extensions
+                FROM entity_trace_cache etc
+                JOIN chapters c ON c.id = etc.chapter_id
+                WHERE c.number = %s
+                """,
+                (chapter,),
+            )
+            self._entity_trace_chapter_cache[chapter] = {
+                str(row["entity_name"]): {
+                    "trace_items": list(row.get("trace_items") or []),
+                    "theme_extensions": list(row.get("theme_extensions") or []),
+                }
+                for row in rows
+            }
+        return dict(self._entity_trace_chapter_cache[chapter])
+
+    def entity_graph_payloads_for_names(self, names: list[str]) -> dict[str, dict[str, Any]]:
+        clean_names = [str(name or "").strip() for name in names if str(name or "").strip()]
+        unique_names = list(dict.fromkeys(clean_names))
+        missing_names = [name for name in unique_names if name not in self._entity_graph_cache]
+        if missing_names:
+            rows = self._fetchall(
+                """
+                SELECT entity_name, description, neighbors, extended_neighbors, raw_graph, metadata
+                FROM entity_graph_cache
+                WHERE entity_name = ANY(%s)
+                """,
+                (missing_names,),
+            )
+            for row in rows:
+                self._entity_graph_cache[str(row["entity_name"])] = {
+                    "description": str(row.get("description") or ""),
+                    "neighbors": list(row.get("neighbors") or []),
+                    "extended_neighbors": list(row.get("extended_neighbors") or []),
+                    "raw_graph": dict(row.get("raw_graph") or {}),
+                    "metadata": dict(row.get("metadata") or {}),
+                }
+        return {
+            name: dict(self._entity_graph_cache[name])
+            for name in unique_names
+            if name in self._entity_graph_cache
+        }
+
     @property
     def topics(self) -> list[Topic]:
         return list(getattr(self.fallback_store, "topics", []))
@@ -259,6 +318,36 @@ def _relation_from_row(row: dict[str, Any]) -> GraphRelation:
         evidence_ids=list(row["evidence_ids"] or []),
         provenance=row.get("provenance", "curated"),
         description=str(row["description"]),
+    )
+
+
+def _review_card_from_row(row: dict[str, Any]) -> ChapterReviewCard:
+    raw_card = dict(row.get("raw_card") or {})
+    return ChapterReviewCard(
+        id=str(row["id"]),
+        chapter=int(row["chapter_number"]),
+        source=ProcessedMaterialSource(
+            prompt_name=str(row["prompt_name"]),
+            prompt_version=str(row["prompt_version"]),
+            generated_at=row.get("generated_at"),
+        ),
+        plain_summary=str(row["summary"]),
+        plot_chain=list(row["plot_chain"] or []),
+        key_events=list(row["key_events"] or []),
+        key_characters=list(row["key_characters"] or []),
+        current_chapter_foreshadowing_signals=list(row["foreshadowing"] or []),
+        later_association_relation_ids=list(row["later_association_relation_ids"] or []),
+        quotable_fact_ids=list(row["quotable_fact_ids"] or []),
+        retrieval_tags=list(row["retrieval_tags"] or []),
+        understanding_focus=list(row["understanding_focus"] or []),
+        characters=list(raw_card.get("characters", [])),
+        relationships=list(raw_card.get("relationships", [])),
+        places=list(raw_card.get("places", [])),
+        objects=list(raw_card.get("objects", [])),
+        literary_texts=list(raw_card.get("literary_texts", [])),
+        modern_explanations=list(raw_card.get("modern_explanations", [])),
+        later_associations=list(raw_card.get("later_associations", [])),
+        annotations=list(raw_card.get("annotations", [])),
     )
 
 

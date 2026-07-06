@@ -233,6 +233,64 @@ class EvidenceBackedAssociationLLMClient(FakeLLMClient):
 """
 
 
+class QualityGateRepairLLMClient:
+    def __init__(self):
+        self.prompts = []
+
+    def complete(self, prompt: str) -> str:
+        self.prompts.append(prompt)
+        if len(self.prompts) == 1:
+            return """AppImportJSON
+```json
+{
+  "id": "review-001",
+  "chapter": 1,
+  "source": {
+    "prompt_name": "hongloumeng_chapter_review_card",
+    "prompt_version": "2026-07-01",
+    "generated_at": "2026-07-02"
+  },
+  "plain_summary": "第一回主要写甄士隐在梦中看见通灵宝玉的来历，又写贾雨村寄居甄家、等待进身机会。梦幻叙事把石头、僧道和真假有无的结构先摆出来，使学生先抓住全书的开端框架。甄士隐的安稳生活与贾雨村的功名愿望形成对照，既提示人物命运将发生转折，也为后来家族盛衰、人物聚散和真假互映的阅读线索开了头。本回虽然情节不多，却集中交代石头入世、僧道点化、甄贾对照和功名欲望，适合把它当作全书阅读地图来看：先明白谁在梦中看见什么，再明白这些梦幻内容怎样提示真实人生的悲欢，同时把甄士隐、贾雨村两条线分别看作退隐与进取的命运开端来理解。",
+  "plot_chain": ["甄士隐梦中见通灵宝玉来历。", "贾雨村出场并寄居甄家。"],
+  "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
+  "key_characters": [],
+  "current_chapter_foreshadowing_signals": ["通灵宝玉来历提示全书真假有无的叙事框架。"],
+  "later_association_relation_ids": [],
+  "quotable_fact_ids": [],
+  "retrieval_tags": ["#红楼梦", "#第一回", "#甄士隐", "#贾雨村"],
+  "understanding_focus": ["抓住真假有无的开篇结构。"],
+  "characters": [{"name": "甄士隐", "aliases": [], "role": "乡宦", "actions": ["梦中见通灵宝玉来历", "资助贾雨村"], "traits": ["有出世意味", "厚道慷慨"], "evidence": ["甄士隐梦幻识通灵", "贾雨村寄居甄家"], "importance": "引出真假有无结构和人物命运开端"}],
+  "relationships": [{"source": "甄士隐", "type": "参与", "target": "甄士隐梦幻识通灵", "description": "甄士隐在梦中见到通灵宝玉来历，本回由此展开真假有无的开篇结构。", "chapter_evidence": "本回梦幻情节"}],
+  "places": [{"name": "甄家", "scenes": ["贾雨村寄居"], "function": "安稳日常与后续变故形成对照"}],
+  "objects": [{"name": "通灵宝玉", "context": "梦中交代来历", "meaning": "引出全书核心物件", "related_entities": ["甄士隐"]}],
+  "literary_texts": [{"title": "好了歌", "short_quote": "世人都晓神仙好", "explanation": "点出世俗执念", "function": "提示盛衰无常"}],
+  "modern_explanations": [{"quote": "梦幻识通灵", "modern_text": "在梦中认识通灵宝玉的来历。", "value": "理解开篇结构"}],
+  "later_associations": [],
+  "annotations": [{"text": "甄士隐", "kind": "person", "target": "甄士隐", "note": "本回开篇人物"}]
+}
+```
+
+# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
+
+## 11. 高频考点整理
+这里误写成题库式表达。
+"""
+        return FakeLLMClient().complete(prompt)
+
+
+class QualityGateRepairThenMissingJsonLLMClient:
+    def __init__(self):
+        self.prompts = []
+
+    def complete(self, prompt: str) -> str:
+        self.prompts.append(prompt)
+        if len(self.prompts) == 1:
+            return QualityGateRepairLLMClient().complete(prompt)
+        if len(self.prompts) == 2:
+            return "# 第一回 修复稿\n\n这次仍然没有输出 AppImportJSON。"
+        return FakeLLMClient().complete(prompt)
+
+
 class RelationshipEvidenceLightRAGClient:
     def __init__(self, *, with_later_relationship: bool):
         self.with_later_relationship = with_later_relationship
@@ -281,6 +339,12 @@ def test_parse_chapter_selection_supports_list_and_all():
     assert module.parse_chapter_selection("", all_chapters=True) == list(range(1, 121))
 
 
+def test_parse_chapter_selection_supports_ranges_and_deduplicates():
+    module = _import_script_module()
+
+    assert module.parse_chapter_selection("1-3,3,5", all_chapters=False) == [1, 2, 3, 5]
+
+
 def test_generate_selected_chapter_writes_markdown_json_and_combined_json(tmp_path):
     module = _import_script_module()
     manifest_path = _write_manifest(tmp_path)
@@ -306,6 +370,38 @@ def test_generate_selected_chapter_writes_markdown_json_and_combined_json(tmp_pa
     assert [card["chapter"] for card in combined] == [1]
     assert lightrag.queries
     assert "系统提供的全书关系线索" in llm.prompts[0]
+
+
+def test_generate_cards_prints_start_finish_and_skip_progress(tmp_path, capsys):
+    module = _import_script_module()
+    manifest_path = _write_manifest(tmp_path)
+    output_dir = tmp_path / "generated"
+
+    module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=output_dir,
+        chapters=[1],
+        lightrag_client=FakeLightRAGClient(),
+        llm_client=FakeLLMClient(),
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+    first_output = capsys.readouterr().out
+
+    module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=output_dir,
+        chapters=[1],
+        lightrag_client=FakeLightRAGClient(),
+        llm_client=FakeLLMClient(),
+        generated_at="2026-07-02",
+        overwrite=False,
+    )
+    second_output = capsys.readouterr().out
+
+    assert "[1/1] chapter 001 start" in first_output
+    assert "[1/1] chapter 001 done" in first_output
+    assert "[1/1] chapter 001 skipped" in second_output
 
 
 def test_generate_cards_normalizes_query_data_before_prompt_construction(tmp_path):
@@ -394,6 +490,47 @@ def test_generate_cards_retries_when_app_import_json_is_missing(tmp_path):
     assert "只输出 AppImportJSON" in llm.prompts[1]
 
 
+def test_generate_cards_retries_when_quality_gate_rejects_student_facing_terms(tmp_path):
+    module = _import_script_module()
+    manifest_path = _write_manifest(tmp_path)
+    llm = QualityGateRepairLLMClient()
+
+    cards = module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=tmp_path / "generated",
+        chapters=[1],
+        lightrag_client=FakeLightRAGClient(),
+        llm_client=llm,
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+
+    assert [card["chapter"] for card in cards] == [1]
+    assert len(llm.prompts) == 2
+    assert "上一版输出未通过学生端质量门" in llm.prompts[1]
+
+
+def test_generate_cards_repairs_missing_json_after_quality_gate_repair(tmp_path):
+    module = _import_script_module()
+    manifest_path = _write_manifest(tmp_path)
+    llm = QualityGateRepairThenMissingJsonLLMClient()
+
+    cards = module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=tmp_path / "generated",
+        chapters=[1],
+        lightrag_client=FakeLightRAGClient(),
+        llm_client=llm,
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+
+    assert [card["chapter"] for card in cards] == [1]
+    assert len(llm.prompts) == 3
+    assert "上一版输出未通过学生端质量门" in llm.prompts[1]
+    assert "上一次输出没有包含可解析的 AppImportJSON" in llm.prompts[2]
+
+
 def test_extract_app_import_json_rejects_missing_json_block():
     module = _import_script_module()
 
@@ -446,13 +583,28 @@ def test_validate_generated_card_output_rejects_empty_rich_sections():
     assert any("annotations" in error and "不能为空" in error for error in errors)
 
 
-def test_validate_generated_card_output_rejects_summary_outside_250_to_400_chars():
+def test_validate_generated_card_output_rejects_summary_outside_250_to_500_chars():
     module = _import_script_module()
     card = _complete_card_with_rich_defaults(plain_summary="太短。")
 
     errors = module.validate_generated_card_output("# 第1回 标题 章节复习卡\n正文", card)
 
-    assert any("plain_summary" in error and "250—400" in error for error in errors)
+    assert any("plain_summary" in error and "250—500" in error for error in errors)
+
+
+def test_validate_generated_card_output_accepts_summary_up_to_500_chars():
+    module = _import_script_module()
+    summary = LONG_SUMMARY + (
+        "这一补充段用于确认四百字以上但不超过五百字的章节梗概可以通过质量门。"
+        "它继续说明章节卡需要保留足够情节信息、人物关系和阅读线索，不能因为字数稍长就被错误拒绝。"
+        "学生阅读时仍能迅速抓住本回的核心事件、人物走向和全书开篇作用。"
+        "这段文字只用于测试长度边界，不改变章节事实。"
+        "它还模拟真实模型在概述人物表现、情节推进、伏笔照应时自然写到四百字以上的情况。"
+    )
+    card = _complete_card_with_rich_defaults(plain_summary=summary)
+
+    assert 400 < len(summary) <= 500
+    assert module.validate_generated_card_output("# 第1回 标题 章节复习卡\n正文", card) == []
 
 
 def test_validate_generated_card_output_allows_internal_audit_terms_but_not_display_terms():
@@ -798,9 +950,80 @@ def test_normalize_generated_card_trims_long_summary_and_drops_unsupported_later
 
     module.normalize_generated_card_for_quality_gate(card, evidence_pack={"later_association_evidence": []})
 
-    assert 250 <= len(card["plain_summary"]) <= 400
+    assert 250 <= len(card["plain_summary"]) <= 500
     assert card["later_associations"] == []
     assert card["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
+
+
+def test_normalize_generated_card_derives_later_associations_from_later_evidence():
+    module = _import_script_module()
+    card = _complete_card_with_rich_defaults(chapter=1, later_associations=[])
+    evidence_pack = {
+        "later_association_evidence": [
+            {
+                "kind": "relationship",
+                "title": "甄士隐 -> 甄士隐第二回经历",
+                "description": "甄士隐后续经历与第一回梦幻结构互相照应。",
+                "source_chapters": [2],
+                "relationship_keywords": "后文关联",
+                "source_ids": ["rel-001-002"],
+            }
+        ]
+    }
+
+    module.normalize_generated_card_for_quality_gate(card, evidence_pack=evidence_pack)
+
+    assert card["later_associations"] == [
+        {
+            "topic": "甄士隐 -> 甄士隐第二回经历",
+            "description": "甄士隐后续经历与第一回梦幻结构互相照应。",
+            "source_chapters": [2],
+            "source_ids": ["rel-001-002"],
+            "evidence": "甄士隐后续经历与第一回梦幻结构互相照应。",
+        }
+    ]
+    assert card["internal"]["quality_normalization"]["later_associations"]["derived_count"] == 1
+
+
+def test_normalize_generated_card_replaces_unsupported_later_associations_with_derived_evidence():
+    module = _import_script_module()
+    card = _complete_card_with_rich_defaults(
+        chapter=1,
+        later_associations=[
+            {
+                "topic": "甄士隐命运照应",
+                "description": "甄士隐后续经历与第一回梦幻结构互相照应。",
+                "source_chapters": [2],
+                "evidence": "缺少机器引用，不能直接通过质量门。",
+            }
+        ],
+    )
+    evidence_pack = {
+        "later_association_evidence": [
+            {
+                "kind": "relationship",
+                "title": "甄士隐 -> 甄士隐第二回经历",
+                "description": "甄士隐后续经历与第一回梦幻结构互相照应。",
+                "source_chapters": [2],
+                "relationship_keywords": "后文关联",
+                "source_ids": ["rel-001-002"],
+            }
+        ]
+    }
+
+    module.normalize_generated_card_for_quality_gate(card, evidence_pack=evidence_pack)
+
+    assert card["later_associations"] == [
+        {
+            "topic": "甄士隐 -> 甄士隐第二回经历",
+            "description": "甄士隐后续经历与第一回梦幻结构互相照应。",
+            "source_chapters": [2],
+            "source_ids": ["rel-001-002"],
+            "evidence": "甄士隐后续经历与第一回梦幻结构互相照应。",
+        }
+    ]
+    assert card["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
+    assert card["internal"]["quality_normalization"]["later_associations"]["derived_count"] == 1
 
 
 def test_normalize_generated_card_drops_non_id_key_characters():
@@ -852,6 +1075,55 @@ def test_repair_prompt_defaults_later_associations_to_empty_array():
     assert '"后文关联对象"' not in prompt
 
 
+def test_extract_app_import_json_repairs_unescaped_quotes_inside_values():
+    module = _import_script_module()
+
+    card = module.extract_app_import_json(
+        """AppImportJSON
+```json
+{
+  "id": "review-101",
+  "chapter": 101,
+  "modern_explanations": [
+    {
+      "quote": "王仁"与"忘仁"",
+      "value": "点明本回后半标题"胡庸医乱用虎狼药"的核心意象"
+    }
+  ]
+}
+```
+"""
+    )
+
+    explanation = card["modern_explanations"][0]
+    assert explanation["quote"] == '王仁"与"忘仁"'
+    assert explanation["value"] == '点明本回后半标题"胡庸医乱用虎狼药"的核心意象'
+
+
+def test_extract_app_import_json_repairs_unescaped_quotes_without_code_fence():
+    module = _import_script_module()
+
+    card = module.extract_app_import_json(
+        """AppImportJSON
+{
+  "id": "review-101",
+  "chapter": 101,
+  "modern_explanations": [
+    {
+      "quote": "王仁"与"忘仁"",
+      "value": "点明本回后半标题"胡庸医乱用虎狼药"的核心意象"
+    }
+  ]
+}
+
+# 第一百一回 大观园月夜警幽魂 散花寺神签惊异兆 章节复习卡
+"""
+    )
+
+    assert card["chapter"] == 101
+    assert card["modern_explanations"][0]["quote"] == '王仁"与"忘仁"'
+
+
 def test_cli_help_runs_from_repo_root_without_import_error():
     result = subprocess.run(
         [sys.executable, str(SCRIPT_PATH), "--help"],
@@ -862,3 +1134,17 @@ def test_cli_help_runs_from_repo_root_without_import_error():
 
     assert result.returncode == 0
     assert "Generate Hongloumeng chapter review cards" in result.stdout
+    assert "1-120" in result.stdout
+    assert "--llm-timeout" in result.stdout
+    assert "--lightrag-timeout" in result.stdout
+
+
+def test_lightrag_config_can_be_overridden_for_generation_timeout():
+    module = _import_script_module()
+
+    config = module.lightrag_config_from_env(
+        {"LIGHTRAG_BASE_URL": "http://10.1.0.246:9621", "LIGHTRAG_TIMEOUT_SECONDS": "30"},
+        timeout_override=180,
+    )
+
+    assert config.timeout_seconds == 180
