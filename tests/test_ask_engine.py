@@ -183,9 +183,77 @@ def test_ask_engine_does_not_turn_interpretive_retrieval_hit_into_location_answe
     answer = make_engine().ask("王熙凤的性格体现在哪里？", retrieval_client=FakeLightRAGClient(response))
 
     validate_answer(answer)
-    assert answer.status == "refused"
+    assert answer.status == "answered"
+    assert "王熙凤协理宁国府表现其管家才干" in answer.short_conclusion[0].text
+    assert answer.evidence[0].chapter == 13
+    assert answer.evidence[0].source_type == "graph_relation"
+
+
+def test_ask_engine_answers_relationship_question_from_query_data_evidence():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "林黛玉",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "表兄妹,知己关系",
+                    "description": "林黛玉和贾宝玉是姑表兄妹，第三回初见，后文多次互为知己。",
+                    "source_id": "doc-003-chunk-001<SEP>doc-005-chunk-001",
+                    "file_path": (
+                        "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt<SEP>"
+                        "005-第五回-贾宝玉神游太虚境 警幻仙曲演红楼梦.txt"
+                    ),
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+    client = FakeLightRAGClient(response)
+
+    answer = make_engine().ask("林黛玉和贾宝玉的关系是什么？", retrieval_client=client)
+
+    validate_answer(answer)
+    assert client.queries == [("林黛玉和贾宝玉的关系是什么？", "hybrid", {"only_need_context": True})]
+    assert answer.status == "answered"
+    assert "姑表兄妹" in answer.short_conclusion[0].text
+    assert [link.target_id for link in answer.continuation_links] == ["3", "5"]
+    assert answer.quotable_facts is not None
+    assert "第3回" in answer.quotable_facts.claims[0].text
+
+
+def test_ask_engine_returns_partial_for_mixed_query_data_question():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "林黛玉",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "表兄妹,知己关系",
+                    "description": "林黛玉和贾宝玉是姑表兄妹，第三回初见。",
+                    "source_id": "doc-003-chunk-001",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("林黛玉和贾宝玉的关系是什么？再说明一个没有资料的后文细节", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "partial"
+    assert "姑表兄妹" in answer.short_conclusion[0].text
     assert answer.refusal is not None
-    assert answer.refusal.reason == "NO_EVIDENCE"
+    assert answer.refusal.reason == "UNSUPPORTED_SUBCLAIM"
+    assert "没有资料的后文细节" in answer.refusal.message
 
 
 def test_ask_engine_refuses_location_answer_with_conflicting_chapter_sources():
