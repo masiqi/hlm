@@ -20,6 +20,74 @@ def _import_script_module():
     return module
 
 
+LONG_SUMMARY = (
+    "第一回主要写甄士隐在梦中看见通灵宝玉的来历，又写贾雨村寄居甄家、等待进身机会。"
+    "梦幻叙事把石头、僧道和真假有无的结构先摆出来，使学生先抓住全书的开端框架。"
+    "甄士隐的安稳生活与贾雨村的功名愿望形成对照，既提示人物命运将发生转折，也为后来家族盛衰、人物聚散和真假互映的阅读线索开了头。"
+    "本回虽然情节不多，却集中交代石头入世、僧道点化、甄贾对照和功名欲望，适合把它当作全书阅读地图来看："
+    "先明白谁在梦中看见什么，再明白这些梦幻内容怎样提示真实人生的悲欢，同时把甄士隐、贾雨村两条线分别看作退隐与进取的命运开端来理解。"
+)
+
+
+def _rich_card_fields():
+    return {
+        "characters": [
+            {
+                "name": "甄士隐",
+                "aliases": [],
+                "role": "乡宦",
+                "actions": ["梦中见通灵宝玉来历", "资助贾雨村"],
+                "traits": ["有出世意味", "厚道慷慨"],
+                "evidence": ["甄士隐梦幻识通灵", "贾雨村寄居甄家"],
+                "importance": "引出真假有无结构和人物命运开端",
+            }
+        ],
+        "relationships": [
+            {
+                "source": "甄士隐",
+                "type": "参与",
+                "target": "甄士隐梦幻识通灵",
+                "description": "甄士隐在梦中见到通灵宝玉来历，本回由此展开真假有无的开篇结构。",
+                "chapter_evidence": "本回梦幻情节",
+            }
+        ],
+        "places": [
+            {"name": "甄家", "scenes": ["贾雨村寄居"], "function": "安稳日常与后续变故形成对照"}
+        ],
+        "objects": [
+            {"name": "通灵宝玉", "context": "梦中交代来历", "meaning": "引出全书核心物件", "related_entities": ["甄士隐"]}
+        ],
+        "literary_texts": [
+            {"title": "好了歌", "short_quote": "世人都晓神仙好", "explanation": "点出世俗执念", "function": "提示盛衰无常"}
+        ],
+        "modern_explanations": [
+            {"quote": "梦幻识通灵", "modern_text": "在梦中认识通灵宝玉的来历。", "value": "理解开篇结构"}
+        ],
+        "annotations": [{"text": "甄士隐", "kind": "person", "target": "甄士隐", "note": "本回开篇人物"}],
+    }
+
+
+def _complete_card_with_rich_defaults(**overrides):
+    card = {
+        "id": "review-001",
+        "chapter": 1,
+        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
+        "plain_summary": LONG_SUMMARY,
+        "plot_chain": ["甄士隐梦中见通灵宝玉来历。", "贾雨村出场并寄居甄家。"],
+        "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
+        "key_characters": [],
+        "current_chapter_foreshadowing_signals": ["通灵宝玉来历提示全书真假有无的叙事框架。"],
+        "later_association_relation_ids": [],
+        "quotable_fact_ids": [],
+        "retrieval_tags": ["#红楼梦", "#第一回", "#甄士隐", "#贾雨村"],
+        "understanding_focus": ["抓住真假有无的开篇结构。"],
+        "later_associations": [],
+    }
+    card.update(_rich_card_fields())
+    card.update(overrides)
+    return card
+
+
 def _write_manifest(tmp_path: Path) -> Path:
     chapter_path = tmp_path / "book" / "chapters" / "001-第一回-甄士隐梦幻识通灵 贾雨村风尘怀闺秀.txt"
     chapter_path.parent.mkdir(parents=True)
@@ -69,12 +137,7 @@ class FakeLLMClient:
 
     def complete(self, prompt: str) -> str:
         self.prompts.append(prompt)
-        return """# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
-
-## 1. 本回一句话概括
-本回主要写甄士隐梦幻识通灵与贾雨村出场。
-
-第二部分：AppImportJSON
+        return """AppImportJSON
 ```json
 {
   "id": "review-001",
@@ -84,7 +147,7 @@ class FakeLLMClient:
     "prompt_version": "2026-07-01",
     "generated_at": "2026-07-02"
   },
-  "plain_summary": "第一回主要写甄士隐梦中见通灵宝玉来历，贾雨村也在本回出场，为全书真假有无和人物命运开端奠定基础。",
+  "plain_summary": "第一回主要写甄士隐在梦中看见通灵宝玉的来历，又写贾雨村寄居甄家、等待进身机会。梦幻叙事把石头、僧道和真假有无的结构先摆出来，使学生先抓住全书的开端框架。甄士隐的安稳生活与贾雨村的功名愿望形成对照，既提示人物命运将发生转折，也为后来家族盛衰、人物聚散和真假互映的阅读线索开了头。本回虽然情节不多，却集中交代石头入世、僧道点化、甄贾对照和功名欲望，适合把它当作全书阅读地图来看：先明白谁在梦中看见什么，再明白这些梦幻内容怎样提示真实人生的悲欢，同时把甄士隐、贾雨村两条线分别看作退隐与进取的命运开端来理解。",
   "plot_chain": ["甄士隐梦中见通灵宝玉来历。", "贾雨村出场并寄居甄家。"],
   "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
   "key_characters": [],
@@ -93,16 +156,21 @@ class FakeLLMClient:
   "quotable_fact_ids": [],
   "retrieval_tags": ["#红楼梦", "#第一回", "#甄士隐", "#贾雨村"],
   "understanding_focus": ["抓住真假有无的开篇结构。"],
-  "characters": [],
-  "relationships": [],
-  "places": [],
-  "objects": [],
-  "literary_texts": [],
-  "modern_explanations": [],
+  "characters": [{"name": "甄士隐", "aliases": [], "role": "乡宦", "actions": ["梦中见通灵宝玉来历", "资助贾雨村"], "traits": ["有出世意味", "厚道慷慨"], "evidence": ["甄士隐梦幻识通灵", "贾雨村寄居甄家"], "importance": "引出真假有无结构和人物命运开端"}],
+  "relationships": [{"source": "甄士隐", "type": "参与", "target": "甄士隐梦幻识通灵", "description": "甄士隐在梦中见到通灵宝玉来历，本回由此展开真假有无的开篇结构。", "chapter_evidence": "本回梦幻情节"}],
+  "places": [{"name": "甄家", "scenes": ["贾雨村寄居"], "function": "安稳日常与后续变故形成对照"}],
+  "objects": [{"name": "通灵宝玉", "context": "梦中交代来历", "meaning": "引出全书核心物件", "related_entities": ["甄士隐"]}],
+  "literary_texts": [{"title": "好了歌", "short_quote": "世人都晓神仙好", "explanation": "点出世俗执念", "function": "提示盛衰无常"}],
+  "modern_explanations": [{"quote": "梦幻识通灵", "modern_text": "在梦中认识通灵宝玉的来历。", "value": "理解开篇结构"}],
   "later_associations": [],
-  "annotations": []
+  "annotations": [{"text": "甄士隐", "kind": "person", "target": "甄士隐", "note": "本回开篇人物"}]
 }
 ```
+
+# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
+
+## 1. 本回一句话概括
+本回主要写甄士隐梦幻识通灵与贾雨村出场。
 """
 
 
@@ -120,12 +188,7 @@ class RetryLLMClient:
 class EvidenceBackedAssociationLLMClient(FakeLLMClient):
     def complete(self, prompt: str) -> str:
         self.prompts.append(prompt)
-        return """# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
-
-## 1. 本回一句话概括
-本回主要写甄士隐梦幻识通灵与贾雨村出场。
-
-第二部分：AppImportJSON
+        return """AppImportJSON
 ```json
 {
   "id": "review-001",
@@ -135,7 +198,7 @@ class EvidenceBackedAssociationLLMClient(FakeLLMClient):
     "prompt_version": "2026-07-01",
     "generated_at": "2026-07-02"
   },
-  "plain_summary": "第一回主要写甄士隐梦中见通灵宝玉来历，贾雨村也在本回出场，为全书真假有无和人物命运开端奠定基础。",
+  "plain_summary": "第一回主要写甄士隐在梦中看见通灵宝玉的来历，又写贾雨村寄居甄家、等待进身机会。梦幻叙事把石头、僧道和真假有无的结构先摆出来，使学生先抓住全书的开端框架。甄士隐的安稳生活与贾雨村的功名愿望形成对照，既提示人物命运将发生转折，也为后来家族盛衰、人物聚散和真假互映的阅读线索开了头。本回虽然情节不多，却集中交代石头入世、僧道点化、甄贾对照和功名欲望，适合把它当作全书阅读地图来看：先明白谁在梦中看见什么，再明白这些梦幻内容怎样提示真实人生的悲欢，同时把甄士隐、贾雨村两条线分别看作退隐与进取的命运开端来理解。",
   "plot_chain": ["甄士隐梦中见通灵宝玉来历。", "贾雨村出场并寄居甄家。"],
   "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
   "key_characters": [],
@@ -144,12 +207,12 @@ class EvidenceBackedAssociationLLMClient(FakeLLMClient):
   "quotable_fact_ids": [],
   "retrieval_tags": ["#红楼梦", "#第一回", "#甄士隐", "#贾雨村"],
   "understanding_focus": ["抓住真假有无的开篇结构。"],
-  "characters": [],
-  "relationships": [],
-  "places": [],
-  "objects": [],
-  "literary_texts": [],
-  "modern_explanations": [],
+  "characters": [{"name": "甄士隐", "aliases": [], "role": "乡宦", "actions": ["梦中见通灵宝玉来历", "资助贾雨村"], "traits": ["有出世意味", "厚道慷慨"], "evidence": ["甄士隐梦幻识通灵", "贾雨村寄居甄家"], "importance": "引出真假有无结构和人物命运开端"}],
+  "relationships": [{"source": "甄士隐", "type": "参与", "target": "甄士隐梦幻识通灵", "description": "甄士隐在梦中见到通灵宝玉来历，本回由此展开真假有无的开篇结构。", "chapter_evidence": "本回梦幻情节"}],
+  "places": [{"name": "甄家", "scenes": ["贾雨村寄居"], "function": "安稳日常与后续变故形成对照"}],
+  "objects": [{"name": "通灵宝玉", "context": "梦中交代来历", "meaning": "引出全书核心物件", "related_entities": ["甄士隐"]}],
+  "literary_texts": [{"title": "好了歌", "short_quote": "世人都晓神仙好", "explanation": "点出世俗执念", "function": "提示盛衰无常"}],
+  "modern_explanations": [{"quote": "梦幻识通灵", "modern_text": "在梦中认识通灵宝玉的来历。", "value": "理解开篇结构"}],
   "later_associations": [
     {
       "topic": "甄士隐命运照应",
@@ -159,9 +222,14 @@ class EvidenceBackedAssociationLLMClient(FakeLLMClient):
       "evidence": "关系线索显示甄士隐与第二回经历存在照应。"
     }
   ],
-  "annotations": []
+  "annotations": [{"text": "甄士隐", "kind": "person", "target": "甄士隐", "note": "本回开篇人物"}]
 }
 ```
+
+# 第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀 章节复习卡
+
+## 1. 本回一句话概括
+本回主要写甄士隐梦幻识通灵与贾雨村出场。
 """
 
 
@@ -356,68 +424,49 @@ def test_validate_generated_card_output_rejects_technical_terms_and_greeting():
 
     errors = module.validate_generated_card_output("好的，同学\n# 第5回 标题 章节复习卡", card)
 
-    assert any("不得以寒暄开头" in error for error in errors)
+    assert any("不得以寒暄开头" in error or "不得以寒暄" in error for error in errors)
     assert any("禁用词" in error and "LightRAG" in error for error in errors)
 
 
 def test_validate_generated_card_output_accepts_clean_extended_card():
     module = _import_script_module()
-    card = {
-        "id": "review-027",
-        "chapter": 27,
-        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
-        "plain_summary": "本回主要写宝钗扑蝶和黛玉葬花。",
-        "plot_chain": ["宝钗扑蝶", "黛玉葬花"],
-        "key_events": ["宝钗扑蝶", "黛玉葬花"],
-        "key_characters": [],
-        "current_chapter_foreshadowing_signals": ["葬花情节提示黛玉身世悲感。"],
-        "later_association_relation_ids": [],
-        "quotable_fact_ids": [],
-        "retrieval_tags": ["#第二十七回"],
-        "understanding_focus": ["抓住宝钗与黛玉的对照。"],
-        "characters": [],
-        "relationships": [],
-        "places": [],
-        "objects": [],
-        "literary_texts": [],
-        "modern_explanations": [],
-        "later_associations": [],
-        "annotations": [],
-    }
+    card = _complete_card_with_rich_defaults(chapter=27, id="review-027")
 
     assert module.validate_generated_card_output("# 第27回 标题 章节复习卡\n正文", card) == []
 
 
+def test_validate_generated_card_output_rejects_empty_rich_sections():
+    module = _import_script_module()
+    card = _complete_card_with_rich_defaults(characters=[], relationships=[], annotations=[])
+
+    errors = module.validate_generated_card_output("# 第1回 标题 章节复习卡\n正文", card)
+
+    assert any("characters" in error and "不能为空" in error for error in errors)
+    assert any("relationships" in error and "不能为空" in error for error in errors)
+    assert any("annotations" in error and "不能为空" in error for error in errors)
+
+
+def test_validate_generated_card_output_rejects_summary_outside_250_to_400_chars():
+    module = _import_script_module()
+    card = _complete_card_with_rich_defaults(plain_summary="太短。")
+
+    errors = module.validate_generated_card_output("# 第1回 标题 章节复习卡\n正文", card)
+
+    assert any("plain_summary" in error and "250—400" in error for error in errors)
+
+
 def test_validate_generated_card_output_allows_internal_audit_terms_but_not_display_terms():
     module = _import_script_module()
-    card = {
-        "id": "review-027",
-        "chapter": 27,
-        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
-        "plain_summary": "本回主要写宝钗扑蝶和黛玉葬花。",
-        "plot_chain": ["宝钗扑蝶", "黛玉葬花"],
-        "key_events": ["宝钗扑蝶", "黛玉葬花"],
-        "key_characters": [],
-        "current_chapter_foreshadowing_signals": ["葬花情节提示黛玉身世悲感。"],
-        "later_association_relation_ids": [],
-        "quotable_fact_ids": [],
-        "retrieval_tags": ["#第二十七回"],
-        "understanding_focus": ["抓住宝钗与黛玉的对照。"],
-        "characters": [],
-        "relationships": [],
-        "places": [],
-        "objects": [],
-        "literary_texts": [],
-        "modern_explanations": [],
-        "later_associations": [],
-        "annotations": [],
-        "internal": {
+    card = _complete_card_with_rich_defaults(
+        chapter=27,
+        id="review-027",
+        internal={
             "evidence_audit": {
                 "source": "LightRAG /query/data",
                 "normalized_candidate_count": 2,
             }
         },
-    }
+    )
 
     assert module.validate_generated_card_output("# 第27回 标题 章节复习卡\n正文", card) == []
 
@@ -430,26 +479,8 @@ def test_validate_generated_card_output_allows_internal_audit_terms_but_not_disp
 
 def test_later_associations_require_normalized_later_evidence():
     module = _import_script_module()
-    card = {
-        "id": "review-001",
-        "chapter": 1,
-        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
-        "plain_summary": "第一回主要写甄士隐梦幻识通灵与贾雨村出场。",
-        "plot_chain": ["甄士隐梦幻识通灵", "贾雨村出场"],
-        "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
-        "key_characters": [],
-        "current_chapter_foreshadowing_signals": ["通灵宝玉来历提示全书真假有无的叙事框架。"],
-        "later_association_relation_ids": [],
-        "quotable_fact_ids": [],
-        "retrieval_tags": ["#第一回"],
-        "understanding_focus": ["抓住真假有无的开篇结构。"],
-        "characters": [],
-        "relationships": [],
-        "places": [],
-        "objects": [],
-        "literary_texts": [],
-        "modern_explanations": [],
-        "later_associations": [
+    card = _complete_card_with_rich_defaults(
+        later_associations=[
             {
                 "topic": "甄士隐命运照应",
                 "description": "甄士隐后续经历与本回梦幻结构互相照应。",
@@ -457,9 +488,8 @@ def test_later_associations_require_normalized_later_evidence():
                 "source_ids": ["rel-001-002"],
                 "evidence": "关系线索显示甄士隐与第二回经历存在照应。",
             }
-        ],
-        "annotations": [],
-    }
+        ]
+    )
     current_only_pack = module.build_evidence_pack(
         RelationshipEvidenceLightRAGClient(with_later_relationship=False).query_data("第一回", mode="hybrid"),
         question="第1回 甄士隐命运照应",
@@ -486,35 +516,16 @@ def test_later_associations_require_normalized_later_evidence():
 
 def test_later_associations_must_match_supporting_evidence():
     module = _import_script_module()
-    card = {
-        "id": "review-001",
-        "chapter": 1,
-        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
-        "plain_summary": "第一回主要写甄士隐梦幻识通灵与贾雨村出场。",
-        "plot_chain": ["甄士隐梦幻识通灵", "贾雨村出场"],
-        "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
-        "key_characters": [],
-        "current_chapter_foreshadowing_signals": ["通灵宝玉来历提示全书真假有无的叙事框架。"],
-        "later_association_relation_ids": [],
-        "quotable_fact_ids": [],
-        "retrieval_tags": ["#第一回"],
-        "understanding_focus": ["抓住真假有无的开篇结构。"],
-        "characters": [],
-        "relationships": [],
-        "places": [],
-        "objects": [],
-        "literary_texts": [],
-        "modern_explanations": [],
-        "later_associations": [
+    card = _complete_card_with_rich_defaults(
+        later_associations=[
             {
                 "topic": "贾宝玉挨打",
                 "description": "宝玉挨打与本回甄士隐梦幻结构互相照应。",
                 "source_chapters": [33],
                 "evidence": "第三十三回宝玉挨打。",
             }
-        ],
-        "annotations": [],
-    }
+        ]
+    )
     later_pack = module.build_evidence_pack(
         RelationshipEvidenceLightRAGClient(with_later_relationship=True).query_data("第一回", mode="hybrid"),
         question="第1回 甄士隐命运照应",
@@ -532,35 +543,16 @@ def test_later_associations_must_match_supporting_evidence():
 
 def test_later_associations_require_machine_checkable_evidence_reference():
     module = _import_script_module()
-    card = {
-        "id": "review-001",
-        "chapter": 1,
-        "source": {"prompt_name": "hongloumeng_chapter_review_card", "prompt_version": "2026-07-01", "generated_at": "2026-07-02"},
-        "plain_summary": "第一回主要写甄士隐梦幻识通灵与贾雨村出场。",
-        "plot_chain": ["甄士隐梦幻识通灵", "贾雨村出场"],
-        "key_events": ["甄士隐梦幻识通灵", "贾雨村出场"],
-        "key_characters": [],
-        "current_chapter_foreshadowing_signals": ["通灵宝玉来历提示全书真假有无的叙事框架。"],
-        "later_association_relation_ids": [],
-        "quotable_fact_ids": [],
-        "retrieval_tags": ["#第一回"],
-        "understanding_focus": ["抓住真假有无的开篇结构。"],
-        "characters": [],
-        "relationships": [],
-        "places": [],
-        "objects": [],
-        "literary_texts": [],
-        "modern_explanations": [],
-        "later_associations": [
+    card = _complete_card_with_rich_defaults(
+        later_associations=[
             {
                 "topic": "甄士隐命运照应",
                 "description": "甄士隐后续经历与本回梦幻结构互相照应。",
                 "source_chapters": [2],
                 "evidence": "关系线索显示甄士隐与第二回经历存在照应。",
             }
-        ],
-        "annotations": [],
-    }
+        ]
+    )
     later_pack = module.build_evidence_pack(
         RelationshipEvidenceLightRAGClient(with_later_relationship=True).query_data("第一回", mode="hybrid"),
         question="第1回 甄士隐命运照应",
@@ -576,25 +568,22 @@ def test_later_associations_require_machine_checkable_evidence_reference():
     assert any("later_associations[0]" in error and "证据引用" in error for error in errors)
 
 
-def test_generate_cards_rejects_later_associations_without_normalized_later_evidence(tmp_path):
+def test_generate_cards_drops_later_associations_without_normalized_later_evidence(tmp_path):
     module = _import_script_module()
     manifest_path = _write_manifest(tmp_path)
 
-    try:
-        module.generate_cards(
-            manifest_path=manifest_path,
-            output_dir=tmp_path / "generated",
-            chapters=[1],
-            lightrag_client=RelationshipEvidenceLightRAGClient(with_later_relationship=False),
-            llm_client=EvidenceBackedAssociationLLMClient(),
-            generated_at="2026-07-02",
-            overwrite=True,
-        )
-    except ValueError as exc:
-        assert "later_associations" in str(exc)
-        assert "缺少规范化证据" in str(exc)
-    else:
-        raise AssertionError("expected unsupported later_associations to fail quality gate")
+    cards = module.generate_cards(
+        manifest_path=manifest_path,
+        output_dir=tmp_path / "generated",
+        chapters=[1],
+        lightrag_client=RelationshipEvidenceLightRAGClient(with_later_relationship=False),
+        llm_client=EvidenceBackedAssociationLLMClient(),
+        generated_at="2026-07-02",
+        overwrite=True,
+    )
+
+    assert cards[0]["later_associations"] == []
+    assert cards[0]["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
 
 
 def test_generate_cards_accepts_later_associations_with_normalized_later_evidence(tmp_path):
@@ -661,6 +650,7 @@ def test_build_prompt_uses_student_facing_source_names_and_forbids_technical_ter
     assert "LightRAG 全书关系线索" not in prompt
     assert "完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现" in prompt
     assert "不要输出寒暄、解释、免责声明或“好的同学”之类开场白" in prompt
+    assert "必须直接从“AppImportJSON”开始输出" in prompt
 
 
 def test_build_prompt_requests_structured_app_import_sections_for_website_and_database():
@@ -686,6 +676,23 @@ def test_build_prompt_requests_structured_app_import_sections_for_website_and_da
         '"annotations"',
     ):
         assert field in prompt
+
+
+def test_build_json_only_prompt_skips_markdown_section_for_fast_database_trials():
+    module = _import_script_module()
+
+    prompt = module.build_json_only_prompt(
+        chapter_number=1,
+        chapter_title="甄士隐梦幻识通灵 贾雨村风尘怀闺秀",
+        source_file="book/chapters/001.txt",
+        chapter_text="第一回原文",
+        lightrag_evidence={"data": {"entities": []}},
+        generated_at="2026-07-02",
+    )
+
+    assert "只输出第一部分 AppImportJSON" in prompt
+    assert "第二部分：完整 Markdown 章节复习卡" not in prompt
+    assert "## 19. 待补充说明" not in prompt
 
 
 def test_build_prompt_defaults_later_associations_to_empty_array_without_existing_ids():
@@ -736,6 +743,74 @@ def test_build_prompt_raw_response_fallback_filters_current_chapter_association_
 
     assert "甄士隐梦幻识通灵 -> 真假有无" in prompt
     assert '"later_association_evidence": []' in prompt
+
+
+def test_build_evidence_pack_can_limit_prompt_candidates():
+    module = _import_script_module()
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [
+                {"entity_name": "甄士隐", "description": "甄士隐出现在第一回。", "file_path": "001-第一回.txt"},
+                {"entity_name": "贾雨村", "description": "贾雨村出现在第一回。", "file_path": "001-第一回.txt"},
+            ],
+            "relationships": [
+                {
+                    "src_id": "甄士隐",
+                    "tgt_id": "贾雨村",
+                    "keywords": "资助",
+                    "description": "甄士隐资助贾雨村。",
+                    "file_path": "001-第一回.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+    }
+
+    pack = module.build_evidence_pack(response, question="第一回", max_candidates=1)
+
+    assert pack["candidate_count"] == 1
+    assert len(pack["candidates"]) == 1
+
+
+def test_normalize_generated_card_trims_long_summary_and_drops_unsupported_later_associations():
+    module = _import_script_module()
+    long_summary = (
+        "第一回主要写甄士隐梦中见通灵宝玉来历，贾雨村也在本回出场，为全书真假有无和人物命运开端奠定基础。"
+        "本回还写英莲丢失、葫芦庙失火、甄士隐投奔岳父并最终听《好了歌》出家。"
+        "这些情节共同构成全书开篇的结构地图。"
+        "学生阅读时应先抓住神话框架，再看甄士隐与贾雨村一退一进的人生方向。"
+        "这一段故意写得比较长，用来模拟模型输出超过四百字时的归一化处理，归一化只能截短已有文字，不能补写新内容。"
+        "本句继续拉长摘要，确保它超过质量门禁上限。"
+    )
+    card = _complete_card_with_rich_defaults(
+        plain_summary=long_summary * 3,
+        later_associations=[
+            {
+                "topic": "无证据后文",
+                "description": "没有机器可核验证据的后文关联。",
+                "source_chapters": [120],
+                "evidence": "第120回",
+            }
+        ],
+    )
+
+    module.normalize_generated_card_for_quality_gate(card, evidence_pack={"later_association_evidence": []})
+
+    assert 250 <= len(card["plain_summary"]) <= 400
+    assert card["later_associations"] == []
+    assert card["internal"]["quality_normalization"]["later_associations"]["original_count"] == 1
+
+
+def test_normalize_generated_card_drops_non_id_key_characters():
+    module = _import_script_module()
+    card = _complete_card_with_rich_defaults(key_characters=["贾宝玉", "card-lindaiyu"])
+
+    module.normalize_generated_card_for_quality_gate(card, evidence_pack={})
+
+    assert card["key_characters"] == ["card-lindaiyu"]
+    assert card["internal"]["quality_normalization"]["key_characters"]["original_count"] == 2
 
 
 def test_repair_prompt_uses_same_structured_app_import_sections():

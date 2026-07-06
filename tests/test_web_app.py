@@ -94,6 +94,63 @@ def test_api_chapter_returns_extended_review_card_fields(tmp_path):
     ]
 
 
+def test_api_chapter_returns_inline_entity_payload_from_review_card(tmp_path):
+    review_card = _review_card(
+        plain_summary="第一回主要写袭人与宝玉在房中一问一答，借日常照看与劝慰显出主仆之间的亲近关系。人物行动虽小，却能帮助学生理解贾府日常生活中的照料、规劝和情感依附。袭人既是服侍宝玉的人，也常以较稳妥的方式提醒宝玉，这种关系不是单纯事务关系，而是牵连宝玉性情、房中秩序和后来多处情节的重要线索。本回阅读时应先抓住谁在照看谁，再看人物语言如何显出关系的亲疏与权力位置。",
+        characters=[
+            {
+                "name": "袭人",
+                "aliases": ["花袭人"],
+                "role": "宝玉房中丫鬟",
+                "actions": ["劝慰宝玉"],
+                "traits": ["稳妥细心"],
+                "evidence": ["袭人见宝玉回来"],
+                "importance": "帮助理解宝玉房中日常关系",
+            }
+        ],
+        relationships=[
+            {
+                "source": "袭人",
+                "type": "照料",
+                "target": "宝玉",
+                "description": "袭人在本回照看并劝慰宝玉。",
+                "chapter_evidence": "袭人见宝玉回来。",
+            }
+        ],
+        objects=[
+            {
+                "name": "扇子",
+                "context": "房中日常物件",
+                "meaning": "衬托生活场景",
+                "related_entities": ["袭人"],
+            }
+        ],
+        later_associations=[
+            {
+                "topic": "袭人归宿",
+                "description": "袭人线索需要联系后文章回继续理解。",
+                "source_chapters": [120],
+                "evidence": "后文章回证据",
+            }
+        ],
+        annotations=[{"text": "袭人", "kind": "person", "target": "袭人", "note": "宝玉房中丫鬟"}],
+    )
+    manifest_path, data_dir, static_dir = _write_minimal_app_context_files(tmp_path, [review_card])
+    chapter_path = tmp_path / "book" / "chapters" / "001-第一回-甄士隐梦幻识通灵 贾雨村风尘怀闺秀.txt"
+    chapter_path.write_text("袭人见宝玉回来。宝玉问袭人。", encoding="utf-8")
+    context = create_app_context(manifest_path=manifest_path, data_dir=data_dir, static_dir=static_dir)
+
+    status, payload = handle_api_request(context, "GET", "/api/chapters/1")
+
+    assert status == 200
+    assert payload["inlineEntities"][0]["name"] == "袭人"
+    assert payload["inlineEntities"][0]["summary"]
+    assert payload["inlineEntities"][0]["relations"]
+    assert payload["inlineEntities"][0]["chapterJumps"] == [{"chapter": 120, "label": "第120回：袭人归宿"}]
+    assert payload["annotations"][0]["entityId"] == payload["inlineEntities"][0]["id"]
+    assert payload["annotations"][0]["startOffset"] == 0
+
+
 def test_api_chapter_returns_original_text_when_review_card_is_missing():
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
@@ -210,6 +267,25 @@ def test_create_app_context_reads_postgres_database_url_from_dotenv(monkeypatch,
         data_dir=ROOT / "data/app",
         static_dir=ROOT / "static",
         use_postgres_store=True,
+    )
+
+    assert context.store[0] == "postgres"
+    assert context.store[1] == "postgresql://user:p*ss@example.local:5432/hlm"
+
+
+def test_create_app_context_enables_postgres_from_dotenv_flag(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    Path(".env").write_text(
+        "DATABASE_URL=postgresql://user:p*ss@example.local:5432/hlm\n"
+        "HLM_CONTENT_STORE=postgres\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("hlm_kg.web_app.PostgresContentStore", lambda database_url, fallback_store: ("postgres", database_url, fallback_store))
+
+    context = create_app_context(
+        manifest_path=ROOT / "book/chapters_manifest.json",
+        data_dir=ROOT / "data/app",
+        static_dir=ROOT / "static",
     )
 
     assert context.store[0] == "postgres"
@@ -351,6 +427,20 @@ def test_static_knowledge_panel_renders_trace_jump_buttons():
     assert "renderTraceItems" in js
     assert "data-trace-chapter-number" in js
     assert "traceItems" in js
+
+
+def test_static_chapter_page_renders_rich_sections_and_entity_popover():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    css = Path("static/styles.css").read_text(encoding="utf-8")
+
+    assert "renderEntityPopover" in js
+    assert "data-inline-entity-id" in js
+    assert "renderRichSection" in js
+    assert "characters" in js
+    assert "relationships" in js
+    assert "laterAssociations" in js
+    assert ".entity-popover" in css
+    assert ".chapter-section-grid" in css
 
 
 def test_static_styles_include_trace_and_annotation_states():

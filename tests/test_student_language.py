@@ -92,6 +92,18 @@ def test_static_chapter_view_has_chapter_selector():
     assert "chapterSelect.value = String(data.chapter.number)" in js
 
 
+
+
+def test_static_chapter_selector_labels_include_chapter_titles():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "CHAPTER_TITLES" in js
+    assert "甄士隐梦幻识通灵 贾雨村风尘怀闺秀" in js
+    assert "凸碧堂品笛感凄清 凹晶馆联诗悲寂寞" in js
+    assert 'option.textContent = chapterOptionLabel(number)' in js
+    assert "`第 ${number} 回：${title}`" in js
+    assert "`第 ${number} 回`" in js
+
 def test_static_common_entries_route_by_target_type():
     js = Path("static/app.js").read_text(encoding="utf-8")
 

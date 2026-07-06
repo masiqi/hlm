@@ -60,6 +60,9 @@ EXTENDED_APP_IMPORT_LIST_FIELDS = (
     "later_associations",
     "annotations",
 )
+REQUIRED_NON_EMPTY_RICH_FIELDS = ("characters", "relationships", "annotations")
+SUMMARY_MIN_CHARS = 250
+SUMMARY_MAX_CHARS = 400
 DISPLAY_CARD_FIELDS = (
     "plain_summary",
     "plot_chain",
@@ -197,6 +200,8 @@ def generate_cards(
     llm_client: Any,
     generated_at: str,
     overwrite: bool = False,
+    json_only: bool = False,
+    max_evidence_candidates: int | None = None,
 ) -> list[dict[str, Any]]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     by_number = {int(item["number"]): item for item in manifest["chapters"]}
@@ -220,8 +225,16 @@ def generate_cards(
             evidence,
             question=_chapter_evidence_question(chapter_number, str(item["title"])),
             chapter_number=chapter_number,
+            max_candidates=max_evidence_candidates,
         )
-        prompt = build_prompt(
+        prompt = build_json_only_prompt(
+            chapter_number=chapter_number,
+            chapter_title=str(item["title"]),
+            source_file=str(item["file_path"]),
+            chapter_text=chapter_text,
+            lightrag_evidence=evidence_pack,
+            generated_at=generated_at,
+        ) if json_only else build_prompt(
             chapter_number=chapter_number,
             chapter_title=str(item["title"]),
             source_file=str(item["file_path"]),
@@ -257,6 +270,7 @@ def generate_cards(
             },
         )
         _attach_evidence_audit(card, evidence_pack, evidence)
+        normalize_generated_card_for_quality_gate(card, evidence_pack=evidence_pack)
         validation_errors = validate_generated_card_output(markdown, card, evidence_pack=evidence_pack)
         if validation_errors:
             failed_dir = output_dir / "failed"
@@ -302,8 +316,11 @@ def build_evidence_pack(
     *,
     question: str = "",
     chapter_number: int | None = None,
+    max_candidates: int | None = None,
 ) -> dict[str, Any]:
     candidates = normalize_query_data_response(query_data_response, question=question)
+    if max_candidates is not None and max_candidates > 0:
+        candidates = candidates[:max_candidates]
     safe_candidates = [_candidate_to_prompt_item(candidate) for candidate in candidates]
     later_candidates = [
         item
@@ -374,6 +391,64 @@ def _attach_evidence_audit(card: dict[str, Any], evidence_pack: Mapping[str, Any
     }
 
 
+def normalize_generated_card_for_quality_gate(card: dict[str, Any], *, evidence_pack: Mapping[str, Any]) -> None:
+    internal = card.setdefault("internal", {})
+    if not isinstance(internal, dict):
+        internal = {}
+        card["internal"] = internal
+    normalization: dict[str, Any] = {}
+
+    summary = str(card.get("plain_summary") or "").strip()
+    fitted_summary = _fit_summary_to_required_length(summary)
+    if fitted_summary != summary:
+        card["plain_summary"] = fitted_summary
+        normalization["plain_summary"] = {
+            "original_length": len(summary),
+            "normalized_length": len(fitted_summary),
+        }
+
+    later_associations = card.get("later_associations")
+    if isinstance(later_associations, list) and later_associations:
+        later_evidence = evidence_pack.get("later_association_evidence")
+        chapter_number = _card_chapter_number(card)
+        supported = [
+            association
+            for association in later_associations
+            if _later_association_supported(association, later_evidence, chapter_number=chapter_number)
+        ]
+        if len(supported) != len(later_associations):
+            card["later_associations"] = supported
+            normalization["later_associations"] = {
+                "original_count": len(later_associations),
+                "normalized_count": len(supported),
+            }
+
+    if normalization:
+        internal["quality_normalization"] = normalization
+    key_characters = card.get("key_characters")
+    if isinstance(key_characters, list):
+        normalized_key_characters = [item for item in key_characters if isinstance(item, str) and item.startswith("card-")]
+        if normalized_key_characters != key_characters:
+            card["key_characters"] = normalized_key_characters
+            normalization = internal.setdefault("quality_normalization", {})
+            normalization["key_characters"] = {
+                "original_count": len(key_characters),
+                "normalized_count": len(normalized_key_characters),
+            }
+
+
+def _fit_summary_to_required_length(summary: str) -> str:
+    if not summary or len(summary) <= SUMMARY_MAX_CHARS:
+        return summary
+    candidate = summary[:SUMMARY_MAX_CHARS]
+    best_break = -1
+    for marker in ("。", "！", "？", "；"):
+        best_break = max(best_break, candidate.rfind(marker))
+    if best_break + 1 >= SUMMARY_MIN_CHARS:
+        return candidate[: best_break + 1]
+    return candidate.rstrip("，、；：")
+
+
 def build_prompt(
     *,
     chapter_number: int,
@@ -409,7 +484,7 @@ def build_prompt(
 6. 不要写空泛套话；每个重要判断都要绑定具体情节或文本依据。
 7. 完整 Markdown 章节复习卡和 AppImportJSON 的学生可见文字都不得出现这些词：LightRAG、RAG、知识图谱、向量检索、置信度、模型分数、标准答案、题库、下一题、提交答案、批改。
 8. 生成内容不是题库，不要设计刷题流程，不要写评分标准。
-9. 必须直接从标题行“# 第{chapter_number}回 {chapter_title} 章节复习卡”开始输出，不要输出寒暄、解释、免责声明或“好的同学”之类开场白。
+9. 必须直接从“AppImportJSON”开始输出，不要输出寒暄、解释、免责声明或“好的同学”之类开场白。
 
 章节编号：
 {chapter_number}
@@ -428,41 +503,11 @@ def build_prompt(
 
 请输出两部分。
 
-第一部分：完整 Markdown 章节复习卡
+第一部分：AppImportJSON
 
-必须从下面标题行开始，不要在标题前添加任何文字：
+必须从下面这一行开始，不要在它前面添加任何文字：
 
-# 第{chapter_number}回 {chapter_title} 章节复习卡
-
-必须包含以下栏目：
-
-# 第{chapter_number}回 {chapter_title} 章节复习卡
-
-## 1. 本回一句话概括
-## 2. 本回梗概
-250—400 字，按情节发展顺序写。
-## 3. 情节链梳理
-列出 8—15 个关键情节节点，说明涉及人物、起因、经过、结果、作用/意义、是否伏笔。
-## 4. 主要人物与本回表现
-## 5. 人物关系图谱
-## 6. 关键地点与环境描写
-## 7. 关键物件、意象与象征
-## 8. 诗词曲文、对联、判词、灯谜、花签、题额与语言细节
-## 9. 主题与艺术手法
-## 10. 伏笔、照应与后文关联
-后文关联必须引用系统提供的全书关系线索；没有可靠线索时写“本回暂不能确定”。
-## 11. 高频考点整理
-只整理考点，不要变成题库。
-## 12. 易错点与辨析
-## 13. 关键语句现代汉语解释
-## 14. 本回核心知识卡片
-## 15. 关系线索三元组
-## 16. 实体清单
-## 17. 检索标签
-## 18. 本回复习建议
-## 19. 待补充说明
-
-第二部分：AppImportJSON
+AppImportJSON
 
 输出一个 JSON 对象，字段必须完全符合下面结构：
 
@@ -551,7 +596,69 @@ def build_prompt(
 - key_characters、later_association_relation_ids、quotable_fact_ids 暂时留空数组，除非输入材料明确提供了已经存在的 ID。
 - later_associations 默认输出空数组；只有系统提供的全书关系线索或明确后续章回证据足以支撑时，才可填入对象。
 - plain_summary、plot_chain、key_events、current_chapter_foreshadowing_signals、understanding_focus、characters、relationships、places、objects、literary_texts、modern_explanations、later_associations、annotations 中不得出现禁用词。
+
+第二部分：完整 Markdown 章节复习卡
+
+AppImportJSON 输出完整后，再输出完整 Markdown 章节复习卡。
+
+Markdown 部分必须从下面标题行开始：
+
+# 第{chapter_number}回 {chapter_title} 章节复习卡
+
+Markdown 必须包含以下栏目：
+
+# 第{chapter_number}回 {chapter_title} 章节复习卡
+
+## 1. 本回一句话概括
+## 2. 本回梗概
+250—400 字，按情节发展顺序写。
+## 3. 情节链梳理
+列出 8—15 个关键情节节点，说明涉及人物、起因、经过、结果、作用/意义、是否伏笔。
+## 4. 主要人物与本回表现
+## 5. 人物关系图谱
+## 6. 关键地点与环境描写
+## 7. 关键物件、意象与象征
+## 8. 诗词曲文、对联、判词、灯谜、花签、题额与语言细节
+## 9. 主题与艺术手法
+## 10. 伏笔、照应与后文关联
+后文关联必须引用系统提供的全书关系线索；没有可靠线索时写“本回暂不能确定”。
+## 11. 高频考点整理
+只整理考点，不要变成题库。
+## 12. 易错点与辨析
+## 13. 关键语句现代汉语解释
+## 14. 本回核心知识卡片
+## 15. 关系线索三元组
+## 16. 实体清单
+## 17. 检索标签
+## 18. 本回复习建议
+## 19. 待补充说明
 """
+
+
+def build_json_only_prompt(
+    *,
+    chapter_number: int,
+    chapter_title: str,
+    source_file: str,
+    chapter_text: str,
+    lightrag_evidence: Mapping[str, Any],
+    generated_at: str,
+) -> str:
+    full_prompt = build_prompt(
+        chapter_number=chapter_number,
+        chapter_title=chapter_title,
+        source_file=source_file,
+        chapter_text=chapter_text,
+        lightrag_evidence=lightrag_evidence,
+        generated_at=generated_at,
+    )
+    marker = "第二部分：完整 Markdown 章节复习卡"
+    json_prompt = full_prompt.split(marker, 1)[0].rstrip()
+    return (
+        json_prompt
+        + "\n\n只输出第一部分 AppImportJSON，不要输出 Markdown 章节复习卡。"
+        + "\n输出必须从 AppImportJSON 开始，并包含一个合法 JSON 代码块。"
+    )
 
 
 def build_repair_prompt(*, chapter_number: int, chapter_title: str, generated_at: str, previous_output: str) -> str:
@@ -625,8 +732,8 @@ def validate_generated_card_output(
     errors: list[str] = []
     stripped = markdown.lstrip()
     first_line = stripped.splitlines()[0].strip() if stripped else ""
-    if not first_line.startswith("# 第"):
-        errors.append("完整 Markdown 不得以寒暄开头，必须直接从章节标题开始。")
+    if not (first_line.startswith("# 第") or first_line == "AppImportJSON"):
+        errors.append("输出不得以寒暄开头，必须直接从 AppImportJSON 或章节标题开始。")
 
     for term in STUDENT_FORBIDDEN_TERMS:
         if term in markdown:
@@ -636,8 +743,11 @@ def validate_generated_card_output(
         if field not in card:
             errors.append(f"AppImportJSON 缺少必填字段：{field}")
 
-    if not str(card.get("plain_summary") or "").strip():
+    summary = str(card.get("plain_summary") or "").strip()
+    if not summary:
         errors.append("AppImportJSON 字段 plain_summary 不能为空。")
+    elif not SUMMARY_MIN_CHARS <= len(summary) <= SUMMARY_MAX_CHARS:
+        errors.append("AppImportJSON 字段 plain_summary 必须为 250—400 字。")
 
     list_fields = (
         "plot_chain",
@@ -660,6 +770,9 @@ def validate_generated_card_output(
             errors.append(f"AppImportJSON 缺少必填字段：{field}")
         elif not isinstance(card[field], list):
             errors.append(f"AppImportJSON 字段 {field} 必须是数组。")
+    for field in REQUIRED_NON_EMPTY_RICH_FIELDS:
+        if isinstance(card.get(field), list) and not card[field]:
+            errors.append(f"AppImportJSON 字段 {field} 不能为空，网站需要它展示人物、关系或原文链接。")
 
     for path, text in _iter_display_text(card, DISPLAY_CARD_FIELDS):
         for term in STUDENT_FORBIDDEN_TERMS:
@@ -818,6 +931,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path, default=Path("generated"))
     parser.add_argument("--generated-at", default=date.today().isoformat())
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--json-only", action="store_true", help="Only generate AppImportJSON for faster website/database trials.")
+    parser.add_argument("--max-evidence-candidates", type=int, default=None, help="Limit normalized evidence candidates passed to the LLM.")
     args = parser.parse_args(argv)
 
     try:
@@ -834,6 +949,8 @@ def main(argv: list[str] | None = None) -> int:
             llm_client=OpenAICompatibleLLMClient(LLMConfig.from_env(env)),
             generated_at=args.generated_at,
             overwrite=args.overwrite,
+            json_only=args.json_only,
+            max_evidence_candidates=args.max_evidence_candidates,
         )
         checked_path = args.output_dir / "chapter_review_cards.checked.json"
         valid_cards = load_import_cards(args.output_dir / "chapter_review_cards.raw.json", data_dir=Path("data/app"))
