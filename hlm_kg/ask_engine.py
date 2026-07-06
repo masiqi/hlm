@@ -18,6 +18,7 @@ from hlm_kg.evidence_adapter import EvidenceCandidate, normalize_query_data_resp
 
 
 OUT_OF_SCOPE_TERMS = ("作文", "现实", "八卦", "数学", "英语")
+MAX_RETRIEVAL_EVIDENCE = 3
 
 
 class AskEngine:
@@ -29,9 +30,7 @@ class AskEngine:
             return self._refuse(question, "OUT_OF_SCOPE", "当前产品只支持《红楼梦》阅读理解相关问题。")
 
         if retrieval_client is not None:
-            answer = self._answer_from_retrieval(question, retrieval_client)
-            if answer is not None:
-                return answer
+            return self._answer_from_retrieval(question, retrieval_client)
 
         if "没有资料" in question:
             supported = self._daiyu_answer(question)
@@ -57,23 +56,27 @@ class AskEngine:
 
         return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
 
-    def _answer_from_retrieval(self, question: str, retrieval_client: Any) -> AskAnswer | None:
-        if not _is_chapter_location_question(question):
-            return None
+    def _answer_from_retrieval(self, question: str, retrieval_client: Any) -> AskAnswer:
         try:
             response = retrieval_client.query_data(question, mode="hybrid", only_need_context=True)
         except Exception:  # noqa: BLE001 - retrieval failure should not expose internals to students
             return self._refuse(question, "GRAPH_UNAVAILABLE", "关系线索暂时不可用，当前不能生成可靠回答。")
 
         candidates = normalize_query_data_response(response, question=question)
-        chapter_candidates = _chapter_location_candidates(candidates)
-        if _has_conflicting_chapters(chapter_candidates):
-            return self._refuse(question, "SOURCE_CONFLICT", "资料存在不一致，优先查看原文依据。")
-        candidate = chapter_candidates[0] if chapter_candidates else None
-        if candidate is None:
+        if _is_chapter_location_question(question):
+            chapter_candidates = _chapter_location_candidates(candidates)
+            if _has_conflicting_chapters(chapter_candidates):
+                return self._refuse(question, "SOURCE_CONFLICT", "资料存在不一致，优先查看原文依据。")
+            candidate = chapter_candidates[0] if chapter_candidates else None
+            if candidate is None:
+                return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
+            return self._chapter_location_answer(question, candidate)
+
+        supported_candidates = _supporting_candidates(candidates)
+        if not supported_candidates:
             return self._refuse(question, "NO_EVIDENCE", "当前资料中没有找到足够依据回答这个问题。")
 
-        return self._chapter_location_answer(question, candidate)
+        return self._candidate_evidence_answer(question, supported_candidates)
 
     def _chapter_location_answer(self, question: str, candidate: EvidenceCandidate) -> AskAnswer:
         source = candidate.chapter_sources[0]
@@ -112,6 +115,52 @@ class AskEngine:
                 ContinuationLink(f"查看{source.chapter_label}", "chapter", str(source.chapter_number)),
             ],
             refusal=None,
+        )
+
+    def _candidate_evidence_answer(self, question: str, candidates: list[EvidenceCandidate]) -> AskAnswer:
+        selected_candidates = candidates[:MAX_RETRIEVAL_EVIDENCE]
+        evidence = [_evidence_from_candidate(candidate, index) for index, candidate in enumerate(selected_candidates, start=1)]
+        primary_candidate = selected_candidates[0]
+        primary_evidence = evidence[0]
+        conclusion = AnswerClaim(
+            text=_student_safe_candidate_conclusion(primary_candidate),
+            evidence_ids=[primary_evidence.id],
+            claim_type=_claim_type_for_candidate(primary_candidate),
+        )
+        explanation_claims = [
+            AnswerClaim(
+                text=_student_safe_evidence_explanation(candidate),
+                evidence_ids=[item.id],
+                claim_type=_claim_type_for_candidate(candidate),
+            )
+            for candidate, item in zip(selected_candidates, evidence, strict=True)
+        ]
+        quotable_claims = [
+            AnswerClaim(
+                text=_quotable_fact_from_candidate(candidate),
+                evidence_ids=[item.id],
+                claim_type="quotable_fact",
+            )
+            for candidate, item in zip(selected_candidates, evidence, strict=True)
+        ]
+        status = "partial" if _has_explicit_unsupported_subclaim(question) else "answered"
+        return AskAnswer(
+            id=f"ask-{uuid4()}",
+            question=question,
+            status=status,
+            short_conclusion=[conclusion],
+            evidence=evidence,
+            explanation=[AnswerSection(title="依据", claims=explanation_claims)],
+            quotable_facts=AnswerSection(title="可引用事实", claims=quotable_claims),
+            continuation_links=_continuation_links_for_candidates(selected_candidates),
+            refusal=(
+                Refusal(
+                    reason="UNSUPPORTED_SUBCLAIM",
+                    message="“没有资料的后文细节”当前资料不足，未生成确定结论。",
+                )
+                if status == "partial"
+                else None
+            ),
         )
 
     def _daiyu_answer(self, question: str) -> AskAnswer:
@@ -200,6 +249,16 @@ def _chapter_location_candidates(candidates: list[EvidenceCandidate]) -> list[Ev
     return [candidate for candidate in candidates if candidate.chapter_sources and _supports_chapter_location(candidate)]
 
 
+def _supporting_candidates(candidates: list[EvidenceCandidate]) -> list[EvidenceCandidate]:
+    return [
+        candidate
+        for candidate in candidates
+        if candidate.kind != "reference"
+        and candidate.chapter_sources
+        and (candidate.description.strip() or candidate.title.strip())
+    ]
+
+
 def _supports_chapter_location(candidate: EvidenceCandidate) -> bool:
     if candidate.kind == "reference":
         return False
@@ -217,3 +276,77 @@ def _has_conflicting_chapters(candidates: list[EvidenceCandidate]) -> bool:
         for source in candidate.chapter_sources
     }
     return len(chapters) > 1
+
+
+def _evidence_from_candidate(candidate: EvidenceCandidate, index: int) -> Evidence:
+    source = candidate.chapter_sources[0]
+    return Evidence(
+        id=f"ev-query-{index}-{uuid4()}",
+        source_type=_source_type_for_candidate(candidate),
+        chapter=source.chapter_number,
+        location=f"{source.chapter_label}：{source.chapter_title}",
+        quote=None,
+        evidence_text=candidate.description or candidate.title,
+        entity_ids=[],
+        relation_id=candidate.title if candidate.kind == "relationship" else None,
+        confidence="explicit",
+        provenance=source.source_file,
+        derived_from_ids=[],
+    )
+
+
+def _source_type_for_candidate(candidate: EvidenceCandidate) -> str:
+    if candidate.kind in {"relationship", "entity"}:
+        return "graph_relation"
+    if candidate.kind == "chunk":
+        return "original_text"
+    return "processed_material"
+
+
+def _claim_type_for_candidate(candidate: EvidenceCandidate) -> str:
+    if candidate.kind in {"relationship", "entity"}:
+        return "identity_relation"
+    return "plot_summary"
+
+
+def _student_safe_candidate_conclusion(candidate: EvidenceCandidate) -> str:
+    description = _clean_candidate_text(candidate.description)
+    if description:
+        return f"根据可回溯资料，{description}"
+    return f"根据可回溯资料，可以定位到“{candidate.title}”。"
+
+
+def _student_safe_evidence_explanation(candidate: EvidenceCandidate) -> str:
+    source = candidate.chapter_sources[0]
+    topic = _clean_candidate_text(candidate.title)
+    description = _clean_candidate_text(candidate.description)
+    if description:
+        return f"{source.chapter_label}《{source.chapter_title}》的资料说明：{description}"
+    return f"{source.chapter_label}《{source.chapter_title}》提供了“{topic}”的相关依据。"
+
+
+def _quotable_fact_from_candidate(candidate: EvidenceCandidate) -> str:
+    source = candidate.chapter_sources[0]
+    description = _clean_candidate_text(candidate.description or candidate.title)
+    return f"第{source.chapter_number}回：{description}"
+
+
+def _continuation_links_for_candidates(candidates: list[EvidenceCandidate]) -> list[ContinuationLink]:
+    links: list[ContinuationLink] = []
+    seen: set[int] = set()
+    for candidate in candidates:
+        for source in candidate.chapter_sources:
+            if source.chapter_number in seen:
+                continue
+            seen.add(source.chapter_number)
+            links.append(ContinuationLink(f"查看{source.chapter_label}", "chapter", str(source.chapter_number)))
+    return links
+
+
+def _clean_candidate_text(value: str) -> str:
+    parts = [part.strip() for part in str(value or "").split("<SEP>") if part.strip()]
+    return "；".join(parts)
+
+
+def _has_explicit_unsupported_subclaim(question: str) -> bool:
+    return "没有资料" in question
