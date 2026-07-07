@@ -225,6 +225,226 @@ def test_ask_engine_answers_relationship_question_from_query_data_evidence():
     assert "第3回" in answer.quotable_facts.claims[0].text
 
 
+def test_ask_engine_falls_back_to_original_text_when_retrieval_hits_do_not_answer_age_question():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "王熙凤",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "人物关系",
+                    "description": "王熙凤与贾宝玉在《红楼梦》中是堂嫂与堂弟的关系。",
+                    "source_id": "doc-007-chunk-001",
+                    "file_path": "007-第七回-送宫花贾琏戏熙凤 宴宁府宝玉会秦钟.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("贾宝玉最早被资料介绍时多大年纪？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "answered"
+    assert "十来岁" in answer.short_conclusion[0].text
+    assert "王熙凤" not in answer.short_conclusion[0].text
+    assert answer.evidence[0].chapter == 2
+    assert answer.evidence[0].source_type == "original_text"
+    assert "如今长了十来岁" in answer.evidence[0].evidence_text
+    assert answer.continuation_links[0].target_id == "2"
+
+
+def test_ask_engine_rejects_age_evidence_about_another_person():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [],
+            "chunks": [
+                {
+                    "chunk_id": "doc-012-chunk-001",
+                    "content": "贾瑞二十来岁的人，尚未娶亲，想着麝月不得到手，因而相思成病。",
+                    "file_path": "012-第十二回-王熙凤毒设相思局 贾天祥正照风月鉴.txt",
+                }
+            ],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("麝月这时候是几岁？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
+def test_ask_engine_refuses_age_question_when_candidates_do_not_contain_age_evidence():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "王熙凤",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "人物关系",
+                    "description": "王熙凤与贾宝玉在《红楼梦》中是堂嫂与堂弟的关系。",
+                    "source_id": "doc-007-chunk-001",
+                    "file_path": "007-第七回-送宫花贾琏戏熙凤 宴宁府宝玉会秦钟.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("王熙凤第一次在书中出现的时候是几岁？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
+def test_ask_engine_extracts_death_answer_instead_of_returning_relationship_essay():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "林黛玉",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "知己关系,爱情悲剧",
+                    "description": (
+                        "林黛玉与贾宝玉的关系是以姑表兄妹血缘为纽带、刻骨铭心的知己之恋。"
+                        "二人自幼一同长大，初见便觉面善。"
+                        "宝玉说亲的消息直接导致黛玉病情加重，使其急怒攻心，惟求速死。"
+                        "黛玉最终撕毁宝玉所赠之帕以断情，临终前直声呼唤“宝玉！宝玉！你好……”。"
+                        "黛玉死后，宝玉悲痛如刀搅。"
+                    ),
+                    "source_id": "doc-097-chunk-001",
+                    "file_path": "097-第九十七回-林黛玉焚稿断痴情 薛宝钗出闺成大礼.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("林黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "answered"
+    conclusion = answer.short_conclusion[0].text
+    assert "急怒攻心" in conclusion
+    assert "病情加重" in conclusion
+    assert "临终" in conclusion
+    assert "姑表兄妹" not in conclusion
+    assert len(conclusion) < 220
+    assert "姑表兄妹" not in answer.evidence[0].evidence_text
+    assert "急怒攻心" in answer.evidence[0].evidence_text
+
+
+def test_ask_engine_resolves_short_subject_before_extracting_death_answer():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "林黛玉",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "知己关系,爱情悲剧",
+                    "description": (
+                        "林黛玉与贾宝玉的关系是以姑表兄妹血缘为纽带。"
+                        "宝玉说亲的消息直接导致黛玉病情加重，使其急怒攻心，惟求速死。"
+                        "黛玉最终撕毁宝玉所赠之帕以断情，临终前直声呼唤“宝玉！宝玉！你好……”。"
+                    ),
+                    "source_id": "doc-097-chunk-001",
+                    "file_path": "097-第九十七回-林黛玉焚稿断痴情 薛宝钗出闺成大礼.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "answered"
+    assert "林黛玉的死亡经过" in answer.short_conclusion[0].text
+    assert "急怒攻心" in answer.short_conclusion[0].text
+    assert "姑表兄妹" not in answer.short_conclusion[0].text
+
+
+def test_ask_engine_rejects_death_evidence_about_another_person():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "晴雯",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "死亡,人物关系",
+                    "description": "晴雯病重后被撵出，最终痨死，宝玉未及临终相见。",
+                    "source_id": "doc-078-chunk-001",
+                    "file_path": "078-第七十八回-老学士闲征姽婳词 痴公子杜撰芙蓉诔.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("林黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
+def test_ask_engine_rejects_candidate_about_different_subject_for_definition_question():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [
+                {
+                    "entity_name": "贾宝玉",
+                    "entity_type": "person",
+                    "description": "贾宝玉是荣国府贾政与王夫人的儿子，居于怡红院。",
+                    "source_id": "doc-002-chunk-001",
+                    "file_path": "002-第二回-贾夫人仙逝扬州城 冷子兴演说荣国府.txt",
+                }
+            ],
+            "relationships": [],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+
+    answer = make_engine().ask("通灵宝玉是什么？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "refused"
+    assert answer.refusal is not None
+    assert answer.refusal.reason == "NO_EVIDENCE"
+
+
 def test_ask_engine_returns_partial_for_mixed_query_data_question():
     response = {
         "status": "success",

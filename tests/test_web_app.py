@@ -2,7 +2,8 @@ import socket
 import json
 from pathlib import Path
 
-from hlm_kg.web_app import create_app_context, find_available_port, handle_api_request
+from hlm_kg.domain import Topic
+from hlm_kg.web_app import create_app_context, find_available_port, handle_api_request, _topic_list_payload
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -2029,6 +2030,178 @@ def test_api_ask_uses_configured_retrieval_client_for_chapter_location():
     assert "LightRAG" not in str(payload)
 
 
+def test_api_ask_falls_back_to_original_text_when_retrieval_hits_do_not_answer_age_question():
+    class IrrelevantRelationshipRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [],
+                    "relationships": [
+                        {
+                            "src_id": "王熙凤",
+                            "tgt_id": "贾宝玉",
+                            "keywords": "人物关系",
+                            "description": "王熙凤与贾宝玉在《红楼梦》中是堂嫂与堂弟的关系。",
+                            "source_id": "doc-007-chunk-001",
+                            "file_path": "007-第七回-送宫花贾琏戏熙凤 宴宁府宝玉会秦钟.txt",
+                        }
+                    ],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=IrrelevantRelationshipRetrievalClient(),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "贾宝玉最早被资料介绍时多大年纪？"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    assert "十来岁" in payload["shortConclusion"][0]["text"]
+    assert "王熙凤" not in payload["shortConclusion"][0]["text"]
+    assert payload["evidence"][0]["sourceType"] == "original_text"
+    assert payload["evidence"][0]["chapter"] == 2
+    assert "如今长了十来岁" in payload["evidence"][0]["evidenceText"]
+
+
+def test_api_ask_extracts_death_answer_without_returning_relationship_essay():
+    class RelationshipWithDeathEvidenceRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [],
+                    "relationships": [
+                        {
+                            "src_id": "林黛玉",
+                            "tgt_id": "贾宝玉",
+                            "keywords": "知己关系,爱情悲剧",
+                            "description": (
+                                "林黛玉与贾宝玉的关系是以姑表兄妹血缘为纽带、刻骨铭心的知己之恋。"
+                                "二人自幼一同长大，初见便觉面善。"
+                                "宝玉说亲的消息直接导致黛玉病情加重，使其急怒攻心，惟求速死。"
+                                "黛玉最终撕毁宝玉所赠之帕以断情，临终前直声呼唤“宝玉！宝玉！你好……”。"
+                                "黛玉死后，宝玉悲痛如刀搅。"
+                            ),
+                            "source_id": "doc-097-chunk-001",
+                            "file_path": "097-第九十七回-林黛玉焚稿断痴情 薛宝钗出闺成大礼.txt",
+                        }
+                    ],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=RelationshipWithDeathEvidenceRetrievalClient(),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "林黛玉是怎么死的？"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    conclusion = payload["shortConclusion"][0]["text"]
+    evidence_text = payload["evidence"][0]["evidenceText"]
+    assert "急怒攻心" in conclusion
+    assert "病情加重" in conclusion
+    assert "临终" in conclusion
+    assert "姑表兄妹" not in conclusion
+    assert "知己之恋" not in conclusion
+    assert "姑表兄妹" not in evidence_text
+    assert "急怒攻心" in evidence_text
+    assert payload["evidence"][0]["chapter"] == 97
+
+
+def test_api_ask_resolves_short_subject_before_extracting_death_answer():
+    class RelationshipWithDeathEvidenceRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [],
+                    "relationships": [
+                        {
+                            "src_id": "林黛玉",
+                            "tgt_id": "贾宝玉",
+                            "keywords": "知己关系,爱情悲剧",
+                            "description": (
+                                "林黛玉与贾宝玉的关系是以姑表兄妹血缘为纽带。"
+                                "宝玉说亲的消息直接导致黛玉病情加重，使其急怒攻心，惟求速死。"
+                                "黛玉最终撕毁宝玉所赠之帕以断情，临终前直声呼唤“宝玉！宝玉！你好……”。"
+                            ),
+                            "source_id": "doc-097-chunk-001",
+                            "file_path": "097-第九十七回-林黛玉焚稿断痴情 薛宝钗出闺成大礼.txt",
+                        }
+                    ],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=RelationshipWithDeathEvidenceRetrievalClient(),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "黛玉是怎么死的？"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    assert "林黛玉的死亡经过" in payload["shortConclusion"][0]["text"]
+    assert "急怒攻心" in payload["shortConclusion"][0]["text"]
+    assert "姑表兄妹" not in payload["shortConclusion"][0]["text"]
+
+
+def test_api_ask_rejects_candidate_about_different_subject_for_definition_question():
+    class WrongSubjectRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [
+                        {
+                            "entity_name": "贾宝玉",
+                            "entity_type": "person",
+                            "description": "贾宝玉是荣国府贾政与王夫人的儿子，居于怡红院。",
+                            "source_id": "doc-002-chunk-001",
+                            "file_path": "002-第二回-贾夫人仙逝扬州城 冷子兴演说荣国府.txt",
+                        }
+                    ],
+                    "relationships": [],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=WrongSubjectRetrievalClient(),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "通灵宝玉是什么？"})
+
+    assert status == 200
+    assert payload["status"] == "refused"
+    assert payload["refusal"]["reason"] == "NO_EVIDENCE"
+
+
 def test_create_app_context_does_not_build_retrieval_client_from_env_by_default(monkeypatch):
     monkeypatch.setenv("LIGHTRAG_BASE_URL", "http://10.1.0.246:9621")
 
@@ -2163,7 +2336,7 @@ def test_api_ask_returns_refusal_without_internal_reason_code_in_message():
     assert "OUT_OF_SCOPE" not in payload["refusal"]["message"]
 
 
-def test_api_topics_returns_five_categories():
+def test_api_topics_returns_aggregated_topic_categories():
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
@@ -2178,8 +2351,288 @@ def test_api_topics_returns_five_categories():
         "关键事件",
         "判词命运",
         "意象伏笔",
-        "可引用事实",
     }
+    assert not any(topic["title"] == "人物关系" for topic in payload["topics"])
+    assert not any(topic["title"].endswith("可引用事实") for topic in payload["topics"])
+
+
+def test_api_home_returns_camel_cased_common_entry_targets():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/home")
+
+    assert status == 200
+    assert payload["commonEntries"]
+    assert all("targetType" in entry for entry in payload["commonEntries"])
+    assert not any("target_type" in entry for entry in payload["commonEntries"])
+    assert {entry["targetType"] for entry in payload["commonEntries"]} >= {"ask", "chapter", "topic", "card"}
+
+
+def test_api_topics_returns_grouped_topic_library():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/topics")
+
+    assert status == 200
+    assert [group["category"] for group in payload["topicGroups"]] == [
+        "人物关系",
+        "关键事件",
+        "判词命运",
+        "意象伏笔",
+    ]
+    grouped_topics = [
+        topic
+        for group in payload["topicGroups"]
+        for topic in group["topics"]
+    ]
+    assert len(grouped_topics) == len(payload["topics"])
+    assert len(grouped_topics) <= 180
+    for group in payload["topicGroups"]:
+        assert group["description"]
+        assert group["topics"]
+        assert all(topic["category"] == group["category"] for topic in group["topics"])
+        assert all(topic["title"] != group["category"] for topic in group["topics"])
+
+
+def test_topic_list_payload_does_not_fetch_detail_records_for_list_summaries():
+    class ListOnlyStore:
+        topics = [
+            Topic(
+                id="topic-hulu",
+                title="葫芦案",
+                category="关键事件",
+                description="贾雨村乱判葫芦案",
+                card_ids=["card-hulu"],
+                relation_ids=[],
+                typical_question_patterns=["概括事件并说明人物表现"],
+                quotable_fact_ids=["ev-hulu"],
+                evidence_ids=["ev-hulu"],
+            )
+        ]
+
+        def entity_graph_payloads_for_names(self, names):
+            return {}
+
+        def evidence(self, evidence_id):
+            raise AssertionError("topic list should not fetch per-topic evidence records")
+
+        def knowledge_card(self, card_id):
+            raise AssertionError("topic list should not fetch per-topic card records")
+
+    payload = _topic_list_payload(ListOnlyStore())
+
+    assert payload["topics"][0]["description"] == "贾雨村乱判葫芦案"
+
+
+def test_topic_list_payload_reads_lightweight_graph_descriptions_when_available():
+    class ListDescriptionStore:
+        topics = [
+            Topic(
+                id="topic-hulu",
+                title="葫芦案",
+                category="关键事件",
+                description="贾雨村乱判葫芦案",
+                card_ids=["card-hulu"],
+                relation_ids=[],
+                typical_question_patterns=["概括事件并说明人物表现"],
+                quotable_fact_ids=["ev-hulu"],
+                evidence_ids=["ev-hulu"],
+            )
+        ]
+
+        def entity_graph_descriptions_for_names(self, names):
+            assert names == ["葫芦案"]
+            return {"葫芦案": "贾雨村在门子提醒下徇私枉法审理薛家命案。"}
+
+        def entity_graph_payloads_for_names(self, names):
+            raise AssertionError("topic list should not read full graph payloads")
+
+    payload = _topic_list_payload(ListDescriptionStore())
+
+    assert payload["topics"][0]["description"] == "贾雨村在门子提醒下徇私枉法审理薛家命案。"
+
+
+def test_api_topics_enriches_topic_card_descriptions_from_entity_graph_cache():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/topics")
+
+    assert status == 200
+    daguan_topic = next(
+        topic
+        for topic in payload["topics"]
+        if topic["title"] == "大观园" and topic["category"] == "意象伏笔"
+    )
+    assert daguan_topic["description"].startswith("大观园是《红楼梦》中贾府")
+    assert "省亲" in daguan_topic["description"]
+    assert not daguan_topic["description"].startswith("围绕大观园")
+
+
+def test_api_topics_uses_topic_specific_summary_instead_of_related_card_brief_for_descriptions():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/topics")
+
+    assert status == 200
+    xiangling_topic = next(
+        topic
+        for topic in payload["topics"]
+        if topic["title"] == "香菱学诗" and topic["category"] == "意象伏笔"
+    )
+    assert "香菱" in xiangling_topic["description"]
+    assert "学诗" in xiangling_topic["description"]
+    assert not xiangling_topic["description"].startswith("林黛玉")
+    assert "林黛玉是" not in xiangling_topic["description"]
+
+
+def test_api_topic_detail_returns_entity_graph_introduction_and_neighbors():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+    topic_id = next(
+        topic.id
+        for topic in context.store.topics
+        if topic.title == "大观园" and topic.category == "意象伏笔"
+    )
+
+    status, payload = handle_api_request(context, "GET", f"/api/topics/{topic_id}")
+
+    assert status == 200
+    assert payload["topic"]["description"].startswith("大观园是《红楼梦》中贾府")
+    assert payload["topicContext"]["introduction"].startswith("大观园是《红楼梦》中贾府")
+    assert "元妃" in payload["topicContext"]["introduction"]
+    assert payload["topicContext"]["graphRelations"]
+    neighbor_names = {item["name"] for item in payload["topicContext"]["graphRelations"]}
+    assert {"妙玉", "怡红院", "绣春囊"} & neighbor_names
+
+
+def test_api_topic_detail_does_not_use_related_card_graph_as_topic_introduction(tmp_path):
+    manifest_path, data_dir, static_dir = _write_minimal_app_context_files(tmp_path, [])
+    (data_dir / "topics.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "topic-crab-feast",
+                    "title": "螃蟹宴",
+                    "category": "关键事件",
+                    "description": "围绕螃蟹宴的起因、经过、结果和章回出处组织。",
+                    "card_ids": ["card-hengwuyuan"],
+                    "relation_ids": [],
+                    "typical_question_patterns": ["概括事件并说明人物表现"],
+                    "quotable_fact_ids": ["ev-crab-feast"],
+                    "evidence_ids": ["ev-crab-feast"],
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (data_dir / "knowledge_cards.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "card-hengwuyuan",
+                    "name": "蘅芜院",
+                    "type": "place",
+                    "brief": "蘅芜院是薛宝钗在大观园中的居所。",
+                    "text_understanding": [],
+                    "understanding_angles": [],
+                    "graph_relation_ids": [],
+                    "evidence_ids": ["ev-crab-feast"],
+                    "related_card_ids": [],
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (data_dir / "evidence.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "ev-crab-feast",
+                    "source_type": "processed_material",
+                    "chapter": 38,
+                    "location": "第 38 回章节资料：key_events",
+                    "quote": None,
+                    "evidence_text": "藕香榭螃蟹宴赏桂，众人以菊花诗题相互唱和。",
+                    "entity_ids": ["card-hengwuyuan"],
+                    "relation_id": None,
+                    "confidence": "explicit",
+                    "provenance": "test",
+                    "derived_from_ids": [],
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (data_dir / "entity_graph_cache.json").write_text(
+        json.dumps(
+            {
+                "蘅芜院": {
+                    "description": "蘅芜院是大观园中一处重要的居所，原名蘅芷清芬。",
+                    "neighbors": [
+                        {
+                            "name": "薛宝钗",
+                            "relationship": "居住",
+                            "description": "薛宝钗住在蘅芜院。",
+                        }
+                    ],
+                }
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    context = create_app_context(manifest_path=manifest_path, data_dir=data_dir, static_dir=static_dir)
+
+    status, payload = handle_api_request(context, "GET", "/api/topics/topic-crab-feast")
+
+    assert status == 200
+    assert "螃蟹宴" in payload["topic"]["description"]
+    assert "蘅芜院" not in payload["topic"]["description"]
+    assert "螃蟹宴" in payload["topicContext"]["introduction"]
+    assert "蘅芜院" not in payload["topicContext"]["introduction"]
+    assert payload["topicContext"]["graphRelations"] == []
+
+
+def test_api_topics_filters_title_only_key_event_fragments_from_library():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+
+    status, payload = handle_api_request(context, "GET", "/api/topics")
+
+    assert status == 200
+    event_titles = {
+        topic["title"]
+        for topic in payload["topics"]
+        if topic["category"] == "关键事件"
+    }
+    assert "螃蟹宴" in event_titles
+    assert "众人制猜灯谜" not in event_titles
+    assert "一僧一道携宝玉归青埂峰作歌归彼大荒" not in event_titles
 
 
 def test_api_generated_topic_detail_returns_evidence_backed_content():
@@ -2229,11 +2682,16 @@ def test_api_topic_detail_links_cards_relations_and_quotable_facts():
         data_dir=Path("data/app"),
         static_dir=Path("static"),
     )
+    topic_id = next(
+        topic.id
+        for topic in context.store.topics
+        if topic.id.startswith("topic-auto-") and topic.relation_ids and topic.quotable_fact_ids
+    )
 
-    status, payload = handle_api_request(context, "GET", "/api/topics/topic-image-foreshadowing")
+    status, payload = handle_api_request(context, "GET", f"/api/topics/{topic_id}")
 
     assert status == 200
-    assert payload["topic"]["category"] == "意象伏笔"
+    assert payload["topic"]["id"] == topic_id
     assert payload["topic"]["typicalQuestionPatterns"]
     assert payload["cards"]
     assert payload["relations"]
@@ -2245,9 +2703,32 @@ def test_static_topic_view_has_visible_knowledge_panel_target():
     html = Path("static/index.html").read_text(encoding="utf-8")
 
     assert "topic-knowledge-panel" in html
-    assert 'cardTarget.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel"' in js
-    assert "loadKnowledgeCard(cardTarget.dataset.cardId, panel)" in js
+    assert 'if (route.view === "topicDetail")' in js
+    assert "cardId: cardTarget.dataset.cardId" in js
+    assert 'await loadKnowledgeCard(route.cardId, "#topic-knowledge-panel")' in js
     assert "#topic-knowledge-panel" in js
+
+
+def test_static_topic_view_renders_grouped_topic_library():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    html = Path("static/index.html").read_text(encoding="utf-8")
+
+    assert 'id="topic-list" class="topic-groups"' in html
+    assert "renderTopicGroups" in js
+    assert "data.topicGroups" in js
+    assert "topic-group" in js
+    assert '<details class="topic-group">' in js
+    assert '<summary class="topic-group-header">' in js
+    assert 'className = "topic-groups"' in js
+
+
+def test_static_topic_detail_renders_introduction_and_graph_relations():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+
+    assert "topicContext" in js
+    assert "专题简介" in js
+    assert "graphRelations" in js
+    assert "renderTopicGraphRelations" in js
 
 
 def test_static_chapter_view_uses_offset_annotations_not_name_replacement():

@@ -24,7 +24,15 @@ GENERATED_TOPIC_PREFIX = "topic-auto-"
 GENERATED_EVIDENCE_PREFIX = "ev-topic-auto-"
 GENERATED_CARD_PREFIX = "card-topic-auto-"
 GENERATED_RELATION_PREFIX = "rel-topic-auto-"
+HIDDEN_SEED_TOPIC_IDS = {
+    "topic-character-relations",
+    "topic-key-events",
+    "topic-judgement-destiny",
+    "topic-image-foreshadowing",
+    "topic-quotable-facts",
+}
 CATEGORY_ORDER = {"人物关系": 0, "关键事件": 1, "判词命运": 2, "意象伏笔": 3, "可引用事实": 4}
+TOPIC_CATEGORY_LIMITS = {"人物关系": 70, "关键事件": 35, "判词命运": 35, "意象伏笔": 40, "可引用事实": 0}
 CARD_TYPE_BY_SOURCE = {
     "character": "person",
     "relationship_target": "image",
@@ -37,6 +45,37 @@ CARD_TYPE_BY_SOURCE = {
     "later": "image",
 }
 DESTINY_TERMS = ("命运", "判词", "曲", "诗", "花签", "灯谜", "梦", "太虚幻境", "结局", "归宿")
+PROMOTED_TOPIC_TERMS = (
+    "刘姥姥进大观园",
+    "金陵十二钗判词",
+    "黛玉葬花",
+    "宝钗扑蝶",
+    "宝玉挨打",
+    "抄检大观园",
+    "晴雯之死",
+    "晴雯补裘",
+    "香菱学诗",
+    "元妃省亲",
+    "探春理家",
+    "黛玉焚稿",
+    "宝玉成亲",
+    "宝玉出家",
+    "尤三姐之死",
+    "尤二姐之死",
+    "芙蓉女儿诔",
+    "木石前盟",
+    "金玉良缘",
+    "通灵宝玉",
+    "葫芦案",
+    "好了歌",
+    "葬花吟",
+    "太虚幻境",
+    "大观园",
+    "海棠诗社",
+    "螃蟹宴",
+    "贾府败落",
+    "落花",
+)
 
 
 @dataclass(frozen=True)
@@ -83,7 +122,12 @@ class _TopicIndexBuilder:
         knowledge_cards: list[dict[str, Any]],
         graph_relations: list[dict[str, Any]],
     ) -> None:
-        self.seed_topics = [item for item in topics if not _is_generated(item.get("id"), GENERATED_TOPIC_PREFIX)]
+        self.seed_topics = [
+            item
+            for item in topics
+            if not _is_generated(item.get("id"), GENERATED_TOPIC_PREFIX)
+            and str(item.get("id")) not in HIDDEN_SEED_TOPIC_IDS
+        ]
         self.evidence_by_id = {
             str(item["id"]): dict(item)
             for item in evidence
@@ -107,7 +151,8 @@ class _TopicIndexBuilder:
         for card in sorted(review_cards, key=lambda item: int(item.get("chapter") or 0)):
             self._consume_review_card(card)
 
-        generated_topics = [draft.as_dict() for draft in self.topic_drafts.values()]
+        candidate_topics = self._merged_generated_topics([draft.as_dict() for draft in self.topic_drafts.values()])
+        generated_topics = self._published_generated_topics(candidate_topics)
         topics = self._sorted_topics([*self.seed_topics, *generated_topics])
         evidence = sorted(self.evidence_by_id.values(), key=lambda item: str(item["id"]))
         knowledge_cards = sorted(self.cards_by_id.values(), key=lambda item: str(item["id"]))
@@ -123,6 +168,7 @@ class _TopicIndexBuilder:
             summary={
                 "input_chapter_cards": len(review_cards),
                 "generated_topics": len(generated_topics),
+                "candidate_topics": len(candidate_topics),
                 "generated_topics_by_category": generated_by_category,
                 "generated_evidence": len([item for item in evidence if str(item["id"]).startswith(GENERATED_EVIDENCE_PREFIX)]),
                 "generated_knowledge_cards": len([item for item in knowledge_cards if str(item["id"]).startswith(GENERATED_CARD_PREFIX)]),
@@ -205,7 +251,7 @@ class _TopicIndexBuilder:
             typical_question="说明人物表现及章回依据",
         )
         self._attach(topic, card_ids=[card_id], evidence_ids=[evidence_id])
-        self._add_fact_topic(title=f"{name}可引用事实", evidence_id=evidence_id, card_id=card_id)
+        self._attach(topic, quotable_fact_ids=[evidence_id])
 
     def _add_relationship_topic(self, card: dict[str, Any], relationship: Any, index: int) -> None:
         if not isinstance(relationship, dict):
@@ -219,9 +265,10 @@ class _TopicIndexBuilder:
             self.skipped_candidates += 1
             return
         source_card_id = self._ensure_card(name=source, card_type="person", brief=f"{source}相关人物。", evidence_id=None)
+        target_card_type = "person" if _looks_like_person(target) else "image"
         target_card_id = self._ensure_card(
             name=target,
-            card_type="person" if _looks_like_person(target) else "image",
+            card_type=target_card_type,
             brief=f"{target}相关线索。",
             evidence_id=None,
         )
@@ -247,7 +294,7 @@ class _TopicIndexBuilder:
             "description": f"{source}与{target}的{relation_type}关系：{description}",
         }
         self._ensure_card(name=source, card_type="person", brief=f"{source}相关人物。", evidence_id=evidence_id, relation_id=relation_id)
-        self._ensure_card(name=target, card_type="person" if _looks_like_person(target) else "image", brief=f"{target}相关线索。", evidence_id=evidence_id)
+        self._ensure_card(name=target, card_type=target_card_type, brief=f"{target}相关线索。", evidence_id=evidence_id, relation_id=relation_id)
         topic = self._topic(
             category="人物关系",
             title=f"{source}与{target}",
@@ -256,7 +303,30 @@ class _TopicIndexBuilder:
             typical_question="说明人物关系及章回依据",
         )
         self._attach(topic, card_ids=[source_card_id, target_card_id], relation_ids=[relation_id], evidence_ids=[evidence_id])
-        self._add_fact_topic(title=f"{source}与{target}关系出处", evidence_id=evidence_id, card_id=source_card_id)
+        self._attach(topic, quotable_fact_ids=[evidence_id])
+        self._attach_person_relation_topic(
+            title=source,
+            card_id=source_card_id,
+            relation_id=relation_id,
+            evidence_id=evidence_id,
+        )
+        if target_card_type == "person":
+            self._attach_person_relation_topic(
+                title=target,
+                card_id=target_card_id,
+                relation_id=relation_id,
+                evidence_id=evidence_id,
+            )
+
+    def _attach_person_relation_topic(self, *, title: str, card_id: str, relation_id: str, evidence_id: str) -> None:
+        topic = self._topic(
+            category="人物关系",
+            title=title,
+            description=f"围绕{title}的章回表现、人物关系和可引用事实组织。",
+            kind="character",
+            typical_question="说明人物关系及章回依据",
+        )
+        self._attach(topic, card_ids=[card_id], relation_ids=[relation_id], evidence_ids=[evidence_id], quotable_fact_ids=[evidence_id])
 
     def _add_literary_topic(self, card: dict[str, Any], item: Any, index: int) -> None:
         if not isinstance(item, dict):
@@ -355,26 +425,60 @@ class _TopicIndexBuilder:
         evidence_id = self._add_evidence(card=card, field=field, index=index, text=clean_text, entity_ids=[])
         if not evidence_id:
             return
+        topic_title = _canonical_topic_title(clean_title, clean_text)
         card_id = self._ensure_card(name=clean_title, card_type=card_type, brief=clean_text, evidence_id=evidence_id)
         topic = self._topic(
             category=category,
-            title=clean_title,
-            description=_topic_description(category, clean_title),
+            title=topic_title,
+            description=_topic_description(category, topic_title),
             kind=source_kind,
             typical_question=typical_question,
         )
-        self._attach(topic, card_ids=[card_id], evidence_ids=[evidence_id], quotable_fact_ids=[evidence_id] if category == "可引用事实" else [])
-        self._add_fact_topic(title=f"{clean_title}可引用事实", evidence_id=evidence_id, card_id=card_id)
+        self._attach(topic, card_ids=[card_id], evidence_ids=[evidence_id], quotable_fact_ids=[evidence_id])
+        if category == "关键事件":
+            summary_evidence_id = self._add_topic_summary_evidence(
+                card=card,
+                field=field,
+                index=index,
+                title=topic_title,
+                alternate_title=clean_title,
+                original_text=clean_text,
+                entity_ids=[card_id],
+            )
+            if summary_evidence_id:
+                self._attach(topic, evidence_ids=[summary_evidence_id])
 
     def _add_fact_topic(self, *, title: str, evidence_id: str, card_id: str | None) -> None:
-        topic = self._topic(
-            category="可引用事实",
-            title=title,
-            description=f"整理{title}中可定位到章回的事实材料。",
-            kind="fact",
-            typical_question="查找可用于作答的事实依据",
+        return
+
+    def _add_topic_summary_evidence(
+        self,
+        *,
+        card: dict[str, Any],
+        field: str,
+        index: int,
+        title: str,
+        alternate_title: str,
+        original_text: str,
+        entity_ids: list[str],
+    ) -> str | None:
+        summary = _compact_text(card.get("plain_summary"))
+        if not summary:
+            return None
+        excerpt = _excerpt_around_term(summary, title) or _excerpt_around_term(summary, alternate_title)
+        if not excerpt:
+            return None
+        if excerpt == _compact_text(original_text):
+            return None
+        if len(excerpt) <= len(_compact_text(original_text)) + 8:
+            return None
+        return self._add_evidence(
+            card=card,
+            field=f"{field}_summary",
+            index=index,
+            text=excerpt,
+            entity_ids=entity_ids,
         )
-        self._attach(topic, card_ids=[card_id] if card_id else [], evidence_ids=[evidence_id], quotable_fact_ids=[evidence_id])
 
     def _add_evidence(
         self,
@@ -486,6 +590,51 @@ class _TopicIndexBuilder:
             cleaned.append(topic)
         return sorted(cleaned, key=lambda item: (CATEGORY_ORDER.get(str(item.get("category")), 99), str(item.get("title")), str(item.get("id"))))
 
+    def _published_generated_topics(self, topics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        published: list[dict[str, Any]] = []
+        for category, limit in TOPIC_CATEGORY_LIMITS.items():
+            if limit <= 0:
+                continue
+            category_topics: list[dict[str, Any]] = []
+            for topic in topics:
+                if topic.get("category") != category or str(topic.get("title", "")).endswith("可引用事实"):
+                    continue
+                if not _is_publishable_generated_topic(topic):
+                    self.skipped_candidates += 1
+                    continue
+                category_topics.append(topic)
+            ranked = sorted(category_topics, key=_topic_rank_key)
+            published.extend(ranked[:limit])
+        return published
+
+    def _merged_generated_topics(self, topics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        merged: dict[tuple[str, str], dict[str, Any]] = {}
+        for topic in topics:
+            category = str(topic.get("category", ""))
+            title = str(topic.get("title", ""))
+            key = (category, title)
+            current = merged.get(key)
+            if current is None:
+                current = {
+                    **topic,
+                    "id": f"{GENERATED_TOPIC_PREFIX}{_slug(category)}-{_slug(title)}",
+                    "card_ids": [],
+                    "relation_ids": [],
+                    "typical_question_patterns": [],
+                    "quotable_fact_ids": [],
+                    "evidence_ids": [],
+                }
+                merged[key] = current
+            current["card_ids"] = _limit_unique([*current["card_ids"], *topic.get("card_ids", [])], 12)
+            current["relation_ids"] = _limit_unique([*current["relation_ids"], *topic.get("relation_ids", [])], 12)
+            current["typical_question_patterns"] = _limit_unique(
+                [*current["typical_question_patterns"], *topic.get("typical_question_patterns", [])],
+                8,
+            )
+            current["quotable_fact_ids"] = _limit_unique([*current["quotable_fact_ids"], *topic.get("quotable_fact_ids", [])], 12)
+            current["evidence_ids"] = _limit_unique([*current["evidence_ids"], *topic.get("evidence_ids", [])], 12)
+        return list(merged.values())
+
 
 def build_topic_index(
     review_cards: list[dict[str, Any]],
@@ -522,6 +671,14 @@ def _has_destiny_term(value: str) -> bool:
     return any(term in value for term in DESTINY_TERMS)
 
 
+def _canonical_topic_title(title: str, text: str) -> str:
+    haystack = f"{title}\n{text}"
+    for term in PROMOTED_TOPIC_TERMS:
+        if term in haystack:
+            return term
+    return title
+
+
 def _slug(value: Any) -> str:
     text = str(value or "").strip().lower()
     ascii_text = re.sub(r"[^a-z0-9]+", "-", text).strip("-")
@@ -536,6 +693,39 @@ def _short_topic(value: str, limit: int = 18) -> str:
     return text[:limit] or str(value or "").strip()[:limit]
 
 
+def _topic_rank_key(topic: dict[str, Any]) -> tuple[int, str, str]:
+    return (-_topic_score(topic), str(topic.get("title", "")), str(topic.get("id", "")))
+
+
+def _topic_score(topic: dict[str, Any]) -> int:
+    title = str(topic.get("title", ""))
+    category = str(topic.get("category", ""))
+    score = 100 * len(topic.get("evidence_ids") or [])
+    score += 40 * len(topic.get("relation_ids") or [])
+    score += 5 * len(topic.get("card_ids") or [])
+    if title in PROMOTED_TOPIC_TERMS:
+        score += 10_000
+    if category == "人物关系" and "与" not in title:
+        score += 300
+    if len(title) > 24:
+        score -= 100
+    if any(mark in title for mark in ("——", "：", "；")):
+        score -= 50
+    return score
+
+
+def _is_publishable_generated_topic(topic: dict[str, Any]) -> bool:
+    category = str(topic.get("category", ""))
+    if category != "关键事件":
+        return True
+    title = str(topic.get("title", ""))
+    if title in PROMOTED_TOPIC_TERMS:
+        return True
+    if len(topic.get("quotable_fact_ids") or []) >= 2:
+        return True
+    return bool(topic.get("relation_ids"))
+
+
 def _join_parts(*parts: Any) -> str:
     values: list[str] = []
     for part in parts:
@@ -548,6 +738,35 @@ def _join_parts(*parts: Any) -> str:
         if text:
             values.append(text)
     return "；".join(values)
+
+
+def _excerpt_around_term(value: str, term: str, limit: int = 360) -> str:
+    text = _compact_text(value)
+    clean_term = str(term or "").strip()
+    if not text or not clean_term:
+        return ""
+    index = text.find(clean_term)
+    if index == -1:
+        return ""
+    sentence_start = max(text.rfind(mark, 0, index) for mark in ("。", "；", "！", "？", "\n"))
+    start = sentence_start + 1 if sentence_start >= 0 else 0
+    while start < len(text) and text[start] in " ：，、":
+        start += 1
+    sentence_end_candidates = [text.find(mark, index) for mark in ("。", "；", "！", "？", "\n")]
+    sentence_end = min([candidate for candidate in sentence_end_candidates if candidate != -1], default=-1)
+    if sentence_end == -1:
+        sentence_end = min(len(text), start + limit)
+    excerpt = text[start : sentence_end + 1].strip()
+    if len(excerpt) <= limit:
+        return excerpt
+    boundary = max(excerpt.rfind(mark, 0, limit) for mark in ("。", "；", "！", "？"))
+    if boundary >= limit // 2:
+        return excerpt[: boundary + 1]
+    return excerpt[:limit].rstrip() + "..."
+
+
+def _compact_text(value: Any) -> str:
+    return re.sub(r"\s+", " ", str(value or "")).strip()
 
 
 def _limit_unique(items: list[str | None], limit: int) -> list[str]:

@@ -317,6 +317,14 @@ class ContentStore:
                 payloads[clean_name] = dict(payload)
         return payloads
 
+    def entity_graph_descriptions_for_names(self, names: list[str]) -> dict[str, str]:
+        descriptions: dict[str, str] = {}
+        for name, payload in self.entity_graph_payloads_for_names(names).items():
+            description = str(payload.get("description") or "").strip()
+            if description:
+                descriptions[name] = description
+        return descriptions
+
     @property
     def topics(self) -> list[Topic]:
         return list(self._topics.values())

@@ -356,6 +356,51 @@
     "chapter": 1,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-e0067c6c1b"
+    ],
+    "evidence_text": "故事从姑苏阊门外的甄士隐写起：他梦中听闻僧道谈论神瑛侍者以甘露灌溉绛珠仙草、绛珠草愿以泪还债的风流公案，并见“太虚幻境”牌坊及对联。",
+    "id": "ev-topic-auto-ch001-key-events-summary-001-zh-6c12354b27",
+    "location": "第 1 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-001:key_events_summary:1",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 1,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-4a873632ec"
+    ],
+    "evidence_text": "元宵节英莲被拐，葫芦庙失火殃及甄家，甄士隐投靠岳父封肃，贫病交加。",
+    "id": "ev-topic-auto-ch001-key-events-summary-004-zh-bee9c8956e",
+    "location": "第 1 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-001:key_events_summary:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 1,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b20ab6a5b2"
+    ],
+    "evidence_text": "最后跛足道人唱《好了歌》，甄士隐注解后彻悟，随道人出家。",
+    "id": "ev-topic-auto-ch001-key-events-summary-006-zh-9d6989ae6c",
+    "location": "第 1 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-001:key_events_summary:6",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 1,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "甄士隐 -> 贾雨村：甄士隐与贾雨村之间的关系复杂而深长，贯穿了贫贱与显达、恩义与世故的纠葛。贾雨村早年贫窘，寄居葫芦庙时，甄士隐常与他交往，邀入书房小斋对谈，并将其视为旧交。中秋之夜，甄士隐特意备下酒席，与贾雨村对饮，席间赏识其才华抱负，随即慷慨解囊，资助他进京赶考。贾雨村对此一直感念，称甄士隐为“恩公”，并提及“蒙慨赠到都”，足见甄士隐确是他的大恩人。\n\n然而，贾雨村发迹后的态度却呈现出矛盾。甄士隐家遭火灾时，贾雨村曾怀疑其遭劫，却因眷恋名利，不肯回去查看，显露出忘恩负义的一面。后来他知晓甄士隐火化仙去，心中明白，却未将此事告知夫人，表现出冷静而世故的处事方式。他独坐书房时，也曾细想甄士隐从前的话语，说明过往的交情与对话始终留存在记忆里。\n\n多年后，二人命运再度交汇。贾雨村在急流津觉迷渡口与旧识甄士隐相遇，彼此追叙前事。此时甄士隐已看破红尘，出家为道，不肯说破前身，以疏离的方式结束了这段尘缘。此外，二人还曾在仁清巷旧宅门口叙话，甄士隐向贾雨村解释宝玉的来历，进一步延展了他们的交谈内容。这段关系既有恩深义重的慷慨，又有世态炎凉下的疏离，折射出人性的复杂。<SEP>贾雨村在庙火起时怀疑甄士隐遭劫，但因名利关心不肯回去查看，体现其忘恩负义。<SEP>贾雨村与甄士隐是旧识，雨村知晓甄士隐火化仙去，心中明白，却未告知夫人，表现其冷静或世故。<SEP>贾雨村独坐书房，细想甄士隐之前的话，两人此前有旧交和对话。；甄士隐与贾雨村之间的关系复杂而深长，贯穿了贫贱与显达、恩义与世故的纠葛。贾雨村早年贫窘，寄居葫芦庙时，甄士隐常与他交往，邀入书房小斋对谈，并将其视为旧交。中秋之夜，甄士隐特意备下酒席，与贾雨村对饮，席间赏识其才华抱负，随即慷慨解囊，资助他进京赶考。贾雨村对此一直感念，称甄士隐为“恩公”，并提及“蒙慨赠到都”，足见甄士隐确是他的大恩人。\n\n然而，贾雨村发迹后的态度却呈现出矛盾。甄士隐家遭火灾时，贾雨村曾怀疑其遭劫，却因眷恋名利，不肯回去查看，显露出忘恩负义的一面。后来他知晓甄士隐火化仙去，心中明白，却未将此事告知夫人，表现出冷静而世故的处事方式。他独坐书房时，也曾细想甄士隐从前的话语，说明过往的交情与对话始终留存在记忆里。\n\n多年后，二人命运再度交汇。贾雨村在急流津觉迷渡口与旧识甄士隐相遇，彼此追叙前事。此时甄士隐已看破红尘，出家为道，不肯说破前身，以疏离的方式结束了这段尘缘。此外，二人还曾在仁清巷旧宅门口叙话，甄士隐向贾雨村解释宝玉的来历，进一步延展了他们的交谈内容。这段关系既有恩深义重的慷慨，又有世态炎凉下的疏离，折射出人性的复杂。<SEP>贾雨村在庙火起时怀疑甄士隐遭劫，但因名利关心不肯回去查看，体现其忘恩负义。<SEP>贾雨村与甄士隐是旧识，雨村知晓甄士隐火化仙去，心中明白，却未告知夫人，表现其冷静或世故。<SEP>贾雨村独坐书房，细想甄士隐之前的话，两人此前有旧交和对话。",
     "id": "ev-topic-auto-ch001-later-associations-000-sep-sep-sep-sep-sep-sep",
@@ -994,6 +1039,21 @@
     "chapter": 2,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-ac981eb3d4"
+    ],
+    "evidence_text": "冷子兴演说荣国府，详细介绍宁荣二府的世系、人物和衰败迹象，重点讲述贾宝玉衔玉而生的异事及其'女儿是水做的骨肉'之奇论。",
+    "id": "ev-topic-auto-ch002-key-events-summary-004-zh-2b15605ef5",
+    "location": "第 2 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-002:key_events_summary:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 2,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "荣国府 -> 贾宝玉：荣国府与贾宝玉的关系，集中体现了贾宝玉在贾府宗法体系中的核心身份与生活轨迹。贾宝玉是荣国府贾政的嫡子，被宁国公与荣国公两位先祖视作家族中“略可望成”的继业者，承载着振兴家业的期许。他自小便生活在荣国府内，曾与林黛玉一同被安置在贾母房中，由祖母直接照料，足见其在荣国府内宅中的特殊地位。\n\n贾宝玉作为荣国府的公子，日常言行与活动始终以荣国府为背景。他曾在过年期间从宁国府返回荣国府继续拜年，亦曾以“咱们家”的口吻询问为何无人来领牌支取东西，表明他对荣国府家事有着明确的归属感与参与意识。其诗作被外人传抄时，也自然被贴上荣国府的标签，彰显出他作为荣国府文化代表的身份。这些描述共同勾勒出贾宝玉与荣国府之间不可分割的关联：他既是荣国府的嫡系血脉，又是府中日常生活的亲历者，更是这世家大族盛衰命运的象征性人物。<SEP>贾宝玉是荣国府公子。<SEP>贾宝玉住在荣国府，其病重导致荣府中闹得马仰人翻。；荣国府与贾宝玉的关系，集中体现了贾宝玉在贾府宗法体系中的核心身份与生活轨迹。贾宝玉是荣国府贾政的嫡子，被宁国公与荣国公两位先祖视作家族中“略可望成”的继业者，承载着振兴家业的期许。他自小便生活在荣国府内，曾与林黛玉一同被安置在贾母房中，由祖母直接照料，足见其在荣国府内宅中的特殊地位。\n\n贾宝玉作为荣国府的公子，日常言行与活动始终以荣国府为背景。他曾在过年期间从宁国府返回荣国府继续拜年，亦曾以“咱们家”的口吻询问为何无人来领牌支取东西，表明他对荣国府家事有着明确的归属感与参与意识。其诗作被外人传抄时，也自然被贴上荣国府的标签，彰显出他作为荣国府文化代表的身份。这些描述共同勾勒出贾宝玉与荣国府之间不可分割的关联：他既是荣国府的嫡系血脉，又是府中日常生活的亲历者，更是这世家大族盛衰命运的象征性人物。<SEP>贾宝玉是荣国府公子。<SEP>贾宝玉住在荣国府，其病重导致荣府中闹得马仰人翻。",
     "id": "ev-topic-auto-ch002-later-associations-000-sep-sep-sep-sep",
@@ -1433,6 +1493,21 @@
     "id": "ev-topic-auto-ch003-key-events-003-zh-8dcdadaa2c",
     "location": "第 3 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-003:key_events:3",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 3,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-e24b050309"
+    ],
+    "evidence_text": "随后王熙凤出场，其打扮与做派令黛玉暗惊。",
+    "id": "ev-topic-auto-ch003-key-events-summary-002-zh-ca660f1031",
+    "location": "第 3 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-003:key_events_summary:2",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -2221,6 +2296,36 @@
     "id": "ev-topic-auto-ch005-key-events-004-zh-83947f2622",
     "location": "第 5 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-005:key_events:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 5,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-1278a8885d"
+    ],
+    "evidence_text": "梦中宝玉随秦氏进入太虚幻境，遇警幻仙姑。",
+    "id": "ev-topic-auto-ch005-key-events-summary-000-zh-72d3c66056",
+    "location": "第 5 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-005:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 5,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-65cf9c2dea"
+    ],
+    "evidence_text": "仙姑受宁荣二公之托，引宝玉翻阅“薄命司”中金陵十二钗正、副、又副册，聆听《红楼梦》十二支仙曲，以警示其家族与女儿们的悲剧命运。",
+    "id": "ev-topic-auto-ch005-key-events-summary-002-zh-e3d9cd137b",
+    "location": "第 5 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-005:key_events_summary:2",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -3184,6 +3289,21 @@
     "id": "ev-topic-auto-ch007-key-events-005-zh-47609c1fdd",
     "location": "第 7 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-007:key_events:5",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 7,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-47609c1fdd"
+    ],
+    "evidence_text": "晚间辞归时，宁府老仆焦大醉骂，揭露“爬灰”等丑事，被众人捆堵马粪。",
+    "id": "ev-topic-auto-ch007-key-events-summary-005-zh-dcf22a2375",
+    "location": "第 7 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-007:key_events_summary:5",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -8194,6 +8314,21 @@
     "chapter": 17,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-c181058190"
+    ],
+    "evidence_text": "大观园工程告竣，贾政携众清客入园查看，预备为各处景观题写匾额对联，以备元妃省亲时游幸。",
+    "id": "ev-topic-auto-ch017-key-events-summary-000-zh-2bcba5518a",
+    "location": "第 17 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-017:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 17,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "元妃省亲 -> 贾政：贾政在元妃省亲一事中扮演了关键角色，从筹备到落实以及后续影响均深度参与。省亲前，他密切关注相关事宜，曾派贾琏传达并商议省亲的各项消息。随后，贾政亲自题本上奏，奉旨明确元妃于正月十五日省亲的日期，为省亲定下确切时间表。\n\n省亲当日，贾政以父亲和臣子的双重身份迎接元妃。他在月台下排班，上殿行礼，并奉命更换匾额。同时，贾政向元妃行参问安，陈述皇恩浩荡与家族忠君之情，并进献《归省颂》，以此表达对皇室的感恩与忠诚。省亲结束后，贾政为仰答皇恩，居官更加勤慎，这间接导致他后来被点学差，进一步影响了仕途走向。；贾政在元妃省亲一事中扮演了关键角色，从筹备到落实以及后续影响均深度参与。省亲前，他密切关注相关事宜，曾派贾琏传达并商议省亲的各项消息。随后，贾政亲自题本上奏，奉旨明确元妃于正月十五日省亲的日期，为省亲定下确切时间表。\n\n省亲当日，贾政以父亲和臣子的双重身份迎接元妃。他在月台下排班，上殿行礼，并奉命更换匾额。同时，贾政向元妃行参问安，陈述皇恩浩荡与家族忠君之情，并进献《归省颂》，以此表达对皇室的感恩与忠诚。省亲结束后，贾政为仰答皇恩，居官更加勤慎，这间接导致他后来被点学差，进一步影响了仕途走向。",
     "id": "ev-topic-auto-ch017-later-associations-000-zh-5aba56a983",
@@ -8691,6 +8826,21 @@
     "id": "ev-topic-auto-ch018-key-events-006-zh-8cb86f1a48",
     "location": "第 18 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-018:key_events:6",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 18,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-17f7666584"
+    ],
+    "evidence_text": "既而大开筵宴，元妃亲为园中各处赐名，题总名“大观园”及各处轩馆之名如“潇湘馆”、“怡红院”、“蘅芜院”、“浣葛山庄”等，并题诗一首。",
+    "id": "ev-topic-auto-ch018-key-events-summary-002-zh-84085031b7",
+    "location": "第 18 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-018:key_events_summary:2",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -9260,6 +9410,21 @@
     "id": "ev-topic-auto-ch019-key-events-005-zh-e48b3fc12c",
     "location": "第 19 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-019:key_events:5",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 19,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-9241413f43"
+    ],
+    "evidence_text": "他闻到黛玉袖里幽香，编“耗子精偷香芋”故事戏谑黛玉是真正的“香玉”，黛玉反讥宝玉没有“暖香”去配宝钗的“冷香”，暗刺金玉良缘。",
+    "id": "ev-topic-auto-ch019-key-events-summary-004-zh-094671c60e",
+    "location": "第 19 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-019:key_events_summary:4",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -11440,6 +11605,21 @@
     "chapter": 23,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-7a0af3c534"
+    ],
+    "evidence_text": "元妃命人将大观园题咏勒石，又下谕命宝玉与众姊妹搬入园中居住。",
+    "id": "ev-topic-auto-ch023-key-events-summary-000-zh-0a89e39f67",
+    "location": "第 23 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-023:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 23,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "林黛玉 -> 西厢记：林黛玉在听曲时联想到《西厢记》中“花落水流红，闲愁万种”的句子，加深了伤春悲秋的情感。<SEP>林黛玉在牙牌令中化用《西厢记》典故，表现其受禁书影响，为后文薛宝钗规劝她埋下伏笔。<SEP>林黛玉也熟悉《西厢记》，曾因宝玉引用其中句子取笑而恼怒，说明她也读过此书。；林黛玉在听曲时联想到《西厢记》中“花落水流红，闲愁万种”的句子，加深了伤春悲秋的情感。<SEP>林黛玉在牙牌令中化用《西厢记》典故，表现其受禁书影响，为后文薛宝钗规劝她埋下伏笔。<SEP>林黛玉也熟悉《西厢记》，曾因宝玉引用其中句子取笑而恼怒，说明她也读过此书。",
     "id": "ev-topic-auto-ch023-later-associations-000-sep-sep-sep-sep",
@@ -13592,6 +13772,36 @@
     "chapter": 27,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-aa732ac9d4"
+    ],
+    "evidence_text": "本回以宝钗扑蝶的热闹活泼与黛玉葬花的凄凉孤独形成鲜明对比，同时通过小红攀附王熙凤等情节，交织展现大观园内的人际斗争与青春悲剧。",
+    "id": "ev-topic-auto-ch027-key-events-summary-000-zh-0d6d17795b",
+    "location": "第 27 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-027:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 27,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-27303e3ca3"
+    ],
+    "evidence_text": "本回以宝钗扑蝶的热闹活泼与黛玉葬花的凄凉孤独形成鲜明对比，同时通过小红攀附王熙凤等情节，交织展现大观园内的人际斗争与青春悲剧。",
+    "id": "ev-topic-auto-ch027-key-events-summary-003-zh-0d6d17795b",
+    "location": "第 27 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-027:key_events_summary:3",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 27,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "贾宝玉 -> 黛玉葬花：在经典文学情节中，贾宝玉与“黛玉葬花”有着密切的互动与深刻的情感共鸣，是该事件的核心参与者与重要见证者。\n\n在情节的起因与发展阶段，贾宝玉将落花抖入水池的举动，直接引出了林黛玉关于葬花的独特见解与后续行动。当贾宝玉目睹林黛玉葬花时，他主动放下手中的书卷，上前帮助她收拾落花。此外，贾宝玉还曾前往此前与黛玉共同埋葬桃花的旧地，这一行为进一步加深了他与“黛玉葬花”情节的内在关联。\n\n在情节的高潮部分，贾宝玉在山坡上偷偷聆听林黛玉吟诵《葬花吟》以及葬花时发出的悲声。他对此深受触动，悲恸不已，甚至痴倒并恸倒在山坡上。贾宝玉的这种强烈情感反应，不仅使他成为“黛玉葬花”情节的重要见证者，更构成了该情节的重要呼应与深远余波。<SEP>贾宝玉当日与黛玉一同葬花，是黛玉葬花情节的参与者，二人共同完成葬花之举。；在经典文学情节中，贾宝玉与“黛玉葬花”有着密切的互动与深刻的情感共鸣，是该事件的核心参与者与重要见证者。\n\n在情节的起因与发展阶段，贾宝玉将落花抖入水池的举动，直接引出了林黛玉关于葬花的独特见解与后续行动。当贾宝玉目睹林黛玉葬花时，他主动放下手中的书卷，上前帮助她收拾落花。此外，贾宝玉还曾前往此前与黛玉共同埋葬桃花的旧地，这一行为进一步加深了他与“黛玉葬花”情节的内在关联。\n\n在情节的高潮部分，贾宝玉在山坡上偷偷聆听林黛玉吟诵《葬花吟》以及葬花时发出的悲声。他对此深受触动，悲恸不已，甚至痴倒并恸倒在山坡上。贾宝玉的这种强烈情感反应，不仅使他成为“黛玉葬花”情节的重要见证者，更构成了该情节的重要呼应与深远余波。<SEP>贾宝玉当日与黛玉一同葬花，是黛玉葬花情节的参与者，二人共同完成葬花之举。",
     "id": "ev-topic-auto-ch027-later-associations-000-sep-sep",
@@ -15297,6 +15507,51 @@
     "id": "ev-topic-auto-ch030-key-events-006-zh-41a9cab00a",
     "location": "第 30 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-030:key_events:6",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 30,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-0e4792db51"
+    ],
+    "evidence_text": "二是宝钗借扇机带双敲，宝玉以杨妃比宝钗，宝钗不悦，借小丫头靓儿找扇子之机厉声发作，后又借《负荆请罪》讽刺宝黛二人，展现其端雅之下的机锋。",
+    "id": "ev-topic-auto-ch030-key-events-summary-001-zh-5f7cf25cf3",
+    "location": "第 30 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-030:key_events_summary:1",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 30,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-fb5336fc66"
+    ],
+    "evidence_text": "三是椿龄画蔷，宝玉在王夫人房中调笑金钏儿，致金钏儿被撵走后，在蔷薇架下见一戏班女孩子龄官，蹲在地上反复画“蔷”字，宝玉看痴，待下雨时反提醒对方避雨，淋透而归。",
+    "id": "ev-topic-auto-ch030-key-events-summary-003-zh-ccec834093",
+    "location": "第 30 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-030:key_events_summary:3",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 30,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-41a9cab00a"
+    ],
+    "evidence_text": "归院时踢了袭人，袭人吐血，埋下病根。",
+    "id": "ev-topic-auto-ch030-key-events-summary-006-zh-0a23f12f12",
+    "location": "第 30 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-030:key_events_summary:6",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -17431,6 +17686,21 @@
     "chapter": 34,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-807e1394ad"
+    ],
+    "evidence_text": "掌灯后，王夫人召见袭人，袭人进言劝谏，建议让宝玉搬出大观园，以防男女闲言，深得王夫人赏识，得赐香露并受托照料宝玉。",
+    "id": "ev-topic-auto-ch034-key-events-summary-002-zh-27818f22d1",
+    "location": "第 34 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-034:key_events_summary:2",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 34,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "林黛玉：林黛玉是中国古典小说《红楼梦》中的核心女主角，原籍姑苏，为巡盐御史林如海与贾母之女贾敏的独生女。母亲去世后，她以贾母外孙女的身份寄居荣国府，与表兄贾宝玉青梅竹马，居所清幽名潇湘馆，别号“潇湘妃子”，又称“颦儿”。她自幼体弱多病，心思敏感，性格孤高自许、自尊心极强，言辞犀利却又不乏幽默，常因“金玉良缘”之说试探宝玉，亦与姊妹们戏谑，既显孤寂又露善谑。\n\n林黛玉与宝玉有“木石前盟”之宿缘，互为知己，从不以功名利禄相劝，但二人因多疑屡生摩擦，如剪香囊、题帕诗等，情意深挚而悲苦。她才情出众，诗作独树一帜，元妃省亲时奉命题诗受赏，主张葬花并吟《葬花吟》以寄身世之悲，与宝玉共读《西厢记》、听《牡丹亭》曲词皆触动愁绪。海棠诗社中她以“潇湘妃子”咏白海棠，菊花诗会所作《问菊》《菊梦》等被推为第一，诗风孤傲幽怨。她教导香菱学诗，阐释诗学主张，循循善诱，展现热忱与耐心。\n\n日常中，她居潇湘馆，书卷气浓，对宝钗坦诚心迹，因宝钗送燕窝等关怀而改观，感激之余倾诉寄人篱下之苦。秋夜独对孤灯，吟成《秋窗风雨夕》；妙玉处品茶，因未辨梅花雪水被笑“大俗人”；看戏时评《荆钗记》男祭，认为心到即可，显其通透。王夫人曾向贾政提及她病中，令宝玉伤心；贾政后来归家，忆起黛玉已逝，亦伤感落泪。\n\n林黛玉最终泪尽而逝，死前焚诗稿，传闻死后有音乐之声，被宝玉疑为成仙。其悲剧结局或被归因于贾府长辈的捉弄，与薛宝钗同列判词，被喻为“世外仙姝”“阆苑仙葩”，成为文学史上凄美绝尘的经典形象。；林黛玉是中国古典小说《红楼梦》中的核心女主角，原籍姑苏，为巡盐御史林如海与贾母之女贾敏的独生女。母亲去世后，她以贾母外孙女的身份寄居荣国府，与表兄贾宝玉青梅竹马，居所清幽名潇湘馆，别号“潇湘妃子”，又称“颦儿”。她自幼体弱多病，心思敏感，性格孤高自许、自尊心极强，言辞犀利却又不乏幽默，常因“金玉良缘”之说试探宝玉，亦与姊妹们戏谑，既显孤寂又露善谑。\n\n林黛玉与宝玉有“木石前盟”之宿缘，互为知己，从不以功名利禄相劝，但二人因多疑屡生摩擦，如剪香囊、题帕诗等，情意深挚而悲苦。她才情出众，诗作独树一帜，元妃省亲时奉命题诗受赏，主张葬花并吟《葬花吟》以寄身世之悲，与宝玉共读《西厢记》、听《牡丹亭》曲词皆触动愁绪。海棠诗社中她以“潇湘妃子”咏白海棠，菊花诗会所作《问菊》《菊梦》等被推为第一，诗风孤傲幽怨。她教导香菱学诗，阐释诗学主张，循循善诱，展现热忱与耐心。\n\n日常中，她居潇湘馆，书卷气浓，对宝钗坦诚心迹，因宝钗送燕窝等关怀而改观，感激之余倾诉寄人篱下之苦。秋夜独对孤灯，吟成《秋窗风雨夕》；妙玉处品茶，因未辨梅花雪水被笑“大俗人”；看戏时评《荆钗记》男祭，认为心到即可，显其通透。王夫人曾向贾政提及她病中，令宝玉伤心；贾政后来归家，忆起黛玉已逝，亦伤感落泪。\n\n林黛玉最终泪尽而逝，死前焚诗稿，传闻死后有音乐之声，被宝玉疑为成仙。其悲剧结局或被归因于贾府长辈的捉弄，与薛宝钗同列判词，被喻为“世外仙姝”“阆苑仙葩”，成为文学史上凄美绝尘的经典形象。",
     "id": "ev-topic-auto-ch034-later-associations-000-zh-7a2fba594d",
@@ -17961,6 +18231,36 @@
     "id": "ev-topic-auto-ch035-key-events-011-zh-6b067fefb1",
     "location": "第 35 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-035:key_events:11",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 35,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b97050b1e7"
+    ],
+    "evidence_text": "黛玉独立花阴，望众人探宝玉而触动身世之感，回潇湘馆后又因鹦哥念《葬花吟》而伤怀。",
+    "id": "ev-topic-auto-ch035-key-events-summary-001-zh-0801fef0a1",
+    "location": "第 35 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-035:key_events_summary:1",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 35,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b795dbd5c1"
+    ],
+    "evidence_text": "宝钗陪母进园探视宝玉，宝玉想吃小荷叶莲蓬汤，凤姐找出精巧银模子，顺势做十碗汤做人情，博贾母夸赞。",
+    "id": "ev-topic-auto-ch035-key-events-summary-003-zh-d129b94f44",
+    "location": "第 35 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-035:key_events_summary:3",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -19155,6 +19455,21 @@
     "chapter": 37,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-dc2b598977"
+    ],
+    "evidence_text": "宝钗体谅湘云经济拮据，代为筹划螃蟹宴，并商议菊花诗题。",
+    "id": "ev-topic-auto-ch037-key-events-summary-004-zh-d4eb958cdb",
+    "location": "第 37 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-037:key_events_summary:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 37,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "海棠花 -> 贾宝玉：贾宝玉走出房门寻找小红时，看到小红倚在西南角栏杆旁，被一株海棠花遮挡了视线。<SEP>海棠花枯而复荣，被黛玉视为不祥之兆，暗示宝玉可能有灾祸，与失玉相呼应。<SEP>宝玉作诗咏海棠，由花及人，联想晴雯与五儿。；贾宝玉走出房门寻找小红时，看到小红倚在西南角栏杆旁，被一株海棠花遮挡了视线。<SEP>海棠花枯而复荣，被黛玉视为不祥之兆，暗示宝玉可能有灾祸，与失玉相呼应。<SEP>宝玉作诗咏海棠，由花及人，联想晴雯与五儿。",
     "id": "ev-topic-auto-ch037-later-associations-000-sep-sep-sep-sep",
@@ -19775,6 +20090,21 @@
     "id": "ev-topic-auto-ch038-key-events-005-zh-972606dfc2",
     "location": "第 38 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-038:key_events:5",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 38,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-690e911f4a"
+    ],
+    "evidence_text": "第三十八回，史湘云做东，在藕香榭设螃蟹宴请贾母等赏桂花。",
+    "id": "ev-topic-auto-ch038-key-events-summary-000-zh-5063774949",
+    "location": "第 38 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-038:key_events_summary:0",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -26128,6 +26458,21 @@
     "chapter": 50,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-176258d744"
+    ],
+    "evidence_text": "本回紧接上回，众人在芦雪庭即景联诗。",
+    "id": "ev-topic-auto-ch050-key-events-summary-000-zh-2abf0712dd",
+    "location": "第 50 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-050:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 50,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "林黛玉 -> 第98章：回目“苦绛珠魂归离恨天”预示林黛玉即将死去。；回目“苦绛珠魂归离恨天”预示林黛玉即将死去。",
     "id": "ev-topic-auto-ch050-later-associations-000-98",
@@ -29536,6 +29881,21 @@
     "chapter": 56,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-8cfbe53f1b"
+    ],
+    "evidence_text": "探春因赖大家花园被承包获利一事受启发，提出将大观园中的花草树木、菜蔬稻稗等分派给园中老妈妈承包管理，既可省去工费，又能让园子有人照管，婆子们也可借此获利。",
+    "id": "ev-topic-auto-ch056-key-events-summary-001-zh-59346d00bd",
+    "location": "第 56 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-056:key_events_summary:1",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 56,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "大观园：大观园是《红楼梦》中贾府为迎接元妃（贾元春）省亲而耗费巨资修建的省亲别墅式大型园林，又被称为“园里”。它兼具皇家礼仪功能与诗意居住空间，元妃省亲时赐名“大观园”并题诗勒石，随后下谕命宝玉、黛玉、宝钗、迎春、探春、惜春、李纨等人入园居住，薛姨妈受托照管。园门为五间正门，配水磨群墙与白石台阶，入门以翠嶂掩映，馆舍错落，包括宝玉的怡红院、黛玉的潇湘馆，以及嘉荫堂、凸碧山庄等，栊翠庵被圈在园内，后成为惜春养静之所。聚锦门位于西南角，东南小角门常开，后门曾被凤姐用于将尤二姐带入，另有一便门连接宁国府。\n\n园内花木初由贾芸负责，探春理家时推行承包制，将花草分包给婆子们，王夫人又请薛宝钗各处照管，但后期管理渐松，下人夜间聚赌引发争斗，贾母因此查赌。尤氏夜查时发现正门与角门未关好，后来更是无人管理，园中出息被下人侵吞。大观园承载了极为丰富的日常活动与关键情节：众女儿在此祭饯花神、结社吟诗、举办螃蟹宴，宝玉作《四时即事》诗；贾母携刘姥姥游览，香菱入园学诗，惜春奉贾母命绘制大观园图，史湘云等看驾娘种藕，莺儿折柳编花篮，鸳鸯在园中遇平儿、袭人谈及抗婚，又在园门前撞见司棋私会，彩云将私赠之物扔入河中，茯苓霜事件亦发生于此，贾芸曾想入园找宝玉。失窃事件亦在园内发生，包勇被派看守浇灌，曾在园中巡查时打死贼人，保护了财物。\n\n后期因傻大姐捡到绣春囊，直接引发抄检大观园的风波，丫鬟们被逐离散，晴雯被训斥后哭着走回园内，司棋病重时鸳鸯亦在园内探望。通灵宝玉丢失后，众人曾关闭园门搜寻。此后园中光景大变，黛玉病中只见寂寞，探春远嫁后人烟稀少，仅余李纨、探春、惜春居住，惜春对比自己现住处不如园里显亮，因而失去画画的兴头。宝玉欲逛园被贾母阻止，贾母又让贾政交还园子。园子日渐冷落，月色明朗时树影重重，寂静凄凉，宝玉再进园时只见花木枯萎，亭馆剥落。包勇看守期间，妙玉欲入园探望四姑娘。贾政曾奏请将园子入官，内廷不收，无人居住，封锁后成为荒园，后来传说闹妖怪，贾赦到此探查，设坛驱邪逐妖，法师洒法水、指画各处楼阁亭台。巧姐儿也曾提及“园里”是往昔游玩之地。大观园的修建耗费巨大，是贾府经济亏空的重要原因，其由盛转衰的历程成为全书核心意象，宝玉去园里引发的对黛玉的思念，更强化了园子的情感象征。<SEP>贾府为元妃省亲建造的园林，贾芸想进园内找宝玉。；大观园是《红楼梦》中贾府为迎接元妃（贾元春）省亲而耗费巨资修建的省亲别墅式大型园林，又被称为“园里”。它兼具皇家礼仪功能与诗意居住空间，元妃省亲时赐名“大观园”并题诗勒石，随后下谕命宝玉、黛玉、宝钗、迎春、探春、惜春、李纨等人入园居住，薛姨妈受托照管。园门为五间正门，配水磨群墙与白石台阶，入门以翠嶂掩映，馆舍错落，包括宝玉的怡红院、黛玉的潇湘馆，以及嘉荫堂、凸碧山庄等，栊翠庵被圈在园内，后成为惜春养静之所。聚锦门位于西南角，东南小角门常开，后门曾被凤姐用于将尤二姐带入，另有一便门连接宁国府。\n\n园内花木初由贾芸负责，探春理家时推行承包制，将花草分包给婆子们，王夫人又请薛宝钗各处照管，但后期管理渐松，下人夜间聚赌引发争斗，贾母因此查赌。尤氏夜查时发现正门与角门未关好，后来更是无人管理，园中出息被下人侵吞。大观园承载了极为丰富的日常活动与关键情节：众女儿在此祭饯花神、结社吟诗、举办螃蟹宴，宝玉作《四时即事》诗；贾母携刘姥姥游览，香菱入园学诗，惜春奉贾母命绘制大观园图，史湘云等看驾娘种藕，莺儿折柳编花篮，鸳鸯在园中遇平儿、袭人谈及抗婚，又在园门前撞见司棋私会，彩云将私赠之物扔入河中，茯苓霜事件亦发生于此，贾芸曾想入园找宝玉。失窃事件亦在园内发生，包勇被派看守浇灌，曾在园中巡查时打死贼人，保护了财物。\n\n后期因傻大姐捡到绣春囊，直接引发抄检大观园的风波，丫鬟们被逐离散，晴雯被训斥后哭着走回园内，司棋病重时鸳鸯亦在园内探望。通灵宝玉丢失后，众人曾关闭园门搜寻。此后园中光景大变，黛玉病中只见寂寞，探春远嫁后人烟稀少，仅余李纨、探春、惜春居住，惜春对比自己现住处不如园里显亮，因而失去画画的兴头。宝玉欲逛园被贾母阻止，贾母又让贾政交还园子。园子日渐冷落，月色明朗时树影重重，寂静凄凉，宝玉再进园时只见花木枯萎，亭馆剥落。包勇看守期间，妙玉欲入园探望四姑娘。贾政曾奏请将园子入官，内廷不收，无人居住，封锁后成为荒园，后来传说闹妖怪，贾赦到此探查，设坛驱邪逐妖，法师洒法水、指画各处楼阁亭台。巧姐儿也曾提及“园里”是往昔游玩之地。大观园的修建耗费巨大，是贾府经济亏空的重要原因，其由盛转衰的历程成为全书核心意象，宝玉去园里引发的对黛玉的思念，更强化了园子的情感象征。<SEP>贾府为元妃省亲建造的园林，贾芸想进园内找宝玉。",
     "id": "ev-topic-auto-ch056-later-associations-000-sep-sep",
@@ -31399,6 +31759,21 @@
     "id": "ev-topic-auto-ch060-key-events-005-zh-e74d08e0e5",
     "location": "第 60 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-060:key_events:5",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 60,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b45da4d8f0"
+    ],
+    "evidence_text": "本回主要写两件事：茉莉粉冒充蔷薇硝引发赵姨娘大闹怡红院，以及玫瑰露和茯苓霜的暗中流转。",
+    "id": "ev-topic-auto-ch060-key-events-summary-001-zh-6a21bcca10",
+    "location": "第 60 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-060:key_events_summary:1",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -39048,6 +39423,21 @@
     "chapter": 74,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-13719b9283"
+    ],
+    "evidence_text": "第74回“惑奸谗抄检大观园 避嫌隙杜绝宁国府”是贾府内部矛盾的总爆发，由一只绣春囊引发。",
+    "id": "ev-topic-auto-ch074-key-events-summary-003-74",
+    "location": "第 74 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-074:key_events_summary:3",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 74,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "大观园 -> 贾宝玉：大观园与贾宝玉的关联，是《红楼梦》情节展开的核心空间。贾宝玉奉元妃之命入住大观园，其居所为怡红院，丫鬟袭人、晴雯、麝月、秋纹等随其出入，园门成为内外界限。入园后，贾宝玉度过了一段心满意足的时光，创作《四时即事》诗，私下将文理雅道的杂书带进园中阅读，每日在清幽的池畔莲蓬间游玩坐卧，甚至甘愿为丫头们充役，也曾拄杖散步或因心烦而终日闲逛散心。\n\n在大观园中，贾宝玉经历了诸多具体事件：他听香菱讲诗、谈论诗社诗稿；从王夫人处返回后，让晴雯、麝月看雀金呢，再回覆贾母；散席后回园就寝，袭人早已预备周全；也曾因心中闷闷，回房睡去，梦中历游甄府花园；他照顾受伤的袭人，将怡红院作为调治之处；见王夫人醒来后自觉无趣，慌忙躲入大观园。与林黛玉拌嘴后，曾被贾母带出园子。婚后回九时，轿子途经大观园。他感叹大观园中光景已大变，知心知意之人离散各处，预示贾府盛衰。辞别贾母后，他忙进园中，摘冠解带换衣，麝月、秋纹在此等候。此外，贾宝玉曾一度中邪发疯、拿刀弄杖，病愈后仍回园居住。\n\n贾母和王夫人因担心贾宝玉与林黛玉同住园中会生出事端，曾亲自到园中看望。贾宝玉爱动不爱静，时常要到园中逛，却被贾母阻止。然而，在他病后不再出屋门，不再踏入大观园，园中遂更无生气，终成寂寥之所。这些细节共同勾勒出贾宝玉以大观园为舞台的丰富情感生活与命运转折。<SEP>贾宝玉酒后欲进大观园逛逛，表明他对园子的依恋。<SEP>贾宝玉病后趁着酒兴去大观园逛逛，触发后续事件。<SEP>宝玉从园里回来，园指大观园，黛玉曾居于此，触景生情，引发思念。；大观园与贾宝玉的关联，是《红楼梦》情节展开的核心空间。贾宝玉奉元妃之命入住大观园，其居所为怡红院，丫鬟袭人、晴雯、麝月、秋纹等随其出入，园门成为内外界限。入园后，贾宝玉度过了一段心满意足的时光，创作《四时即事》诗，私下将文理雅道的杂书带进园中阅读，每日在清幽的池畔莲蓬间游玩坐卧，甚至甘愿为丫头们充役，也曾拄杖散步或因心烦而终日闲逛散心。\n\n在大观园中，贾宝玉经历了诸多具体事件：他听香菱讲诗、谈论诗社诗稿；从王夫人处返回后，让晴雯、麝月看雀金呢，再回覆贾母；散席后回园就寝，袭人早已预备周全；也曾因心中闷闷，回房睡去，梦中历游甄府花园；他照顾受伤的袭人，将怡红院作为调治之处；见王夫人醒来后自觉无趣，慌忙躲入大观园。与林黛玉拌嘴后，曾被贾母带出园子。婚后回九时，轿子途经大观园。他感叹大观园中光景已大变，知心知意之人离散各处，预示贾府盛衰。辞别贾母后，他忙进园中，摘冠解带换衣，麝月、秋纹在此等候。此外，贾宝玉曾一度中邪发疯、拿刀弄杖，病愈后仍回园居住。\n\n贾母和王夫人因担心贾宝玉与林黛玉同住园中会生出事端，曾亲自到园中看望。贾宝玉爱动不爱静，时常要到园中逛，却被贾母阻止。然而，在他病后不再出屋门，不再踏入大观园，园中遂更无生气，终成寂寥之所。这些细节共同勾勒出贾宝玉以大观园为舞台的丰富情感生活与命运转折。<SEP>贾宝玉酒后欲进大观园逛逛，表明他对园子的依恋。<SEP>贾宝玉病后趁着酒兴去大观园逛逛，触发后续事件。<SEP>宝玉从园里回来，园指大观园，黛玉曾居于此，触景生情，引发思念。",
     "id": "ev-topic-auto-ch074-later-associations-000-sep-sep-sep-sep-sep-sep",
@@ -39620,6 +40010,21 @@
     "id": "ev-topic-auto-ch075-key-events-006-zh-23f4dbcf5a",
     "location": "第 75 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-075:key_events:6",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 75,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-c89225d48d"
+    ],
+    "evidence_text": "尤氏转往李纨处，恰逢宝钗来辞行，说要搬出大观园。",
+    "id": "ev-topic-auto-ch075-key-events-summary-001-zh-30092b0119",
+    "location": "第 75 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-075:key_events_summary:1",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -41238,6 +41643,36 @@
     "chapter": 78,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-113358ed7a"
+    ],
+    "evidence_text": "宝钗以母病、事务繁多为由，正式搬出大观园，并劝王夫人减省园中开销。",
+    "id": "ev-topic-auto-ch078-key-events-summary-001-zh-0656c527cb",
+    "location": "第 78 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-078:key_events_summary:1",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 78,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-11364a71b7"
+    ],
+    "evidence_text": "晚间，宝玉因池上芙蓉正开，忆起晴雯为芙蓉花神之说，遂备四样吃食，以冰鲛一幅楷字写成《芙蓉女儿诔》，于芙蓉花前泣涕祭奠。",
+    "id": "ev-topic-auto-ch078-key-events-summary-004-zh-bec75504b3",
+    "location": "第 78 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-078:key_events_summary:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 78,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "姽婳词（节选）：前叙恒王练兵、林四娘统军，中写恒王战死、四娘率众夜袭贼营捐躯，末以“何事文武立朝纲，不及闺中林四娘”作结，讽刺满朝文武尸位素餐，反不如一介女流能忠义赴死。；是贾政命题的应制之作，展现宝玉诗才的同时，也暗含对士大夫的批判。其“长篇歌行”的体裁主张，体现宝玉不随流俗的诗学观。",
     "id": "ev-topic-auto-ch078-literary-texts-000-zh-83a597f333",
@@ -41649,6 +42084,21 @@
     "id": "ev-topic-auto-ch079-key-events-004-zh-c53f46b5eb",
     "location": "第 79 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-079:key_events:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 79,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b7a095b15b"
+    ],
+    "evidence_text": "宝玉因抄检大观园、逐司棋、别迎春、悲晴雯等事，忧思成疾，卧床一月。",
+    "id": "ev-topic-auto-ch079-key-events-summary-001-zh-af5ad7eb32",
+    "location": "第 79 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-079:key_events_summary:1",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -43809,6 +44259,21 @@
     "id": "ev-topic-auto-ch083-key-events-005-zh-127e565898",
     "location": "第 83 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-083:key_events:5",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 83,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-fdd2e7d4b7"
+    ],
+    "evidence_text": "一条是元妃染恙，宫中传唤亲丁四人探视。",
+    "id": "ev-topic-auto-ch083-key-events-summary-001-zh-74e64a1c5a",
+    "location": "第 83 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-083:key_events_summary:1",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -49535,6 +50000,21 @@
     "chapter": 94,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-9930eb0d46"
+    ],
+    "evidence_text": "众人散去后，袭人发现宝玉换衣时未挂通灵宝玉，慌忙寻找，遍寻不见。",
+    "id": "ev-topic-auto-ch094-key-events-summary-004-zh-423fc98938",
+    "location": "第 94 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-094:key_events_summary:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 94,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "贾宝玉 -> 通灵宝玉：贾宝玉与通灵宝玉之间是一种伴生性、象征性且命运攸关的核心关系。通灵宝玉是贾宝玉出生时口中衔下的一块五彩晶莹、刻有字迹的美玉，被贾母等人视为“命根子”，终生贴身佩戴。这一“衔玉而生”的奇象确立了通灵宝玉作为贾宝玉身份与命运象征的地位，也成为“金玉良缘”之说的重要信物。\n\n在日常生活中，通灵宝玉的保管与展示备受重视：王熙凤曾代为保管并收于枕边，贾母也曾命其摘下放入盘中。社交场合中，此玉屡屡引人注目，北静王两次索要观看铭文，清虚观张道士捧出供众人观赏，薛宝钗在射覆游戏中所覆的“宝”字正指此玉。在特殊事件中，通靈寶玉展現超常作用：賈寶玉中邪時，賈政曾將玉交僧道持誦驅邪；賈寶玉恼怒時，以“勞什子”稱之，甚至試圖將其砸碎；此外，玉曾在帳中放出紅光，顯現異象。\n\n通灵宝玉的丢失对贾宝玉产生了决定性影响。换衣时未挂玉导致丢失，随即引发众人追查。失玉后，贾宝玉行为痴傻，失魂丧魄，灵机大不似先，贾母直指“命根子”丢失使他失去神志。虽有焙茗误认当铺之玉，贾母赠汉玉安慰，终无法替代。后来和尚持通灵宝玉送还，贾宝玉苏醒，称“久违了”，神气渐复，能吃饭坐起。但麝月提及砸玉之事，贾宝玉将玉撂下，又引发昏迷，印证了玉在则神灵，玉失则命危的紧密关联。袭人直言“那玉就是你的命”，进一步点明二者性命攸关。\n\n最终，和尚索要玉并点化，贾宝玉决意将通灵宝玉还予和尚，表示不再留恋红尘，标志着其与尘世宿命的决裂。通灵宝玉的得与失、存与还，始终牵动着贾宝玉的魂魄与命运，成为其人生历程中不可分割的象征本体。<SEP>贾宝玉衔玉而生，通灵宝玉是其下凡历劫的标识。<SEP>贾宝玉衔通灵宝玉而生，通灵宝玉是其下凡历世的标志。<SEP>通灵宝玉是贾宝玉的随身佩玉，惜春特意询问是否带在身上。<SEP>贾宝玉出生时含玉而生，探春认为这块玉带来了不好。；贾宝玉与通灵宝玉之间是一种伴生性、象征性且命运攸关的核心关系。通灵宝玉是贾宝玉出生时口中衔下的一块五彩晶莹、刻有字迹的美玉，被贾母等人视为“命根子”，终生贴身佩戴。这一“衔玉而生”的奇象确立了通灵宝玉作为贾宝玉身份与命运象征的地位，也成为“金玉良缘”之说的重要信物。\n\n在日常生活中，通灵宝玉的保管与展示备受重视：王熙凤曾代为保管并收于枕边，贾母也曾命其摘下放入盘中。社交场合中，此玉屡屡引人注目，北静王两次索要观看铭文，清虚观张道士捧出供众人观赏，薛宝钗在射覆游戏中所覆的“宝”字正指此玉。在特殊事件中，通靈寶玉展現超常作用：賈寶玉中邪時，賈政曾將玉交僧道持誦驅邪；賈寶玉恼怒時，以“勞什子”稱之，甚至試圖將其砸碎；此外，玉曾在帳中放出紅光，顯現異象。\n\n通灵宝玉的丢失对贾宝玉产生了决定性影响。换衣时未挂玉导致丢失，随即引发众人追查。失玉后，贾宝玉行为痴傻，失魂丧魄，灵机大不似先，贾母直指“命根子”丢失使他失去神志。虽有焙茗误认当铺之玉，贾母赠汉玉安慰，终无法替代。后来和尚持通灵宝玉送还，贾宝玉苏醒，称“久违了”，神气渐复，能吃饭坐起。但麝月提及砸玉之事，贾宝玉将玉撂下，又引发昏迷，印证了玉在则神灵，玉失则命危的紧密关联。袭人直言“那玉就是你的命”，进一步点明二者性命攸关。\n\n最终，和尚索要玉并点化，贾宝玉决意将通灵宝玉还予和尚，表示不再留恋红尘，标志着其与尘世宿命的决裂。通灵宝玉的得与失、存与还，始终牵动着贾宝玉的魂魄与命运，成为其人生历程中不可分割的象征本体。<SEP>贾宝玉衔玉而生，通灵宝玉是其下凡历劫的标识。<SEP>贾宝玉衔通灵宝玉而生，通灵宝玉是其下凡历世的标志。<SEP>通灵宝玉是贾宝玉的随身佩玉，惜春特意询问是否带在身上。<SEP>贾宝玉出生时含玉而生，探春认为这块玉带来了不好。",
     "id": "ev-topic-auto-ch094-later-associations-000-sep-sep-sep-sep-sep-sep-sep-sep",
@@ -50188,6 +50668,21 @@
     "id": "ev-topic-auto-ch095-key-events-007-zh-0e042e3f88",
     "location": "第 95 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-095:key_events:7",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 95,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-2ead5b2e1f"
+    ],
+    "evidence_text": "邢岫烟求妙玉扶乩得青埂峰乩语，众人解为玉未真丢但难寻；",
+    "id": "ev-topic-auto-ch095-key-events-summary-001-zh-4626f39de3",
+    "location": "第 95 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-095:key_events_summary:1",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -51276,6 +51771,21 @@
     "chapter": 97,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-d1ecdff866"
+    ],
+    "evidence_text": "贾府一边是黛玉焚稿断情，一边是宝钗出闺成大礼，悲喜两同，形成全书最惨烈的对照。",
+    "id": "ev-topic-auto-ch097-key-events-summary-000-zh-9423693f81",
+    "location": "第 97 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-097:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 97,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "林黛玉 -> 第98章：回目“苦绛珠魂归离恨天”预示林黛玉即将死去。；回目“苦绛珠魂归离恨天”预示林黛玉即将死去。",
     "id": "ev-topic-auto-ch097-later-associations-000-98",
@@ -51740,6 +52250,21 @@
     "id": "ev-topic-auto-ch098-key-events-004-zh-8c6d34646d",
     "location": "第 98 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-098:key_events:4",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 98,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-eed2f8b235"
+    ],
+    "evidence_text": "宝钗为切断病根，直言告知黛玉已死，宝玉霎时昏厥，魂魄行至阴司泉路寻访黛玉，被告知“黛玉生不同人，死不同鬼，无魂无魄，已归太虚幻境”，欲见需潜心修养，后被一石击心，惊醒于锦绣丛中。",
+    "id": "ev-topic-auto-ch098-key-events-summary-002-zh-60798fc0f9",
+    "location": "第 98 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-098:key_events_summary:2",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -52335,6 +52860,21 @@
     "id": "ev-topic-auto-ch099-key-events-010-zh-675e54c0e1",
     "location": "第 99 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-099:key_events:10",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 99,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b2c7916905"
+    ],
+    "evidence_text": "宝玉病后灵机大减，宝钗知道是因通灵宝玉丢失所致，袭人悉心服侍，大观园内姐妹星散，只剩李纨、探春、惜春暂住，景象冷清。",
+    "id": "ev-topic-auto-ch099-key-events-summary-002-zh-6b7146660a",
+    "location": "第 99 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-099:key_events_summary:2",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -53310,6 +53850,21 @@
     "chapter": 101,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b27dcdb10c"
+    ],
+    "evidence_text": "她与丰儿夜入大观园，月色凄凉，丰儿回取衣服。",
+    "id": "ev-topic-auto-ch101-key-events-summary-000-zh-bef7916c23",
+    "location": "第 101 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-101:key_events_summary:0",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 101,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "王熙凤衣锦还乡签文：看似荣归故里、功成圆满，实际“衣锦还乡”指死后灵柩归葬金陵；“为谁辛苦”则叹凤姐一生算计终是一场空。；典型的诗谶，以喜庆语写悲剧结局，强化全书命运无常的主题。",
     "id": "ev-topic-auto-ch101-literary-texts-000-zh-37c78bdfdc",
@@ -53826,6 +54381,36 @@
     "id": "ev-topic-auto-ch102-key-events-005-zh-411ef5bbcc",
     "location": "第 102 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-102:key_events:5",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 102,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-ec5ffcca3f"
+    ],
+    "evidence_text": "大观园自贾妃薨后日渐荒凉，探春一去更是寂寞。",
+    "id": "ev-topic-auto-ch102-key-events-summary-001-zh-53d24b95c8",
+    "location": "第 102 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-102:key_events_summary:1",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 102,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-83df96dd61"
+    ],
+    "evidence_text": "大观园自贾妃薨后日渐荒凉，探春一去更是寂寞。",
+    "id": "ev-topic-auto-ch102-key-events-summary-003-zh-53d24b95c8",
+    "location": "第 102 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-102:key_events_summary:3",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -56947,6 +57532,21 @@
     "chapter": 108,
     "confidence": "explicit",
     "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-de0c34f572"
+    ],
+    "evidence_text": "酒散后，宝玉不顾阻拦，带着袭人进入荒凉的大观园，走到潇湘馆前，听见里面有啼哭声，认定是黛玉魂灵，不禁痛哭自责。",
+    "id": "ev-topic-auto-ch108-key-events-summary-003-zh-55a575e555",
+    "location": "第 108 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-108:key_events_summary:3",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 108,
+    "confidence": "explicit",
+    "derived_from_ids": [],
     "entity_ids": [],
     "evidence_text": "大观园：大观园是《红楼梦》中贾府为迎接元妃（贾元春）省亲而耗费巨资修建的省亲别墅式大型园林，又被称为“园里”。它兼具皇家礼仪功能与诗意居住空间，元妃省亲时赐名“大观园”并题诗勒石，随后下谕命宝玉、黛玉、宝钗、迎春、探春、惜春、李纨等人入园居住，薛姨妈受托照管。园门为五间正门，配水磨群墙与白石台阶，入门以翠嶂掩映，馆舍错落，包括宝玉的怡红院、黛玉的潇湘馆，以及嘉荫堂、凸碧山庄等，栊翠庵被圈在园内，后成为惜春养静之所。聚锦门位于西南角，东南小角门常开，后门曾被凤姐用于将尤二姐带入，另有一便门连接宁国府。\n\n园内花木初由贾芸负责，探春理家时推行承包制，将花草分包给婆子们，王夫人又请薛宝钗各处照管，但后期管理渐松，下人夜间聚赌引发争斗，贾母因此查赌。尤氏夜查时发现正门与角门未关好，后来更是无人管理，园中出息被下人侵吞。大观园承载了极为丰富的日常活动与关键情节：众女儿在此祭饯花神、结社吟诗、举办螃蟹宴，宝玉作《四时即事》诗；贾母携刘姥姥游览，香菱入园学诗，惜春奉贾母命绘制大观园图，史湘云等看驾娘种藕，莺儿折柳编花篮，鸳鸯在园中遇平儿、袭人谈及抗婚，又在园门前撞见司棋私会，彩云将私赠之物扔入河中，茯苓霜事件亦发生于此，贾芸曾想入园找宝玉。失窃事件亦在园内发生，包勇被派看守浇灌，曾在园中巡查时打死贼人，保护了财物。\n\n后期因傻大姐捡到绣春囊，直接引发抄检大观园的风波，丫鬟们被逐离散，晴雯被训斥后哭着走回园内，司棋病重时鸳鸯亦在园内探望。通灵宝玉丢失后，众人曾关闭园门搜寻。此后园中光景大变，黛玉病中只见寂寞，探春远嫁后人烟稀少，仅余李纨、探春、惜春居住，惜春对比自己现住处不如园里显亮，因而失去画画的兴头。宝玉欲逛园被贾母阻止，贾母又让贾政交还园子。园子日渐冷落，月色明朗时树影重重，寂静凄凉，宝玉再进园时只见花木枯萎，亭馆剥落。包勇看守期间，妙玉欲入园探望四姑娘。贾政曾奏请将园子入官，内廷不收，无人居住，封锁后成为荒园，后来传说闹妖怪，贾赦到此探查，设坛驱邪逐妖，法师洒法水、指画各处楼阁亭台。巧姐儿也曾提及“园里”是往昔游玩之地。大观园的修建耗费巨大，是贾府经济亏空的重要原因，其由盛转衰的历程成为全书核心意象，宝玉去园里引发的对黛玉的思念，更强化了园子的情感象征。<SEP>贾府为元妃省亲建造的园林，贾芸想进园内找宝玉。；大观园是《红楼梦》中贾府为迎接元妃（贾元春）省亲而耗费巨资修建的省亲别墅式大型园林，又被称为“园里”。它兼具皇家礼仪功能与诗意居住空间，元妃省亲时赐名“大观园”并题诗勒石，随后下谕命宝玉、黛玉、宝钗、迎春、探春、惜春、李纨等人入园居住，薛姨妈受托照管。园门为五间正门，配水磨群墙与白石台阶，入门以翠嶂掩映，馆舍错落，包括宝玉的怡红院、黛玉的潇湘馆，以及嘉荫堂、凸碧山庄等，栊翠庵被圈在园内，后成为惜春养静之所。聚锦门位于西南角，东南小角门常开，后门曾被凤姐用于将尤二姐带入，另有一便门连接宁国府。\n\n园内花木初由贾芸负责，探春理家时推行承包制，将花草分包给婆子们，王夫人又请薛宝钗各处照管，但后期管理渐松，下人夜间聚赌引发争斗，贾母因此查赌。尤氏夜查时发现正门与角门未关好，后来更是无人管理，园中出息被下人侵吞。大观园承载了极为丰富的日常活动与关键情节：众女儿在此祭饯花神、结社吟诗、举办螃蟹宴，宝玉作《四时即事》诗；贾母携刘姥姥游览，香菱入园学诗，惜春奉贾母命绘制大观园图，史湘云等看驾娘种藕，莺儿折柳编花篮，鸳鸯在园中遇平儿、袭人谈及抗婚，又在园门前撞见司棋私会，彩云将私赠之物扔入河中，茯苓霜事件亦发生于此，贾芸曾想入园找宝玉。失窃事件亦在园内发生，包勇被派看守浇灌，曾在园中巡查时打死贼人，保护了财物。\n\n后期因傻大姐捡到绣春囊，直接引发抄检大观园的风波，丫鬟们被逐离散，晴雯被训斥后哭着走回园内，司棋病重时鸳鸯亦在园内探望。通灵宝玉丢失后，众人曾关闭园门搜寻。此后园中光景大变，黛玉病中只见寂寞，探春远嫁后人烟稀少，仅余李纨、探春、惜春居住，惜春对比自己现住处不如园里显亮，因而失去画画的兴头。宝玉欲逛园被贾母阻止，贾母又让贾政交还园子。园子日渐冷落，月色明朗时树影重重，寂静凄凉，宝玉再进园时只见花木枯萎，亭馆剥落。包勇看守期间，妙玉欲入园探望四姑娘。贾政曾奏请将园子入官，内廷不收，无人居住，封锁后成为荒园，后来传说闹妖怪，贾赦到此探查，设坛驱邪逐妖，法师洒法水、指画各处楼阁亭台。巧姐儿也曾提及“园里”是往昔游玩之地。大观园的修建耗费巨大，是贾府经济亏空的重要原因，其由盛转衰的历程成为全书核心意象，宝玉去园里引发的对黛玉的思念，更强化了园子的情感象征。<SEP>贾府为元妃省亲建造的园林，贾芸想进园内找宝玉。",
     "id": "ev-topic-auto-ch108-later-associations-000-sep-sep",
@@ -58306,6 +58906,21 @@
     "id": "ev-topic-auto-ch111-key-events-003-zh-8f88b8fc17",
     "location": "第 111 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-111:key_events:3",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 111,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-0ec72c5901"
+    ],
+    "evidence_text": "贾母辞灵后，鸳鸯哭诉要跟老太太去，在贾母套间内见秦可卿鬼魂指引，遂取出当年铰下的头发揣入怀中，解下汗巾自缢殉主，魂魄被警幻之妹可卿接引，补入太虚幻境掌管痴情司。",
+    "id": "ev-topic-auto-ch111-key-events-summary-000-zh-88dd5de44a",
+    "location": "第 111 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-111:key_events_summary:0",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -59987,6 +60602,21 @@
     "id": "ev-topic-auto-ch115-key-events-006-zh-4e1297108e",
     "location": "第 115 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-115:key_events:6",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 115,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-b4b5df738e"
+    ],
+    "evidence_text": "王夫人等正为宝玉病情焦灼，又来一个和尚声称送玉，将通灵宝玉在宝玉耳边呼唤后，宝玉苏醒。",
+    "id": "ev-topic-auto-ch115-key-events-summary-005-zh-d117104052",
+    "location": "第 115 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-115:key_events_summary:5",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"
@@ -62716,6 +63346,36 @@
     "id": "ev-topic-auto-ch120-key-events-009-zh-d8478511f9",
     "location": "第 120 回章节资料：key_events",
     "provenance": "data/app/chapter_review_cards.json:review-120:key_events:9",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 120,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-2d5f93db60"
+    ],
+    "evidence_text": "贾雨村遇赦为民，于急流津觉迷渡口重遇甄士隐，士隐详说太虚幻境始末、贾宝玉前因后果，预言“兰桂齐芳，家道复初”，并往度脱其女英莲（香菱）归太虚。",
+    "id": "ev-topic-auto-ch120-key-events-summary-006-zh-91a8905f5e",
+    "location": "第 120 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-120:key_events_summary:6",
+    "quote": null,
+    "relation_id": null,
+    "source_type": "processed_material"
+  },
+  {
+    "chapter": 120,
+    "confidence": "explicit",
+    "derived_from_ids": [],
+    "entity_ids": [
+      "card-topic-auto-event-zh-e2b8561c2e"
+    ],
+    "evidence_text": "贾雨村遇赦为民，于急流津觉迷渡口重遇甄士隐，士隐详说太虚幻境始末、贾宝玉前因后果，预言“兰桂齐芳，家道复初”，并往度脱其女英莲（香菱）归太虚。",
+    "id": "ev-topic-auto-ch120-key-events-summary-008-zh-91a8905f5e",
+    "location": "第 120 回章节资料：key_events_summary",
+    "provenance": "data/app/chapter_review_cards.json:review-120:key_events_summary:8",
     "quote": null,
     "relation_id": null,
     "source_type": "processed_material"

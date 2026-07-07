@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>红楼梦阅读助手</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=topic-context" />
   </head>
   <body>
     <header class="topbar">
@@ -56,13 +56,13 @@
       </section>
       <section id="topics" class="view">
         <h2>看专题</h2>
-        <div id="topic-list" class="topic-grid"></div>
+        <div id="topic-list" class="topic-groups"></div>
         <aside id="topic-knowledge-panel" class="knowledge-panel">
           <button class="panel-close" data-panel-close="topic-knowledge-panel" type="button">关闭</button>
           <div class="knowledge-panel-content"></div>
         </aside>
       </section>
     </main>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=topic-router"></script>
   </body>
 </html>

@@ -130,6 +130,104 @@ function showView(id) {
   views.forEach((view) => view.classList.toggle("active", view.id === id));
 }
 
+function clampChapterNumber(value) {
+  const number = Number(value || 1);
+  if (!Number.isInteger(number)) return 1;
+  return Math.min(120, Math.max(1, number));
+}
+
+function parseRouteFromHash(hash = window.location.hash) {
+  const rawHash = String(hash || "").replace(/^#/, "");
+  const rawRoute = rawHash || "/";
+  const [rawPath, rawQuery = ""] = rawRoute.split("?");
+  const parts = rawPath.split("/").filter(Boolean).map((part) => decodeURIComponent(part));
+  const query = new URLSearchParams(rawQuery);
+  if (parts[0] === "ask") {
+    return { view: "ask", question: query.get("q") || "" };
+  }
+  if (parts[0] === "chapters") {
+    return { view: "chapters", chapterNumber: clampChapterNumber(parts[1] || 1), cardId: query.get("card") || "" };
+  }
+  if (parts[0] === "topics" && parts[1]) {
+    return { view: "topicDetail", topicId: parts[1], cardId: query.get("card") || "" };
+  }
+  if (parts[0] === "topics") {
+    return { view: "topics" };
+  }
+  return { view: "home" };
+}
+
+function routeQuery(params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    const text = String(value || "").trim();
+    if (text) query.set(key, text);
+  });
+  const serialized = query.toString();
+  return serialized ? `?${serialized}` : "";
+}
+
+function routeToHash(route = {}) {
+  if (route.view === "ask") {
+    return `#/ask${routeQuery({ q: route.question })}`;
+  }
+  if (route.view === "chapters") {
+    return `#/chapters/${clampChapterNumber(route.chapterNumber)}${routeQuery({ card: route.cardId })}`;
+  }
+  if (route.view === "topicDetail" && route.topicId) {
+    return `#/topics/${encodeURIComponent(route.topicId)}${routeQuery({ card: route.cardId })}`;
+  }
+  if (route.view === "topics") {
+    return "#/topics";
+  }
+  return "#/";
+}
+
+function navigate(route, options = {}) {
+  const hash = routeToHash(route);
+  if (window.location.hash === hash) {
+    renderRoute(parseRouteFromHash());
+    return;
+  }
+  if (options.replace) {
+    window.history.replaceState(null, "", hash);
+    renderRoute(parseRouteFromHash());
+    return;
+  }
+  window.location.hash = hash;
+}
+
+async function renderRoute(route = parseRouteFromHash()) {
+  closeEntityPopover();
+  if (route.view === "ask") {
+    showView("ask");
+    const input = document.querySelector("#question");
+    if (input) input.value = route.question || "";
+    if (route.question) {
+      await ask(route.question);
+    }
+    return;
+  }
+  if (route.view === "chapters") {
+    showView("chapters");
+    await loadChapter(route.chapterNumber || 1);
+    if (route.cardId) await loadKnowledgeCard(route.cardId, "#knowledge-panel");
+    return;
+  }
+  if (route.view === "topics") {
+    showView("topics");
+    await loadTopics();
+    return;
+  }
+  if (route.view === "topicDetail" && route.topicId) {
+    showView("topics");
+    await loadTopicDetail(route.topicId);
+    if (route.cardId) await loadKnowledgeCard(route.cardId, "#topic-knowledge-panel");
+    return;
+  }
+  showView("home");
+}
+
 async function getJson(url, options) {
   const response = await fetch(url, options);
   if (!response.ok) throw new Error(`请求失败：${response.status}`);
@@ -542,19 +640,16 @@ async function loadHome() {
 
 function handleCommonEntry(target) {
   if (target.dataset.targetType === "ask") {
-    ask(target.dataset.target);
+    navigate({ view: "ask", question: target.dataset.target });
   }
   if (target.dataset.targetType === "chapter") {
-    showView("chapters");
-    loadChapter(Number(target.dataset.target));
+    navigate({ view: "chapters", chapterNumber: Number(target.dataset.target) });
   }
   if (target.dataset.targetType === "topic") {
-    showView("topics");
-    loadTopicDetail(target.dataset.target);
+    navigate({ view: "topicDetail", topicId: target.dataset.target });
   }
   if (target.dataset.targetType === "card") {
-    showView("chapters");
-    loadKnowledgeCard(target.dataset.target);
+    navigate({ view: "chapters", chapterNumber: 1, cardId: target.dataset.target });
   }
 }
 
@@ -775,14 +870,55 @@ async function loadChapter(number = 1) {
 
 async function loadTopics() {
   const data = await getJson("/api/topics");
-  document.querySelector("#topic-list").innerHTML = data.topics
-    .map(
-      (topic) =>
-        `<article><h3>${escapeHtml(topic.title)}</h3><p>${escapeHtml(topic.description)}</p><button data-topic-id="${escapeHtml(topic.id)}">查看专题</button></article>`,
-    )
-    .join("");
+  const topicList = document.querySelector("#topic-list");
+  topicList.className = "topic-groups";
+  topicList.innerHTML = renderTopicGroups(data.topicGroups || groupTopicsByCategory(data.topics || []));
   document.querySelector(panelContentSelector("#topic-knowledge-panel")).innerHTML = "";
   closeKnowledgePanel("topic-knowledge-panel");
+}
+
+function groupTopicsByCategory(topics = []) {
+  const groupsByCategory = new Map();
+  topics.forEach((topic) => {
+    const category = topic.category || "专题";
+    if (!groupsByCategory.has(category)) {
+      groupsByCategory.set(category, {
+        category,
+        description: "围绕相关专题线索组织。",
+        count: 0,
+        topics: [],
+      });
+    }
+    const group = groupsByCategory.get(category);
+    group.topics.push(topic);
+    group.count = group.topics.length;
+  });
+  return Array.from(groupsByCategory.values());
+}
+
+function renderTopicGroups(groups = []) {
+  if (!groups.length) return "<p>暂无可靠资料</p>";
+  return groups
+    .map((group) => {
+      const topics = group.topics || [];
+      return `
+        <details class="topic-group">
+          <summary class="topic-group-header">
+            <div>
+              <h3>${escapeHtml(group.category || "专题")}</h3>
+              <p>${escapeHtml(group.description || "")}</p>
+            </div>
+            <span>${escapeHtml(group.count || topics.length)} 个专题</span>
+          </summary>
+          <div class="topic-grid">${topics.map(renderTopicCard).join("")}</div>
+        </details>
+      `;
+    })
+    .join("");
+}
+
+function renderTopicCard(topic) {
+  return `<article><h4>${escapeHtml(topic.title)}</h4><p>${escapeHtml(topic.description)}</p><button data-topic-id="${escapeHtml(topic.id)}">查看专题</button></article>`;
 }
 
 function renderChapterJumpButton(label, chapter, labelIsEscaped = false) {
@@ -792,25 +928,44 @@ function renderChapterJumpButton(label, chapter, labelIsEscaped = false) {
   return `<button class="text-link" data-chapter-number="${escapeHtml(chapterNumber)}">${text}</button>`;
 }
 
+function renderTopicGraphRelations(relations = []) {
+  if (!relations.length) return "";
+  return relations
+    .map((relation) => {
+      const relationship = relation.relationship ? `（${escapeHtml(relation.relationship)}）` : "";
+      const description = relation.description ? `：${escapeHtml(relation.description)}` : "";
+      return `<li><strong>${escapeHtml(relation.name || "相关线索")}</strong>${relationship}${description}</li>`;
+    })
+    .join("");
+}
+
 async function loadTopicDetail(topicId) {
   const data = await getJson(`/api/topics/${topicId}`);
   const cards = data.cards.map((card) => `<li><button data-card-id="${escapeHtml(card.id)}">${escapeHtml(card.name)}</button></li>`).join("");
   const relations = data.relations
     .map((relation) => `<li>${renderChapterJumpButton(escapeHtml(relation.description), relation.chapters?.[0], true)}</li>`)
     .join("");
+  const graphRelations = renderTopicGraphRelations(data.topicContext?.graphRelations || []);
+  const relationClues = [relations, graphRelations].filter(Boolean).join("");
   const facts = data.evidence
     .map((item) => `<li class="source">${renderChapterJumpButton(`第 ${item.chapter || ""} 回：${item.evidenceText}`, item.chapter)}</li>`)
     .join("");
   const patterns = data.topic.typicalQuestionPatterns.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-  document.querySelector("#topic-list").innerHTML = `
+  const introduction = data.topicContext?.introduction
+    ? `<h4>专题简介</h4><p>${escapeHtml(data.topicContext.introduction)}</p>`
+    : "";
+  const topicList = document.querySelector("#topic-list");
+  topicList.className = "topic-detail";
+  topicList.innerHTML = `
     <article>
       <button data-topic-list-return type="button">返回专题</button>
       <h3>${escapeHtml(data.topic.title)}</h3>
       <p>${escapeHtml(data.topic.description)}</p>
+      ${introduction}
       <h4>核心知识卡</h4>
       <ul>${cards || "<li>暂无可靠资料</li>"}</ul>
       <h4>关系线索</h4>
-      <ul>${relations || "<li>暂无可靠资料</li>"}</ul>
+      <ul>${relationClues || "<li>暂无可靠资料</li>"}</ul>
       <h4>典型问法</h4>
       <ul>${patterns || "<li>暂无可靠资料</li>"}</ul>
       <h4>可引用事实</h4>
@@ -838,55 +993,78 @@ document.addEventListener("click", (event) => {
   const panelCloseTarget = target.closest("[data-panel-close]");
   const topicListReturnTarget = target.closest("[data-topic-list-return]");
   if (viewTarget) {
-    showView(viewTarget.dataset.view);
-    if (viewTarget.dataset.view === "chapters") loadChapter();
-    if (viewTarget.dataset.view === "topics") loadTopics();
+    const view = viewTarget.dataset.view;
+    if (view === "ask") navigate({ view: "ask" });
+    if (view === "chapters") navigate({ view: "chapters", chapterNumber: 1 });
+    if (view === "topics") navigate({ view: "topics" });
+    if (view === "home") navigate({ view: "home" });
+    return;
   }
   if (commonTarget) {
     handleCommonEntry(commonTarget);
+    return;
   }
   if (cardTarget) {
-    const panel = cardTarget.closest("#topics") ? "#topic-knowledge-panel" : "#knowledge-panel";
-    loadKnowledgeCard(cardTarget.dataset.cardId, panel);
+    const route = parseRouteFromHash();
+    if (route.view === "topicDetail") {
+      navigate({ ...route, cardId: cardTarget.dataset.cardId });
+    } else if (route.view === "chapters") {
+      navigate({ ...route, cardId: cardTarget.dataset.cardId });
+    } else {
+      navigate({ view: "chapters", chapterNumber: 1, cardId: cardTarget.dataset.cardId });
+    }
+    return;
   }
   if (inlineEntityTarget) {
     openEntityPopover(inlineEntityTarget.dataset.inlineEntityId);
+    return;
   }
   if (popoverCloseTarget) {
     closeEntityPopover();
+    return;
   }
   if (popoverBackdropTarget) {
     closeEntityPopover();
+    return;
   }
   if (topicTarget) {
-    showView("topics");
-    loadTopicDetail(topicTarget.dataset.topicId);
+    navigate({ view: "topicDetail", topicId: topicTarget.dataset.topicId });
+    return;
   }
   if (topicListReturnTarget) {
-    showView("topics");
-    loadTopics();
+    navigate({ view: "topics" });
+    return;
   }
   if (chapterTarget) {
-    showView("chapters");
-    loadChapter(Number(chapterTarget.dataset.chapterNumber));
+    navigate({ view: "chapters", chapterNumber: Number(chapterTarget.dataset.chapterNumber) });
+    return;
   }
   if (chapterStepTarget) {
     const currentNumber = Number(currentChapterPayload?.chapter?.number || document.querySelector("#chapter-select")?.value || 1);
     const nextNumber = Math.min(120, Math.max(1, currentNumber + Number(chapterStepTarget.dataset.chapterStep || 0)));
-    loadChapter(nextNumber);
+    navigate({ view: "chapters", chapterNumber: nextNumber });
+    return;
   }
   if (chapterTabTarget) {
     setActiveChapterTab(chapterTabTarget.dataset.chapterTab);
+    return;
   }
   if (sourceNeedleTarget) {
     scrollOriginalTextToNeedle(sourceNeedleTarget.dataset.sourceNeedle);
+    return;
   }
   if (traceChapterTarget) {
-    showView("chapters");
-    loadChapter(Number(traceChapterTarget.dataset.traceChapterNumber));
+    navigate({ view: "chapters", chapterNumber: Number(traceChapterTarget.dataset.traceChapterNumber) });
+    return;
   }
   if (panelCloseTarget) {
-    closeKnowledgePanel(panelCloseTarget.dataset.panelClose);
+    const route = parseRouteFromHash();
+    if (route.cardId) {
+      const { cardId, ...routeWithoutCard } = route;
+      navigate(routeWithoutCard);
+    } else {
+      closeKnowledgePanel(panelCloseTarget.dataset.panelClose);
+    }
   }
 });
 
@@ -895,14 +1073,18 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.querySelector("#chapter-select").addEventListener("change", (event) => {
-  loadChapter(Number(event.currentTarget.value));
+  navigate({ view: "chapters", chapterNumber: Number(event.currentTarget.value) });
 });
 
 document.querySelector("#ask-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const question = new FormData(event.currentTarget).get("question");
-  ask(String(question || ""));
+  navigate({ view: "ask", question: String(question || "") });
 });
 
 initChapterSelector();
 loadHome();
+window.addEventListener("hashchange", () => {
+  renderRoute(parseRouteFromHash());
+});
+renderRoute(parseRouteFromHash());

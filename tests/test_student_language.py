@@ -116,7 +116,7 @@ def test_static_chapter_view_has_chapter_selector():
     assert 'for="chapter-select"' in html
     assert "initChapterSelector" in js
     assert "for (let number = 1; number <= 120; number += 1)" in js
-    assert 'loadChapter(Number(event.currentTarget.value))' in js
+    assert 'navigate({ view: "chapters", chapterNumber: Number(event.currentTarget.value) })' in js
     assert "chapterSelect.value = String(data.chapter.number)" in js
     assert "async function loadChapter(number = 1)" in js
     assert "updateChapterNavigation" in js

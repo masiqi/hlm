@@ -14426,7 +14426,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch105-relationships-005-zh-7f0da5bba6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch105-zh-6558f36c93-zh-0082a28bea-05"
+    ],
     "id": "card-topic-auto-image-zh-0082a28bea",
     "name": "宁国府抄家惨状",
     "related_card_ids": [],
@@ -14456,7 +14458,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch074-relationships-005-zh-d0b48c39cf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch074-zh-d58a1be932-zh-00cab8b739-05"
+    ],
     "id": "card-topic-auto-image-zh-00cab8b739",
     "name": "林黛玉（潇湘馆）",
     "related_card_ids": [],
@@ -14516,7 +14520,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch072-relationships-002-zh-3cc457fede"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch072-zh-d58a1be932-zh-02f9fd9f42-02"
+    ],
     "id": "card-topic-auto-image-zh-02f9fd9f42",
     "name": "平儿/贾琏",
     "related_card_ids": [],
@@ -14561,7 +14567,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch059-relationships-001-zh-87beb291d3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch059-zh-c824bbdb9d-zh-03e523ef69-01"
+    ],
     "id": "card-topic-auto-image-zh-03e523ef69",
     "name": "贾宝玉宝珠鱼眼睛论",
     "related_card_ids": [],
@@ -14636,7 +14644,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch085-relationships-001-zh-461dba24e8"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch085-zh-ad66c6bc5d-zh-05674e610c-01"
+    ],
     "id": "card-topic-auto-image-zh-05674e610c",
     "name": "宝玉亲事",
     "related_card_ids": [],
@@ -14696,7 +14706,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch097-relationships-000-zh-24b4769ee4"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch097-zh-2d6600c0fd-zh-062e4b4232-00"
+    ],
     "id": "card-topic-auto-image-zh-062e4b4232",
     "name": "旧帕与诗稿",
     "related_card_ids": [],
@@ -14891,7 +14903,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch004-relationships-001-zh-7d54eca1ff"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch004-zh-4cdcd6d89f-zh-090f61e9fe-01"
+    ],
     "id": "card-topic-auto-image-zh-090f61e9fe",
     "name": "贾政/王子腾",
     "related_card_ids": [],
@@ -14951,7 +14965,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch101-relationships-003-zh-b087375677"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch101-zh-d58a1be932-zh-099d76e0c0-03"
+    ],
     "id": "card-topic-auto-image-zh-099d76e0c0",
     "name": "散花寺神签",
     "related_card_ids": [],
@@ -15117,7 +15133,10 @@
       "ev-topic-auto-ch117-relationships-001-zh-d0c6f7f1ca",
       "ev-topic-auto-ch117-relationships-002-zh-a2fe7f1a0a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch117-zh-ac19e14301-zh-0bbdfbb4c6-01",
+      "rel-topic-auto-ch117-zh-d8fc26cd64-zh-0bbdfbb4c6-02"
+    ],
     "id": "card-topic-auto-image-zh-0bbdfbb4c6",
     "name": "贾宝玉（还玉行为）",
     "related_card_ids": [],
@@ -15162,7 +15181,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch094-relationships-005-zh-64901f1a77"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch094-zh-4a0b5206bd-zh-0c5e0d5bc3-05"
+    ],
     "id": "card-topic-auto-image-zh-0c5e0d5bc3",
     "name": "贾环被疑事件",
     "related_card_ids": [],
@@ -15282,7 +15303,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch022-relationships-000-zh-3348983463"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch022-zh-31c00cd642-zh-0f62ffb001-00"
+    ],
     "id": "card-topic-auto-image-zh-0f62ffb001",
     "name": "宝玉悟禅机写偈",
     "related_card_ids": [],
@@ -15312,7 +15335,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch116-relationships-000-zh-666b8f3bd3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch116-zh-8d20634cad-zh-0f7a1411d2-00"
+    ],
     "id": "card-topic-auto-image-zh-0f7a1411d2",
     "name": "天仙福地（太虚幻境）",
     "related_card_ids": [],
@@ -15327,7 +15352,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch049-relationships-001-zh-d09b520efe"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch049-zh-a8908cdbf9-zh-0fdcf714f0-01"
+    ],
     "id": "card-topic-auto-image-zh-0fdcf714f0",
     "name": "黛玉与宝钗和好",
     "related_card_ids": [],
@@ -15402,7 +15429,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch020-relationships-004-zh-e713c2a4c2"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch020-zh-2d6600c0fd-zh-11abfb445f-04"
+    ],
     "id": "card-topic-auto-image-zh-11abfb445f",
     "name": "史湘云咬舌",
     "related_card_ids": [],
@@ -15432,7 +15461,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch010-relationships-003-zh-480d2be638"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch010-zh-e24ae040c5-zh-121916acf8-03"
+    ],
     "id": "card-topic-auto-image-zh-121916acf8",
     "name": "秦可卿病源",
     "related_card_ids": [],
@@ -15537,7 +15568,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch107-relationships-011-zh-ad41403169"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch107-zh-a642edec65-zh-1445758f01-11"
+    ],
     "id": "card-topic-auto-image-zh-1445758f01",
     "name": "府第园子",
     "related_card_ids": [],
@@ -15912,7 +15945,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch097-relationships-003-zh-e7ae57eb00"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch097-zh-f77f7b8733-zh-19d82b3bb4-03"
+    ],
     "id": "card-topic-auto-image-zh-19d82b3bb4",
     "name": "林黛玉的病情恶化",
     "related_card_ids": [],
@@ -16017,7 +16052,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch076-relationships-004-zh-fa12b51d8a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch076-zh-4efdf904f2-zh-1b0626575c-04"
+    ],
     "id": "card-topic-auto-image-zh-1b0626575c",
     "name": "林黛玉结局",
     "related_card_ids": [],
@@ -16077,7 +16114,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch017-relationships-003-zh-aa8eedda03"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch017-zh-5f80f778cb-zh-1c5426e59d-03"
+    ],
     "id": "card-topic-auto-image-zh-1c5426e59d",
     "name": "梨香院女戏",
     "related_card_ids": [],
@@ -16168,7 +16207,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch039-relationships-003-zh-e16d84d413"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch039-zh-acc4c397d1-zh-1d4b0dc0cb-03"
+    ],
     "id": "card-topic-auto-image-zh-1d4b0dc0cb",
     "name": "若玉",
     "related_card_ids": [],
@@ -16319,7 +16360,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch099-relationships-003-zh-7eebc3a525"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch099-zh-a642edec65-zh-1f7e12a779-03"
+    ],
     "id": "card-topic-auto-image-zh-1f7e12a779",
     "name": "薛蟠打死人命案",
     "related_card_ids": [],
@@ -16485,7 +16528,9 @@
       "ev-topic-auto-ch079-relationships-000-zh-d71e9e84b0",
       "ev-topic-auto-ch079-objects-000-zh-58e95228b7"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch079-zh-8d20634cad-zh-22d1001a09-00"
+    ],
     "id": "card-topic-auto-image-zh-22d1001a09",
     "name": "《芙蓉女儿诔》",
     "related_card_ids": [],
@@ -16697,7 +16742,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch082-relationships-003-zh-4f9c67ad6d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch082-zh-a7e2173148-zh-2613fc18cf-03"
+    ],
     "id": "card-topic-auto-image-zh-2613fc18cf",
     "name": "怡红院丫鬟",
     "related_card_ids": [],
@@ -16848,7 +16895,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch068-relationships-003-zh-117f0fbf1f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch068-zh-995dc66718-zh-27baf18bc6-03"
+    ],
     "id": "card-topic-auto-image-zh-27baf18bc6",
     "name": "王熙凤的意志",
     "related_card_ids": [],
@@ -16953,7 +17002,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch028-relationships-002-zh-1755fd1bda"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch028-zh-46768e0925-zh-29bd91b7a4-02"
+    ],
     "id": "card-topic-auto-image-zh-29bd91b7a4",
     "name": "贾宝玉与薛宝钗",
     "related_card_ids": [],
@@ -16983,7 +17034,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch075-relationships-000-zh-81a10cfda9"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch075-zh-66178aea3e-zh-29e25cae9b-00"
+    ],
     "id": "card-topic-auto-image-zh-29e25cae9b",
     "name": "荣宁二府",
     "related_card_ids": [],
@@ -17193,7 +17246,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch049-relationships-004-zh-8af8892986"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch049-zh-572481bcdc-zh-2dd4b66ac1-04"
+    ],
     "id": "card-topic-auto-image-zh-2dd4b66ac1",
     "name": "芦雪庭联诗",
     "related_card_ids": [],
@@ -17238,7 +17293,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch114-relationships-000-zh-404bd40879"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch114-zh-d58a1be932-zh-2e4830b024-00"
+    ],
     "id": "card-topic-auto-image-zh-2e4830b024",
     "name": "太虚幻境册子",
     "related_card_ids": [],
@@ -17253,7 +17310,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch028-relationships-001-zh-3c1e072a7b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch028-zh-974fb7601b-zh-2e540f64e0-01"
+    ],
     "id": "card-topic-auto-image-zh-2e540f64e0",
     "name": "蒋玉菡与花袭人",
     "related_card_ids": [],
@@ -17463,7 +17522,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch009-relationships-004-zh-1a534f6d49"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch009-zh-c251070614-zh-320e9a1194-04"
+    ],
     "id": "card-topic-auto-image-zh-320e9a1194",
     "name": "香怜、玉爱",
     "related_card_ids": [],
@@ -17478,7 +17539,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch064-relationships-007-zh-7e1b39da30"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch064-zh-415942350d-zh-321e147176-07"
+    ],
     "id": "card-topic-auto-image-zh-321e147176",
     "name": "偷娶尤二姐",
     "related_card_ids": [],
@@ -17523,7 +17586,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch066-relationships-008-zh-8e2d61cafe"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch066-zh-6865b984f3-zh-32cbd608a2-08"
+    ],
     "id": "card-topic-auto-image-zh-32cbd608a2",
     "name": "尤三姐柳湘莲",
     "related_card_ids": [],
@@ -17914,7 +17979,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch018-relationships-005-zh-a6bb54b1fc"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch018-zh-63555aa851-zh-37f8917266-05"
+    ],
     "id": "card-topic-auto-image-zh-37f8917266",
     "name": "薛宝钗、林黛玉",
     "related_card_ids": [],
@@ -17974,7 +18041,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch102-relationships-001-zh-5cdd83db73"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch102-zh-66178aea3e-zh-38d7c7b547-01"
+    ],
     "id": "card-topic-auto-image-zh-38d7c7b547",
     "name": "大观园闹妖怪",
     "related_card_ids": [],
@@ -18199,7 +18268,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch101-relationships-000-zh-bd6866d5ff"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch101-zh-d58a1be932-zh-3c219fe467-00"
+    ],
     "id": "card-topic-auto-image-zh-3c219fe467",
     "name": "秦可卿幽魂",
     "related_card_ids": [],
@@ -18425,7 +18496,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch073-relationships-003-zh-b442bd4eb1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch073-zh-95ef8bb291-zh-3f1680d060-03"
+    ],
     "id": "card-topic-auto-image-zh-3f1680d060",
     "name": "园内聚赌头家",
     "related_card_ids": [],
@@ -18485,7 +18558,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch093-relationships-005-zh-c4425ac74c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch093-zh-102762967e-zh-4016022a97-05"
+    ],
     "id": "card-topic-auto-image-zh-4016022a97",
     "name": "水月庵 / 贾政、贾琏",
     "related_card_ids": [],
@@ -18515,7 +18590,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch022-relationships-004-zh-09bd9f3ef1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch022-zh-9dc5e5e7d0-zh-4132e109a5-04"
+    ],
     "id": "card-topic-auto-image-zh-4132e109a5",
     "name": "贾母命制围屏灯",
     "related_card_ids": [],
@@ -18877,7 +18954,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch093-relationships-004-zh-dc81bd1210"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch093-zh-d58a1be932-zh-4673018c7b-04"
+    ],
     "id": "card-topic-auto-image-zh-4673018c7b",
     "name": "水月庵管理 / 馒头庵（铁槛寺）",
     "related_card_ids": [],
@@ -18907,7 +18986,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch119-relationships-002-zh-7c39101ff6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch119-zh-84e2c87db1-zh-470c6c3479-02"
+    ],
     "id": "card-topic-auto-image-zh-470c6c3479",
     "name": "贾宝玉出家",
     "related_card_ids": [],
@@ -18971,7 +19052,9 @@
       "ev-topic-auto-ch096-relationships-003-zh-2b77f482de"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch040-zh-4797e8cf9b-zh-a8908cdbf9-04"
+      "rel-topic-auto-ch040-zh-95ef8bb291-zh-4797e8cf9b-01",
+      "rel-topic-auto-ch040-zh-4797e8cf9b-zh-a8908cdbf9-04",
+      "rel-topic-auto-ch096-zh-f77f7b8733-zh-4797e8cf9b-03"
     ],
     "id": "card-topic-auto-image-zh-4797e8cf9b",
     "name": "黛玉",
@@ -19111,7 +19194,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch084-relationships-004-zh-b4cf689255"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch084-zh-95ef8bb291-zh-4981aaae08-04"
+    ],
     "id": "card-topic-auto-image-zh-4981aaae08",
     "name": "王尔调（代张家提亲）",
     "related_card_ids": [],
@@ -19210,7 +19295,10 @@
       "ev-topic-auto-ch105-later-associations-002-sep-sep-sep-sep-sep-sep",
       "ev-topic-auto-ch106-relationships-006-zh-c168df5818"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch105-zh-6808c3be3c-zh-4a5130e75c-00",
+      "rel-topic-auto-ch106-zh-e284b09b94-zh-4a5130e75c-06"
+    ],
     "id": "card-topic-auto-image-zh-4a5130e75c",
     "name": "贾府抄家",
     "related_card_ids": [],
@@ -19256,7 +19344,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch002-relationships-003-zh-6386e84a16"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch002-zh-a03ae68d45-zh-4ae9236a1f-03"
+    ],
     "id": "card-topic-auto-image-zh-4ae9236a1f",
     "name": "贾赦、贾政",
     "related_card_ids": [],
@@ -19317,7 +19407,9 @@
       "ev-topic-auto-ch027-relationships-005-zh-efe1bdfd9a",
       "ev-topic-auto-ch027-objects-002-zh-37729fc67e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch027-zh-2d6600c0fd-zh-4c69c54e04-05"
+    ],
     "id": "card-topic-auto-image-zh-4c69c54e04",
     "name": "落花",
     "related_card_ids": [],
@@ -19385,7 +19477,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch107-relationships-009-zh-72306dacc3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch107-zh-a642edec65-zh-4d4f69ff59-09"
+    ],
     "id": "card-topic-auto-image-zh-4d4f69ff59",
     "name": "贾赦、贾珍",
     "related_card_ids": [],
@@ -19400,7 +19494,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch010-relationships-002-zh-b3323228bc"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch010-zh-6a886f87d2-zh-4d6b4c590c-02"
+    ],
     "id": "card-topic-auto-image-zh-4d6b4c590c",
     "name": "秦可卿病情加重",
     "related_card_ids": [],
@@ -19597,7 +19693,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch020-relationships-001-zh-5d74aca153"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch020-zh-d58a1be932-zh-4fc7402a26-01"
+    ],
     "id": "card-topic-auto-image-zh-4fc7402a26",
     "name": "赵姨娘的妒意",
     "related_card_ids": [],
@@ -19794,7 +19892,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch059-relationships-000-zh-12cf8aca66"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch059-zh-36583780b2-zh-537692915e-00"
+    ],
     "id": "card-topic-auto-image-zh-537692915e",
     "name": "春燕姑妈打骂春燕",
     "related_card_ids": [],
@@ -19854,7 +19954,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch029-relationships-004-zh-6b2da15633"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch029-zh-069b07cbc1-zh-546229bdb0-04"
+    ],
     "id": "card-topic-auto-image-zh-546229bdb0",
     "name": "贾宝玉、史湘云、林黛玉",
     "related_card_ids": [],
@@ -20083,7 +20185,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch097-relationships-001-zh-cccedfbfdf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch097-zh-d58a1be932-zh-56b1671021-01"
+    ],
     "id": "card-topic-auto-image-zh-56b1671021",
     "name": "贾宝玉与薛宝钗的婚礼",
     "related_card_ids": [],
@@ -20134,7 +20238,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch022-relationships-002-zh-974d4a8f73"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch022-zh-efc34e5bfc-zh-57add1d2e9-02"
+    ],
     "id": "card-topic-auto-image-zh-57add1d2e9",
     "name": "宝玉读南华经参禅",
     "related_card_ids": [],
@@ -20179,7 +20285,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch041-relationships-002-zh-de4e5c9b19"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch041-zh-8d20634cad-zh-5894ed376e-02"
+    ],
     "id": "card-topic-auto-image-zh-5894ed376e",
     "name": "妙玉与刘姥姥",
     "related_card_ids": [],
@@ -20254,7 +20362,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch084-relationships-002-zh-32a61ad99c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch084-zh-d58a1be932-zh-59085e9696-02"
+    ],
     "id": "card-topic-auto-image-zh-59085e9696",
     "name": "贾宝玉与薛宝钗的婚事",
     "related_card_ids": [],
@@ -20314,7 +20424,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch089-relationships-000-zh-fc2bf74076"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch089-zh-8d20634cad-zh-5a0843615f-00"
+    ],
     "id": "card-topic-auto-image-zh-5a0843615f",
     "name": "雀金裘（晴雯）",
     "related_card_ids": [],
@@ -20406,7 +20518,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch056-relationships-006-zh-30cb90973a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch056-zh-9790506bde-zh-5a8ff3a9cf-06"
+    ],
     "id": "card-topic-auto-image-zh-5a8ff3a9cf",
     "name": "江南甄府",
     "related_card_ids": [],
@@ -20512,7 +20626,10 @@
       "ev-topic-auto-ch029-relationships-003-zh-7eac1e6de2",
       "ev-topic-auto-ch030-relationships-000-zh-f7def81ddd"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch029-zh-95ef8bb291-zh-5c1dcb242c-03",
+      "rel-topic-auto-ch030-zh-f06ce48f25-zh-5c1dcb242c-00"
+    ],
     "id": "card-topic-auto-image-zh-5c1dcb242c",
     "name": "贾宝玉、林黛玉",
     "related_card_ids": [],
@@ -20950,7 +21067,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch065-relationships-004-zh-8aec431454"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch065-zh-c9fa586836-zh-6229a0fb79-04"
+    ],
     "id": "card-topic-auto-image-zh-6229a0fb79",
     "name": "柳湘莲（未点名）",
     "related_card_ids": [],
@@ -20965,7 +21084,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch072-relationships-011-zh-fd1f7caf22"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch072-zh-d6669dcc0e-zh-622f836989-11"
+    ],
     "id": "card-topic-auto-image-zh-622f836989",
     "name": "贾府（凤姐）",
     "related_card_ids": [],
@@ -21149,7 +21270,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch112-relationships-003-zh-cd041af4c1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch112-zh-8985a4e669-zh-674ba90074-03"
+    ],
     "id": "card-topic-auto-image-zh-674ba90074",
     "name": "贾芸、林之孝",
     "related_card_ids": [],
@@ -21317,7 +21440,11 @@
       "ev-topic-auto-ch051-relationships-003-zh-56b99fb358",
       "ev-topic-auto-ch051-objects-000-zh-73611d2c50"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch051-zh-434b359884-zh-6c09b797d9-00",
+      "rel-topic-auto-ch051-zh-f06ce48f25-zh-6c09b797d9-01",
+      "rel-topic-auto-ch051-zh-572481bcdc-zh-6c09b797d9-03"
+    ],
     "id": "card-topic-auto-image-zh-6c09b797d9",
     "name": "十首怀古诗",
     "related_card_ids": [],
@@ -21397,7 +21524,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch067-relationships-005-zh-e2e7b0f6e6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch067-zh-74efb53745-zh-6d2f025c14-05"
+    ],
     "id": "card-topic-auto-image-zh-6d2f025c14",
     "name": "贾琏、尤二姐",
     "related_card_ids": [],
@@ -21503,7 +21632,9 @@
       "ev-topic-auto-ch070-relationships-000-zh-32ecda7cd2",
       "ev-topic-auto-ch070-literary-texts-000-zh-d82d7310e0"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch070-zh-2d6600c0fd-zh-6fd18e0807-00"
+    ],
     "id": "card-topic-auto-image-zh-6fd18e0807",
     "name": "《桃花行》",
     "related_card_ids": [],
@@ -21519,7 +21650,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch038-relationships-005-zh-35d64d5c40"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch038-zh-ae9a003d91-zh-6ff5de52ba-05"
+    ],
     "id": "card-topic-auto-image-zh-6ff5de52ba",
     "name": "贾母等众人",
     "related_card_ids": [],
@@ -21549,7 +21682,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch110-relationships-002-zh-45f2079b2a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch110-zh-a642edec65-zh-70c36c224c-02"
+    ],
     "id": "card-topic-auto-image-zh-70c36c224c",
     "name": "贾母丧事用度",
     "related_card_ids": [],
@@ -21654,7 +21789,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch094-relationships-002-zh-2517938719"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch094-zh-ab85f36211-zh-720fe590fa-02"
+    ],
     "id": "card-topic-auto-image-zh-720fe590fa",
     "name": "探春的忧虑",
     "related_card_ids": [],
@@ -21789,7 +21926,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch019-relationships-002-zh-20abdc3036"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch019-zh-2d6600c0fd-zh-73beb176f4-02"
+    ],
     "id": "card-topic-auto-image-zh-73beb176f4",
     "name": "金玉良缘",
     "related_card_ids": [],
@@ -22097,7 +22236,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch076-relationships-001-zh-9d717b05bf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch076-zh-426c10c476-zh-7832cb905a-01"
+    ],
     "id": "card-topic-auto-image-zh-7832cb905a",
     "name": "林黛玉、史湘云联句",
     "related_card_ids": [],
@@ -22187,7 +22328,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch065-relationships-005-zh-3c47ae1196"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch065-zh-74efb53745-zh-793dc1225e-05"
+    ],
     "id": "card-topic-auto-image-zh-793dc1225e",
     "name": "王熙凤、贾府姑娘等",
     "related_card_ids": [],
@@ -22565,7 +22708,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch117-relationships-006-zh-f124887aec"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch117-zh-a48147bb37-zh-7f12f09400-06"
+    ],
     "id": "card-topic-auto-image-zh-7f12f09400",
     "name": "邢大舅、王仁、贾环",
     "related_card_ids": [],
@@ -22700,7 +22845,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch048-relationships-002-zh-94d33f0ac9"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch048-zh-6808c3be3c-zh-82c24361a8-02"
+    ],
     "id": "card-topic-auto-image-zh-82c24361a8",
     "name": "石呆子",
     "related_card_ids": [],
@@ -22806,7 +22953,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch093-relationships-001-zh-059bd5ad1f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch093-zh-b17f0ac0c5-zh-83da0e4e17-01"
+    ],
     "id": "card-topic-auto-image-zh-83da0e4e17",
     "name": "贾府（贾政）",
     "related_card_ids": [],
@@ -22821,7 +22970,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch031-relationships-003-zh-8bafae0a00"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch031-zh-ae9a003d91-zh-83de5caa9c-03"
+    ],
     "id": "card-topic-auto-image-zh-83de5caa9c",
     "name": "贾宝玉的金麒麟",
     "related_card_ids": [],
@@ -22893,8 +23044,13 @@
       "ev-topic-auto-ch095-relationships-005-zh-be074bb8aa"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch025-zh-a84b5fe945-zh-84e2c87db1-06",
+      "rel-topic-auto-ch035-zh-f06ce48f25-zh-84e2c87db1-06",
+      "rel-topic-auto-ch094-zh-8d20634cad-zh-84e2c87db1-00",
       "rel-topic-auto-ch095-zh-84e2c87db1-zh-8d20634cad-05",
+      "rel-topic-auto-ch115-zh-c1c0409059-zh-84e2c87db1-04",
       "rel-topic-auto-ch115-zh-84e2c87db1-zh-8d20634cad-05",
+      "rel-topic-auto-ch117-zh-8d20634cad-zh-84e2c87db1-00",
       "rel-topic-auto-ch119-zh-84e2c87db1-zh-470c6c3479-02"
     ],
     "id": "card-topic-auto-image-zh-84e2c87db1",
@@ -22931,7 +23087,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch044-relationships-004-zh-1d85fd9ab3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch044-zh-95ef8bb291-zh-84ef650a3a-04"
+    ],
     "id": "card-topic-auto-image-zh-84ef650a3a",
     "name": "王熙凤、贾琏、平儿",
     "related_card_ids": [],
@@ -23021,7 +23179,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch050-relationships-000-zh-1fb0280e6e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch050-zh-ae9a003d91-zh-865792a799-00"
+    ],
     "id": "card-topic-auto-image-zh-865792a799",
     "name": "林黛玉、薛宝钗、薛宝琴",
     "related_card_ids": [],
@@ -23096,7 +23256,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch093-relationships-003-zh-25cfc19f3f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch093-zh-ef6cf35ad5-zh-87f7f5a33c-03"
+    ],
     "id": "card-topic-auto-image-zh-87f7f5a33c",
     "name": "贾琏、赖大",
     "related_card_ids": [],
@@ -23251,7 +23413,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch062-relationships-001-zh-9fa5f4d2ba"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch062-zh-8d20634cad-zh-89e0a164fa-01"
+    ],
     "id": "card-topic-auto-image-zh-89e0a164fa",
     "name": "并蒂菱与夫妻蕙",
     "related_card_ids": [],
@@ -23288,8 +23452,13 @@
       "ev-topic-auto-ch120-relationships-005-zh-d59373f080"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch033-zh-13711a9647-zh-8a2267fcb0-02",
+      "rel-topic-auto-ch045-zh-38a6af7221-zh-8a2267fcb0-04",
+      "rel-topic-auto-ch092-zh-db01695023-zh-8a2267fcb0-06",
+      "rel-topic-auto-ch092-zh-04316e4bd9-zh-8a2267fcb0-07",
       "rel-topic-auto-ch101-zh-8a2267fcb0-zh-913750c00f-05",
-      "rel-topic-auto-ch101-zh-8a2267fcb0-zh-eadc8705d8-06"
+      "rel-topic-auto-ch101-zh-8a2267fcb0-zh-eadc8705d8-06",
+      "rel-topic-auto-ch120-zh-f2d234f487-zh-8a2267fcb0-05"
     ],
     "id": "card-topic-auto-image-zh-8a2267fcb0",
     "name": "贾府",
@@ -23472,7 +23641,10 @@
       "ev-topic-auto-ch086-relationships-006-zh-53c224447b",
       "ev-topic-auto-ch102-relationships-004-zh-47df2f60fa"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch086-zh-9690da19b5-zh-8c179599f2-06",
+      "rel-topic-auto-ch102-zh-a642edec65-zh-8c179599f2-04"
+    ],
     "id": "card-topic-auto-image-zh-8c179599f2",
     "name": "贾府命运",
     "related_card_ids": [],
@@ -23502,7 +23674,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch107-relationships-005-zh-918c1bda12"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch107-zh-95ef8bb291-zh-8cdc318f2a-05"
+    ],
     "id": "card-topic-auto-image-zh-8cdc318f2a",
     "name": "李纨、贾兰",
     "related_card_ids": [],
@@ -23757,7 +23931,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch087-relationships-005-zh-ba359cfacb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch087-zh-4ca1fe30dd-zh-90c40a1d01-05"
+    ],
     "id": "card-topic-auto-image-zh-90c40a1d01",
     "name": "林黛玉之死",
     "related_card_ids": [],
@@ -23802,7 +23978,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch101-relationships-005-zh-83714ef6ac"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch101-zh-8a2267fcb0-zh-913750c00f-05"
+    ],
     "id": "card-topic-auto-image-zh-913750c00f",
     "name": "贾化家人鲍音",
     "related_card_ids": [],
@@ -23866,7 +24044,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch016-relationships-000-zh-140deaedcf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch016-zh-d58a1be932-zh-91dc89f4f3-00"
+    ],
     "id": "card-topic-auto-image-zh-91dc89f4f3",
     "name": "张金哥与守备之子",
     "related_card_ids": [],
@@ -23881,7 +24061,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch031-relationships-004-zh-3f0cbd4596"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch031-zh-262dceb337-zh-91e07666fa-04"
+    ],
     "id": "card-topic-auto-image-zh-91e07666fa",
     "name": "金麒麟（大）",
     "related_card_ids": [],
@@ -23972,7 +24154,9 @@
       "ev-topic-auto-ch022-relationships-005-zh-055d6351cc",
       "ev-topic-auto-ch022-key-events-004-zh-932ba85bd2"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch022-zh-f6992d9791-zh-932ba85bd2-05"
+    ],
     "id": "card-topic-auto-image-zh-932ba85bd2",
     "name": "贾政悲谶语",
     "related_card_ids": [],
@@ -24438,7 +24622,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch014-relationships-000-zh-24a73e46c1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch014-zh-d58a1be932-zh-993a3b70f9-00"
+    ],
     "id": "card-topic-auto-image-zh-993a3b70f9",
     "name": "宁国府内部事务",
     "related_card_ids": [],
@@ -24610,7 +24796,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch026-relationships-005-zh-65cb50a1bf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch026-zh-db01695023-zh-9b9e1191df-05"
+    ],
     "id": "card-topic-auto-image-zh-9b9e1191df",
     "name": "铁网山打围",
     "related_card_ids": [],
@@ -24625,7 +24813,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch045-relationships-001-zh-8c8b15df32"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch045-zh-d58a1be932-zh-9be92b7059-01"
+    ],
     "id": "card-topic-auto-image-zh-9be92b7059",
     "name": "诗社",
     "related_card_ids": [],
@@ -24888,7 +25078,10 @@
       "ev-topic-auto-ch104-relationships-002-zh-d08d3225fe",
       "ev-topic-auto-ch112-places-000-zh-2488786ca3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch002-zh-8daad6c33d-zh-a034a448ae-06",
+      "rel-topic-auto-ch104-zh-666f252fa6-zh-a034a448ae-02"
+    ],
     "id": "card-topic-auto-image-zh-a034a448ae",
     "name": "荣国府",
     "related_card_ids": [],
@@ -24909,7 +25102,9 @@
       "ev-topic-auto-ch116-relationships-001-zh-b155fd630d",
       "ev-topic-auto-ch116-objects-000-zh-a0dd41fd97"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch116-zh-8d20634cad-zh-a067a5d063-01"
+    ],
     "id": "card-topic-auto-image-zh-a067a5d063",
     "name": "金陵十二钗正册、又副册",
     "related_card_ids": [],
@@ -25246,7 +25441,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch023-relationships-003-zh-fe809475bf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch023-zh-e363c74c25-zh-a69e9a76ef-03"
+    ],
     "id": "card-topic-auto-image-zh-a69e9a76ef",
     "name": "贾宝玉与众姊妹",
     "related_card_ids": [],
@@ -25321,7 +25518,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch094-relationships-006-zh-16b9c1e5a6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch094-zh-d58a1be932-zh-a8267b9353-06"
+    ],
     "id": "card-topic-auto-image-zh-a8267b9353",
     "name": "失玉处理",
     "related_card_ids": [],
@@ -25501,7 +25700,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch094-relationships-007-zh-3b9cc42c85"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch094-zh-a37f576e6e-zh-ab363c476c-07"
+    ],
     "id": "card-topic-auto-image-zh-ab363c476c",
     "name": "通灵宝玉下落",
     "related_card_ids": [],
@@ -25609,7 +25810,11 @@
       "ev-topic-auto-ch074-relationships-002-zh-8b92236e54",
       "ev-topic-auto-ch075-relationships-003-zh-17969650a7"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch074-zh-39a1f1c4ce-zh-abfc513bff-01",
+      "rel-topic-auto-ch074-zh-2152406afd-zh-abfc513bff-02",
+      "rel-topic-auto-ch075-zh-3ffbb081ca-zh-abfc513bff-03"
+    ],
     "id": "card-topic-auto-image-zh-abfc513bff",
     "name": "抄检大观园",
     "related_card_ids": [],
@@ -25654,7 +25859,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch007-relationships-001-zh-e28a2fe7f6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch007-zh-2d6600c0fd-zh-ad898fbe9e-01"
+    ],
     "id": "card-topic-auto-image-zh-ad898fbe9e",
     "name": "送宫花",
     "related_card_ids": [],
@@ -25909,7 +26116,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch006-relationships-004-zh-ef23799b7f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch006-zh-74b20908db-zh-b29350adbf-04"
+    ],
     "id": "card-topic-auto-image-zh-b29350adbf",
     "name": "王狗儿之父",
     "related_card_ids": [],
@@ -25999,7 +26208,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch088-relationships-006-zh-3f0f86ca15"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch088-zh-d58a1be932-zh-b39a0004bb-06"
+    ],
     "id": "card-topic-auto-image-zh-b39a0004bb",
     "name": "宁府斗殴",
     "related_card_ids": [],
@@ -26074,7 +26285,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch070-relationships-002-zh-7dc222d61f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch070-zh-f06ce48f25-zh-b5bbe34e56-02"
+    ],
     "id": "card-topic-auto-image-zh-b5bbe34e56",
     "name": "《临江仙》",
     "related_card_ids": [],
@@ -26164,7 +26377,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch056-relationships-001-zh-c42b7ab0d3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch056-zh-2152406afd-zh-b6d05867ba-01"
+    ],
     "id": "card-topic-auto-image-zh-b6d05867ba",
     "name": "赖大家花园",
     "related_card_ids": [],
@@ -26511,7 +26726,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch104-relationships-000-zh-04049a48a9"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch104-zh-34ede07937-zh-ba7d0b8b52-00"
+    ],
     "id": "card-topic-auto-image-zh-ba7d0b8b52",
     "name": "贾芸及贾府",
     "related_card_ids": [],
@@ -26572,7 +26789,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch043-relationships-003-zh-1df750a9b4"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch043-zh-8d20634cad-zh-bb97dcf61c-03"
+    ],
     "id": "card-topic-auto-image-zh-bb97dcf61c",
     "name": "金钏（隐指）",
     "related_card_ids": [],
@@ -26602,7 +26821,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch117-relationships-003-zh-d185add296"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch117-zh-f06ce48f25-zh-bc0c52b6ec-03"
+    ],
     "id": "card-topic-auto-image-zh-bc0c52b6ec",
     "name": "还玉事件",
     "related_card_ids": [],
@@ -26903,7 +27124,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch078-relationships-004-zh-79fef9baf3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch078-zh-a642edec65-zh-beb08b8db3-04"
+    ],
     "id": "card-topic-auto-image-zh-beb08b8db3",
     "name": "贾宝玉、贾环、贾兰",
     "related_card_ids": [],
@@ -27054,7 +27277,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch001-relationships-007-zh-ca11731598"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch001-zh-3338472d4b-zh-c168f0e5f8-07"
+    ],
     "id": "card-topic-auto-image-zh-c168f0e5f8",
     "name": "石头记",
     "related_card_ids": [],
@@ -27099,7 +27324,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch104-relationships-003-zh-3d39c41d4e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch104-zh-a642edec65-zh-c22246654c-03"
+    ],
     "id": "card-topic-auto-image-zh-c22246654c",
     "name": "黛玉死讯",
     "related_card_ids": [],
@@ -27129,7 +27356,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch010-relationships-000-zh-dfdccf983a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch010-zh-af3cf3e4ec-zh-c26d691440-00"
+    ],
     "id": "card-topic-auto-image-zh-c26d691440",
     "name": "贾珍、尤氏",
     "related_card_ids": [],
@@ -27252,7 +27481,9 @@
       "ev-topic-auto-ch073-relationships-004-zh-c61febf402",
       "ev-topic-auto-ch073-objects-001-zh-9e78b63dab"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch073-zh-c25b80abcc-zh-c4a3c139bc-04"
+    ],
     "id": "card-topic-auto-image-zh-c4a3c139bc",
     "name": "攒珠累金凤",
     "related_card_ids": [],
@@ -27268,7 +27499,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch065-relationships-002-zh-e6dcd5bac7"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch065-zh-c9fa586836-zh-c4b146062f-02"
+    ],
     "id": "card-topic-auto-image-zh-c4b146062f",
     "name": "贾珍、贾琏",
     "related_card_ids": [],
@@ -27524,7 +27757,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch103-relationships-001-zh-2edcf0256c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch103-zh-34c989788b-zh-c8264264e0-01"
+    ],
     "id": "card-topic-auto-image-zh-c8264264e0",
     "name": "夏金桂饮毒身亡",
     "related_card_ids": [],
@@ -27569,7 +27804,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch116-relationships-004-zh-f21005a408"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch116-zh-a642edec65-zh-c8ebcabf85-04"
+    ],
     "id": "card-topic-auto-image-zh-c8ebcabf85",
     "name": "贾母灵柩、林黛玉灵柩",
     "related_card_ids": [],
@@ -27649,7 +27886,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch040-relationships-005-zh-72f8cb4c57"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch040-zh-95ef8bb291-zh-ca4228831b-05"
+    ],
     "id": "card-topic-auto-image-zh-ca4228831b",
     "name": "宝玉黛玉",
     "related_card_ids": [],
@@ -27935,7 +28174,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch054-relationships-007-zh-3f04452eeb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch054-zh-415942350d-zh-cd85409f06-07"
+    ],
     "id": "card-topic-auto-image-zh-cd85409f06",
     "name": "贾府宗法礼仪",
     "related_card_ids": [],
@@ -28342,7 +28583,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch117-relationships-007-zh-159600247c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch117-zh-5759fc8ae7-zh-d2a2c1fb1f-07"
+    ],
     "id": "card-topic-auto-image-zh-d2a2c1fb1f",
     "name": "外藩选妃消息",
     "related_card_ids": [],
@@ -28417,7 +28660,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch054-relationships-006-zh-4b3ee9631d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch054-zh-8d20634cad-zh-d386217719-06"
+    ],
     "id": "card-topic-auto-image-zh-d386217719",
     "name": "袭人与鸳鸯",
     "related_card_ids": [],
@@ -28480,7 +28725,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch079-relationships-001-zh-ba09af0abf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch079-zh-d34c98c4ac-zh-d41d35af28-01"
+    ],
     "id": "card-topic-auto-image-zh-d41d35af28",
     "name": "宝黛爱情悲剧",
     "related_card_ids": [],
@@ -28525,7 +28772,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch037-relationships-006-zh-3aa7413cca"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch037-zh-8d20634cad-zh-d475cdbc55-06"
+    ],
     "id": "card-topic-auto-image-zh-d475cdbc55",
     "name": "史湘云入社",
     "related_card_ids": [],
@@ -28585,7 +28834,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch022-relationships-003-zh-381e3e17bf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch022-zh-8bde6b6141-zh-d53da7dbdd-03"
+    ],
     "id": "card-topic-auto-image-zh-d53da7dbdd",
     "name": "宝玉放弃参禅",
     "related_card_ids": [],
@@ -28645,7 +28896,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch102-relationships-003-zh-09da5e05e0"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch102-zh-6808c3be3c-zh-d5e623bc33-03"
+    ],
     "id": "card-topic-auto-image-zh-d5e623bc33",
     "name": "大观园驱邪逐妖",
     "related_card_ids": [],
@@ -28675,7 +28928,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch069-relationships-004-zh-f9c60f9c84"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch069-zh-95ef8bb291-zh-d62171aac4-04"
+    ],
     "id": "card-topic-auto-image-zh-d62171aac4",
     "name": "尤二姐之死",
     "related_card_ids": [],
@@ -28735,7 +28990,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch010-relationships-004-zh-5751629ab5"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch010-zh-4febf761cc-zh-d70ffc6ab4-04"
+    ],
     "id": "card-topic-auto-image-zh-d70ffc6ab4",
     "name": "宁国府宴席",
     "related_card_ids": [],
@@ -28932,7 +29189,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch087-relationships-001-zh-4f36c02b44"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch087-zh-2d6600c0fd-zh-d9c5689eea-01"
+    ],
     "id": "card-topic-auto-image-zh-d9c5689eea",
     "name": "旧手帕、香囊、穗子",
     "related_card_ids": [],
@@ -28948,7 +29207,9 @@
       "ev-topic-auto-ch023-relationships-001-zh-a629de6da8",
       "ev-topic-auto-ch023-objects-001-zh-be86d114fe"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch023-zh-2d6600c0fd-zh-da5751812f-01"
+    ],
     "id": "card-topic-auto-image-zh-da5751812f",
     "name": "《牡丹亭》曲文",
     "related_card_ids": [],
@@ -28964,7 +29225,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch070-relationships-003-zh-84fcf3c3e3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch070-zh-ae9a003d91-zh-dabc8b0f63-03"
+    ],
     "id": "card-topic-auto-image-zh-dabc8b0f63",
     "name": "柳絮填词会",
     "related_card_ids": [],
@@ -29174,7 +29437,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch105-relationships-007-zh-fc01a67575"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch105-zh-77eb0553f5-zh-de8be49588-07"
+    ],
     "id": "card-topic-auto-image-zh-de8be49588",
     "name": "王熙凤昏厥",
     "related_card_ids": [],
@@ -29204,7 +29469,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch101-relationships-004-zh-66cbfa744f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch101-zh-f06ce48f25-zh-df54a4c5c5-04"
+    ],
     "id": "card-topic-auto-image-zh-df54a4c5c5",
     "name": "衣锦还乡签文",
     "related_card_ids": [],
@@ -29309,7 +29576,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch032-relationships-003-zh-6ff41bb23f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch032-zh-c5724720d4-zh-e0536300d1-03"
+    ],
     "id": "card-topic-auto-image-zh-e0536300d1",
     "name": "含耻辱情烈死金钏",
     "related_card_ids": [],
@@ -29384,7 +29653,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch116-relationships-003-zh-12dbdf3f20"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch116-zh-8decd4cefa-zh-e1c524a0d1-03"
+    ],
     "id": "card-topic-auto-image-zh-e1c524a0d1",
     "name": "入我门来一笑逢",
     "related_card_ids": [],
@@ -29444,7 +29715,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch037-relationships-003-zh-06f7889633"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch037-zh-bd87deca88-zh-e2563f7d66-03"
+    ],
     "id": "card-topic-auto-image-zh-e2563f7d66",
     "name": "咏白海棠诗会",
     "related_card_ids": [],
@@ -29759,7 +30032,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch070-relationships-004-zh-baa84f6f1b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch070-zh-8d20634cad-zh-e870ac4434-04"
+    ],
     "id": "card-topic-auto-image-zh-e870ac4434",
     "name": "柳湘莲/尤氏姊妹",
     "related_card_ids": [],
@@ -29775,7 +30050,9 @@
       "ev-topic-auto-ch109-relationships-005-zh-6fbd8c9435",
       "ev-topic-auto-ch109-objects-000-zh-b274f8f60e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch109-zh-95ef8bb291-zh-e8e48f83c3-05"
+    ],
     "id": "card-topic-auto-image-zh-e8e48f83c3",
     "name": "汉玉",
     "related_card_ids": [],
@@ -29881,7 +30158,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch075-relationships-002-zh-b1a9b78928"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch075-zh-c523b52a1c-zh-ea2750dc35-02"
+    ],
     "id": "card-topic-auto-image-zh-ea2750dc35",
     "name": "贾府衰败",
     "related_card_ids": [],
@@ -29926,7 +30205,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch101-relationships-006-zh-b1e6037d07"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch101-zh-8a2267fcb0-zh-eadc8705d8-06"
+    ],
     "id": "card-topic-auto-image-zh-eadc8705d8",
     "name": "贾范家人时福",
     "related_card_ids": [],
@@ -29941,7 +30222,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch020-relationships-000-zh-0405fed30d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch020-zh-d58a1be932-zh-eb51109df8-00"
+    ],
     "id": "card-topic-auto-image-zh-eb51109df8",
     "name": "李嬷嬷的妒意",
     "related_card_ids": [],
@@ -29956,7 +30239,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch014-relationships-001-zh-5b348d714d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch014-zh-d58a1be932-zh-ebb5c69baf-01"
+    ],
     "id": "card-topic-auto-image-zh-ebb5c69baf",
     "name": "贾琏（及其随行人员）",
     "related_card_ids": [],
@@ -30076,7 +30361,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch094-relationships-004-zh-00ea37a092"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch094-zh-2942c31957-zh-edab05fa64-04"
+    ],
     "id": "card-topic-auto-image-zh-edab05fa64",
     "name": "失玉案",
     "related_card_ids": [],
@@ -30378,7 +30665,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch016-relationships-001-zh-b39cca9635"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch016-zh-e1f1d69286-zh-f33d5f4dc0-01"
+    ],
     "id": "card-topic-auto-image-zh-f33d5f4dc0",
     "name": "省亲及修建大观园",
     "related_card_ids": [],
@@ -30394,7 +30683,10 @@
       "ev-topic-auto-ch037-relationships-000-zh-2d3b887068",
       "ev-topic-auto-ch037-relationships-001-zh-1d188556bf"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch037-zh-54145105ff-zh-f3af5a286c-00",
+      "rel-topic-auto-ch037-zh-572481bcdc-zh-f3af5a286c-01"
+    ],
     "id": "card-topic-auto-image-zh-f3af5a286c",
     "name": "海棠诗社",
     "related_card_ids": [],
@@ -30472,7 +30764,10 @@
       "ev-topic-auto-ch064-relationships-004-zh-296b79881a",
       "ev-topic-auto-ch064-objects-000-zh-5c00ca7d47"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch064-zh-8985a4e669-zh-f67d9fa2de-03",
+      "rel-topic-auto-ch064-zh-6fa56282ca-zh-f67d9fa2de-04"
+    ],
     "id": "card-topic-auto-image-zh-f67d9fa2de",
     "name": "汉玉九龙佩",
     "related_card_ids": [],
@@ -30533,7 +30828,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch022-relationships-001-zh-f60d462a98"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch022-zh-9924783f62-zh-f6ee76f3bc-01"
+    ],
     "id": "card-topic-auto-image-zh-f6ee76f3bc",
     "name": "湘云、黛玉分别与宝玉生气",
     "related_card_ids": [],
@@ -30608,7 +30905,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch093-relationships-007-zh-f247ee3815"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch093-zh-1e82bc3d48-zh-f80a902a8f-07"
+    ],
     "id": "card-topic-auto-image-zh-f80a902a8f",
     "name": "贾芹水月庵饮酒事件",
     "related_card_ids": [],
@@ -30758,7 +31057,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch096-relationships-002-zh-b7fbcaa83d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch096-zh-95ef8bb291-zh-f91f8f25b7-02"
+    ],
     "id": "card-topic-auto-image-zh-f91f8f25b7",
     "name": "宝玉宝钗婚",
     "related_card_ids": [],
@@ -30866,7 +31167,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch046-relationships-004-zh-6f2b82ebea"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch046-zh-cddadc5dd2-zh-fa83970e65-04"
+    ],
     "id": "card-topic-auto-image-zh-fa83970e65",
     "name": "平儿、袭人",
     "related_card_ids": [],
@@ -30942,7 +31245,9 @@
       "ev-topic-auto-ch037-relationships-005-zh-3e5d29d354",
       "ev-topic-auto-ch037-literary-texts-004-zh-545a12e13d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch037-zh-f06ce48f25-zh-fc3ca65bd8-05"
+    ],
     "id": "card-topic-auto-image-zh-fc3ca65bd8",
     "name": "菊花诗十二题",
     "related_card_ids": [],
@@ -30973,7 +31278,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch106-relationships-007-zh-4732219a04"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch106-zh-a642edec65-zh-fcf5b803d1-07"
+    ],
     "id": "card-topic-auto-image-zh-fcf5b803d1",
     "name": "北静王、西平王",
     "related_card_ids": [],
@@ -31199,7 +31506,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch054-relationships-004-zh-8c55bf8d4d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch054-zh-d58a1be932-zh-ffa770b53b-04"
+    ],
     "id": "card-topic-auto-image-zh-ffa770b53b",
     "name": "击鼓传梅令",
     "related_card_ids": [],
@@ -32888,7 +33197,11 @@
       "ev-topic-auto-ch064-relationships-002-zh-ef2b4fbae6",
       "ev-topic-auto-ch064-objects-001-zh-1887b8de81"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch064-zh-2d6600c0fd-zh-037a39b2aa-00",
+      "rel-topic-auto-ch064-zh-8d20634cad-zh-037a39b2aa-01",
+      "rel-topic-auto-ch064-zh-f06ce48f25-zh-037a39b2aa-02"
+    ],
     "id": "card-topic-auto-person-zh-037a39b2aa",
     "name": "五美吟",
     "related_card_ids": [],
@@ -32937,7 +33250,13 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch009-zh-0469afba0e-zh-c251070614-05",
       "rel-topic-auto-ch011-zh-0469afba0e-zh-d58a1be932-01",
-      "rel-topic-auto-ch012-zh-0469afba0e-zh-8d63dbf1eb-06"
+      "rel-topic-auto-ch011-zh-d58a1be932-zh-0469afba0e-02",
+      "rel-topic-auto-ch012-zh-d58a1be932-zh-0469afba0e-00",
+      "rel-topic-auto-ch012-zh-6308a9c2d1-zh-0469afba0e-03",
+      "rel-topic-auto-ch012-zh-7677d9c5fd-zh-0469afba0e-04",
+      "rel-topic-auto-ch012-zh-121f11a83f-zh-0469afba0e-05",
+      "rel-topic-auto-ch012-zh-0469afba0e-zh-8d63dbf1eb-06",
+      "rel-topic-auto-ch012-zh-fbaf3e0925-zh-0469afba0e-07"
     ],
     "id": "card-topic-auto-person-zh-0469afba0e",
     "name": "贾瑞",
@@ -33002,7 +33321,9 @@
       "ev-topic-auto-ch099-characters-007-zh-c37b34a9fb",
       "ev-topic-auto-ch099-relationships-002-zh-22f7dd58b5"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch099-zh-a642edec65-zh-08e2c06c60-02"
+    ],
     "id": "card-topic-auto-person-zh-08e2c06c60",
     "name": "周琼",
     "related_card_ids": [],
@@ -33020,7 +33341,10 @@
       "ev-topic-auto-ch072-relationships-005-zh-adf31a237d",
       "ev-topic-auto-ch072-relationships-006-zh-c41985df4b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch072-zh-d58a1be932-zh-08ead604d4-05",
+      "rel-topic-auto-ch072-zh-8985a4e669-zh-08ead604d4-06"
+    ],
     "id": "card-topic-auto-person-zh-08ead604d4",
     "name": "旺儿媳妇",
     "related_card_ids": [],
@@ -33036,7 +33360,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch105-relationships-002-zh-77740817c5"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch105-zh-415942350d-zh-094d0020fa-02"
+    ],
     "id": "card-topic-auto-person-zh-094d0020fa",
     "name": "国法",
     "related_card_ids": [],
@@ -33102,7 +33428,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch097-relationships-005-zh-450e4b2f75"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch097-zh-022a3e3667-zh-110709e6a2-05"
+    ],
     "id": "card-topic-auto-person-zh-110709e6a2",
     "name": "新房",
     "related_card_ids": [],
@@ -33117,7 +33445,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch059-relationships-004-zh-98d13d3143"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch059-zh-c240ccb710-zh-11a83fdbd3-04"
+    ],
     "id": "card-topic-auto-person-zh-11a83fdbd3",
     "name": "多处风波",
     "related_card_ids": [],
@@ -33154,7 +33484,9 @@
       "ev-topic-auto-ch105-characters-009-zh-0d967d87ca",
       "ev-topic-auto-ch105-relationships-004-zh-7b574e545f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch105-zh-46eb32b48d-zh-1299e9757e-04"
+    ],
     "id": "card-topic-auto-person-zh-1299e9757e",
     "name": "赵堂官",
     "related_card_ids": [],
@@ -33172,7 +33504,8 @@
       "ev-topic-auto-ch033-relationships-006-zh-4cb7cbc6df"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch033-zh-13711a9647-zh-8a2267fcb0-02"
+      "rel-topic-auto-ch033-zh-13711a9647-zh-8a2267fcb0-02",
+      "rel-topic-auto-ch033-zh-c251070614-zh-13711a9647-06"
     ],
     "id": "card-topic-auto-person-zh-13711a9647",
     "name": "忠顺王府",
@@ -33201,7 +33534,14 @@
       "ev-topic-auto-ch103-characters-006-zh-aae8ea4530"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch049-zh-154cf9aafa-zh-ae9a003d91-07"
+      "rel-topic-auto-ch048-zh-c251070614-zh-154cf9aafa-00",
+      "rel-topic-auto-ch048-zh-2d6600c0fd-zh-154cf9aafa-01",
+      "rel-topic-auto-ch049-zh-154cf9aafa-zh-ae9a003d91-07",
+      "rel-topic-auto-ch062-zh-8d20634cad-zh-154cf9aafa-00",
+      "rel-topic-auto-ch079-zh-8d20634cad-zh-154cf9aafa-04",
+      "rel-topic-auto-ch100-zh-399535aaf5-zh-154cf9aafa-00",
+      "rel-topic-auto-ch103-zh-399535aaf5-zh-154cf9aafa-00",
+      "rel-topic-auto-ch120-zh-f2d234f487-zh-154cf9aafa-03"
     ],
     "id": "card-topic-auto-person-zh-154cf9aafa",
     "name": "香菱",
@@ -33241,7 +33581,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch009-relationships-002-zh-6d53da9495"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch009-zh-17dc31275f-zh-16aa25a0f9-02"
+    ],
     "id": "card-topic-auto-person-zh-16aa25a0f9",
     "name": "学里太爷",
     "related_card_ids": [],
@@ -33260,6 +33602,7 @@
       "ev-topic-auto-ch009-relationships-008-zh-323fd1cca4"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch009-zh-a642edec65-zh-17dc31275f-01",
       "rel-topic-auto-ch009-zh-17dc31275f-zh-16aa25a0f9-02",
       "rel-topic-auto-ch009-zh-17dc31275f-zh-8d20634cad-08"
     ],
@@ -33282,7 +33625,10 @@
       "ev-topic-auto-ch059-characters-005-zh-ce94cf21b8",
       "ev-topic-auto-ch091-characters-005-zh-2f226bb453"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch040-zh-95ef8bb291-zh-182bd9a072-02",
+      "rel-topic-auto-ch049-zh-4aeb833690-zh-182bd9a072-02"
+    ],
     "id": "card-topic-auto-person-zh-182bd9a072",
     "name": "宝钗",
     "related_card_ids": [],
@@ -33299,7 +33645,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch043-relationships-004-zh-21c86c0bda"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch043-zh-2ec894fbeb-zh-18da32dcfa-04"
+    ],
     "id": "card-topic-auto-person-zh-18da32dcfa",
     "name": "金钏",
     "related_card_ids": [],
@@ -33332,6 +33680,7 @@
       "ev-topic-auto-ch051-relationships-008-zh-088d4fa13b"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch051-zh-8d20634cad-zh-1bf84bc431-07",
       "rel-topic-auto-ch051-zh-1bf84bc431-zh-3c97c4d73c-08"
     ],
     "id": "card-topic-auto-person-zh-1bf84bc431",
@@ -33364,9 +33713,14 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch047-zh-1ddbf804e8-zh-c251070614-02",
       "rel-topic-auto-ch047-zh-1ddbf804e8-zh-8d20634cad-03",
+      "rel-topic-auto-ch066-zh-c9fa586836-zh-1ddbf804e8-00",
       "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-01",
       "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-02",
-      "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-04"
+      "rel-topic-auto-ch066-zh-c9fa586836-zh-1ddbf804e8-03",
+      "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-04",
+      "rel-topic-auto-ch066-zh-8d20634cad-zh-1ddbf804e8-05",
+      "rel-topic-auto-ch066-zh-8985a4e669-zh-1ddbf804e8-06",
+      "rel-topic-auto-ch066-zh-8985a4e669-zh-1ddbf804e8-07"
     ],
     "id": "card-topic-auto-person-zh-1ddbf804e8",
     "name": "柳湘莲",
@@ -33397,8 +33751,12 @@
       "ev-topic-auto-ch093-characters-010-zh-69d46754b4"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch058-zh-8d20634cad-zh-1e82bc3d48-03",
       "rel-topic-auto-ch058-zh-1e82bc3d48-zh-51596c9222-04",
+      "rel-topic-auto-ch060-zh-4a0b5206bd-zh-1e82bc3d48-00",
       "rel-topic-auto-ch060-zh-1e82bc3d48-zh-d1e23b3403-03",
+      "rel-topic-auto-ch061-zh-d1e23b3403-zh-1e82bc3d48-00",
+      "rel-topic-auto-ch077-zh-a7e2173148-zh-1e82bc3d48-02",
       "rel-topic-auto-ch093-zh-1e82bc3d48-zh-f80a902a8f-07"
     ],
     "id": "card-topic-auto-person-zh-1e82bc3d48",
@@ -33420,7 +33778,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch071-relationships-002-zh-6153637e6a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch071-zh-cddadc5dd2-zh-1f3bec550c-02"
+    ],
     "id": "card-topic-auto-person-zh-1f3bec550c",
     "name": "司棋私情",
     "related_card_ids": [],
@@ -33452,7 +33812,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch019-relationships-004-zh-48d1f81030"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch019-zh-62c246f10a-zh-20aa56d45f-04"
+    ],
     "id": "card-topic-auto-person-zh-20aa56d45f",
     "name": "茜雪被撵",
     "related_card_ids": [],
@@ -33488,7 +33850,9 @@
       "ev-topic-auto-ch112-relationships-004-zh-7640008554"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch111-zh-221cae98f3-zh-394d0d9b1d-03"
+      "rel-topic-auto-ch111-zh-221cae98f3-zh-394d0d9b1d-03",
+      "rel-topic-auto-ch111-zh-b17f0ac0c5-zh-221cae98f3-04",
+      "rel-topic-auto-ch112-zh-b17f0ac0c5-zh-221cae98f3-04"
     ],
     "id": "card-topic-auto-person-zh-221cae98f3",
     "name": "何三",
@@ -33506,7 +33870,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch067-relationships-001-zh-78953829de"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch067-zh-2d6600c0fd-zh-22368fd5ce-01"
+    ],
     "id": "card-topic-auto-person-zh-22368fd5ce",
     "name": "江南土仪",
     "related_card_ids": [],
@@ -33527,6 +33893,7 @@
       "ev-topic-auto-ch081-characters-011-zh-ffcee08354"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch025-zh-4a0b5206bd-zh-223993ad0f-00",
       "rel-topic-auto-ch025-zh-223993ad0f-zh-8d20634cad-01",
       "rel-topic-auto-ch025-zh-223993ad0f-zh-d58a1be932-02",
       "rel-topic-auto-ch025-zh-223993ad0f-zh-95ef8bb291-05"
@@ -33586,7 +33953,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch050-relationships-006-zh-005a3a8ee4"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch050-zh-426c10c476-zh-2408a33430-06"
+    ],
     "id": "card-topic-auto-person-zh-2408a33430",
     "name": "众姐妹",
     "related_card_ids": [],
@@ -33601,7 +33970,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch110-relationships-001-zh-b43ac3ccbc"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch110-zh-d58a1be932-zh-244b05cc00-01"
+    ],
     "id": "card-topic-auto-person-zh-244b05cc00",
     "name": "贾母丧事",
     "related_card_ids": [],
@@ -33633,7 +34004,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch041-relationships-004-zh-4431eaf9ef"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch041-zh-70a5ebe8a4-zh-27fe1ba50a-04"
+    ],
     "id": "card-topic-auto-person-zh-27fe1ba50a",
     "name": "板儿",
     "related_card_ids": [],
@@ -33701,8 +34074,10 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch020-zh-2942c31957-zh-592cd00192-05",
+      "rel-topic-auto-ch020-zh-4a0b5206bd-zh-2942c31957-06",
       "rel-topic-auto-ch025-zh-2942c31957-zh-8d20634cad-03",
       "rel-topic-auto-ch033-zh-2942c31957-zh-8d20634cad-01",
+      "rel-topic-auto-ch072-zh-e9041abaac-zh-2942c31957-09",
       "rel-topic-auto-ch084-zh-2942c31957-zh-d58a1be932-03",
       "rel-topic-auto-ch094-zh-2942c31957-zh-edab05fa64-04",
       "rel-topic-auto-ch119-zh-2942c31957-zh-898e26c888-03"
@@ -33726,7 +34101,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch102-relationships-002-zh-def8f02eb1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch102-zh-a911ed2c7b-zh-2b528445e6-02"
+    ],
     "id": "card-topic-auto-person-zh-2b528445e6",
     "name": "尤氏病症",
     "related_card_ids": [],
@@ -33760,6 +34137,7 @@
       "ev-topic-auto-ch043-relationships-004-zh-21c86c0bda"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch035-zh-8d20634cad-zh-2ec894fbeb-01",
       "rel-topic-auto-ch043-zh-2ec894fbeb-zh-18da32dcfa-04"
     ],
     "id": "card-topic-auto-person-zh-2ec894fbeb",
@@ -33782,7 +34160,9 @@
       "ev-topic-auto-ch080-places-002-zh-a323fe17ae",
       "ev-topic-auto-ch090-places-001-zh-729b856826"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch079-zh-8d20634cad-zh-2f7ba6c276-03"
+    ],
     "id": "card-topic-auto-person-zh-2f7ba6c276",
     "name": "紫菱洲",
     "related_card_ids": [],
@@ -33888,7 +34268,9 @@
       "ev-topic-auto-ch002-characters-001-zh-61c80960d9",
       "ev-topic-auto-ch002-relationships-001-zh-d416cc2b1c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch002-zh-4cdcd6d89f-zh-3412afde7e-01"
+    ],
     "id": "card-topic-auto-person-zh-3412afde7e",
     "name": "娇杏",
     "related_card_ids": [],
@@ -33916,6 +34298,8 @@
       "ev-topic-auto-ch103-relationships-001-zh-2edcf0256c"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch080-zh-399535aaf5-zh-34c989788b-02",
+      "rel-topic-auto-ch083-zh-399535aaf5-zh-34c989788b-04",
       "rel-topic-auto-ch091-zh-34c989788b-zh-399535aaf5-00",
       "rel-topic-auto-ch091-zh-34c989788b-zh-62242a215d-01",
       "rel-topic-auto-ch100-zh-34c989788b-zh-399535aaf5-04",
@@ -33983,6 +34367,7 @@
       "ev-topic-auto-ch009-relationships-009-zh-add647df70"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch009-zh-bf294f71cc-zh-3632970bfb-07",
       "rel-topic-auto-ch009-zh-3632970bfb-zh-c251070614-09"
     ],
     "id": "card-topic-auto-person-zh-3632970bfb",
@@ -34018,7 +34403,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch030-relationships-002-zh-5af5743fa6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch030-zh-c5724720d4-zh-366d585054-02"
+    ],
     "id": "card-topic-auto-person-zh-366d585054",
     "name": "死亡事件",
     "related_card_ids": [],
@@ -34033,7 +34420,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch030-relationships-004-zh-1c7f593a0e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch030-zh-9b83914c8c-zh-36d1e3cf2c-04"
+    ],
     "id": "card-topic-auto-person-zh-36d1e3cf2c",
     "name": "三人关系",
     "related_card_ids": [],
@@ -34067,7 +34456,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch111-relationships-003-zh-89fdf9f165"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch111-zh-221cae98f3-zh-394d0d9b1d-03"
+    ],
     "id": "card-topic-auto-person-zh-394d0d9b1d",
     "name": "贼首",
     "related_card_ids": [],
@@ -34082,7 +34473,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch054-relationships-000-zh-df99d703d0"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch054-zh-95ef8bb291-zh-3960f370ee-00"
+    ],
     "id": "card-topic-auto-person-zh-3960f370ee",
     "name": "陈腐旧套",
     "related_card_ids": [],
@@ -34109,7 +34502,13 @@
       "ev-topic-auto-ch117-relationships-008-zh-1eded2d635"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch117-zh-397ad61dd2-zh-66178aea3e-08"
+      "rel-topic-auto-ch042-zh-95ef8bb291-zh-397ad61dd2-02",
+      "rel-topic-auto-ch042-zh-f06ce48f25-zh-397ad61dd2-03",
+      "rel-topic-auto-ch050-zh-95ef8bb291-zh-397ad61dd2-03",
+      "rel-topic-auto-ch087-zh-426c10c476-zh-397ad61dd2-04",
+      "rel-topic-auto-ch117-zh-397ad61dd2-zh-66178aea3e-08",
+      "rel-topic-auto-ch118-zh-d8fc26cd64-zh-397ad61dd2-04",
+      "rel-topic-auto-ch118-zh-8d20634cad-zh-397ad61dd2-05"
     ],
     "id": "card-topic-auto-person-zh-397ad61dd2",
     "name": "贾惜春",
@@ -34148,12 +34547,12 @@
       "rel-topic-auto-ch080-zh-399535aaf5-zh-34c989788b-02",
       "rel-topic-auto-ch080-zh-399535aaf5-zh-c0cce0d33c-04",
       "rel-topic-auto-ch083-zh-399535aaf5-zh-34c989788b-04",
+      "rel-topic-auto-ch083-zh-f06ce48f25-zh-399535aaf5-05",
       "rel-topic-auto-ch085-zh-399535aaf5-zh-f24ea463d2-04",
       "rel-topic-auto-ch090-zh-399535aaf5-zh-62242a215d-04",
+      "rel-topic-auto-ch091-zh-34c989788b-zh-399535aaf5-00",
       "rel-topic-auto-ch091-zh-399535aaf5-zh-62242a215d-02",
-      "rel-topic-auto-ch091-zh-399535aaf5-zh-ec77f72d63-03",
-      "rel-topic-auto-ch100-zh-399535aaf5-zh-154cf9aafa-00",
-      "rel-topic-auto-ch103-zh-399535aaf5-zh-154cf9aafa-00"
+      "rel-topic-auto-ch091-zh-399535aaf5-zh-ec77f72d63-03"
     ],
     "id": "card-topic-auto-person-zh-399535aaf5",
     "name": "夏金桂",
@@ -34179,6 +34578,8 @@
       "ev-topic-auto-ch074-relationships-001-zh-46ae1bf041"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch073-zh-f77f7b8733-zh-39a1f1c4ce-00",
+      "rel-topic-auto-ch073-zh-d8bbce6461-zh-39a1f1c4ce-01",
       "rel-topic-auto-ch074-zh-39a1f1c4ce-zh-abfc513bff-01"
     ],
     "id": "card-topic-auto-person-zh-39a1f1c4ce",
@@ -34226,11 +34627,16 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch026-zh-3c97c4d73c-zh-2d6600c0fd-04",
+      "rel-topic-auto-ch031-zh-8d20634cad-zh-3c97c4d73c-00",
       "rel-topic-auto-ch031-zh-3c97c4d73c-zh-ac19e14301-01",
       "rel-topic-auto-ch051-zh-3c97c4d73c-zh-91bd4950ac-06",
+      "rel-topic-auto-ch051-zh-1bf84bc431-zh-3c97c4d73c-08",
       "rel-topic-auto-ch052-zh-3c97c4d73c-zh-8ac40876f1-02",
       "rel-topic-auto-ch052-zh-3c97c4d73c-zh-8d20634cad-03",
       "rel-topic-auto-ch073-zh-3c97c4d73c-zh-8d20634cad-02",
+      "rel-topic-auto-ch074-zh-c012bdecb2-zh-3c97c4d73c-00",
+      "rel-topic-auto-ch077-zh-a7e2173148-zh-3c97c4d73c-00",
+      "rel-topic-auto-ch077-zh-8d20634cad-zh-3c97c4d73c-03",
       "rel-topic-auto-ch077-zh-3c97c4d73c-zh-8d20634cad-04"
     ],
     "id": "card-topic-auto-person-zh-3c97c4d73c",
@@ -34272,7 +34678,9 @@
       "ev-topic-auto-ch089-relationships-003-zh-38fe2027ce",
       "ev-topic-auto-ch090-characters-003-zh-2b9763187a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch089-zh-667c094608-zh-3d1f60202b-03"
+    ],
     "id": "card-topic-auto-person-zh-3d1f60202b",
     "name": "侍书",
     "related_card_ids": [],
@@ -34288,7 +34696,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch112-relationships-002-zh-131468ceb5"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch112-zh-8decd4cefa-zh-3de3f4dd40-02"
+    ],
     "id": "card-topic-auto-person-zh-3de3f4dd40",
     "name": "铰发",
     "related_card_ids": [],
@@ -34303,7 +34713,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch033-relationships-000-zh-1c923516cd"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch033-zh-8d20634cad-zh-3f30a3e6a8-00"
+    ],
     "id": "card-topic-auto-person-zh-3f30a3e6a8",
     "name": "琪官",
     "related_card_ids": [],
@@ -34338,6 +34750,7 @@
       "ev-topic-auto-ch099-relationships-001-zh-9d1a824303"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch099-zh-a642edec65-zh-40ed1e3a15-00",
       "rel-topic-auto-ch099-zh-40ed1e3a15-zh-aa6611486d-01"
     ],
     "id": "card-topic-auto-person-zh-40ed1e3a15",
@@ -34369,14 +34782,17 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch013-zh-415942350d-zh-751345646f-02",
+      "rel-topic-auto-ch013-zh-c251070614-zh-415942350d-04",
       "rel-topic-auto-ch013-zh-415942350d-zh-d58a1be932-06",
       "rel-topic-auto-ch053-zh-415942350d-zh-ef6cf35ad5-00",
+      "rel-topic-auto-ch053-zh-73f7f81526-zh-415942350d-01",
       "rel-topic-auto-ch054-zh-415942350d-zh-cd85409f06-07",
       "rel-topic-auto-ch064-zh-415942350d-zh-321e147176-07",
       "rel-topic-auto-ch065-zh-415942350d-zh-c9fa586836-01",
       "rel-topic-auto-ch075-zh-415942350d-zh-9b00582c55-01",
       "rel-topic-auto-ch088-zh-415942350d-zh-8fd0c51f80-02",
-      "rel-topic-auto-ch105-zh-415942350d-zh-094d0020fa-02"
+      "rel-topic-auto-ch105-zh-415942350d-zh-094d0020fa-02",
+      "rel-topic-auto-ch107-zh-95ef8bb291-zh-415942350d-01"
     ],
     "id": "card-topic-auto-person-zh-415942350d",
     "name": "贾珍",
@@ -34411,13 +34827,16 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch041-zh-426c10c476-zh-95ef8bb291-00",
       "rel-topic-auto-ch041-zh-426c10c476-zh-acc4c397d1-01",
+      "rel-topic-auto-ch041-zh-2d6600c0fd-zh-426c10c476-03",
       "rel-topic-auto-ch050-zh-426c10c476-zh-2408a33430-06",
+      "rel-topic-auto-ch063-zh-8d20634cad-zh-426c10c476-02",
       "rel-topic-auto-ch076-zh-426c10c476-zh-7832cb905a-01",
       "rel-topic-auto-ch087-zh-426c10c476-zh-8d20634cad-02",
       "rel-topic-auto-ch087-zh-426c10c476-zh-397ad61dd2-04",
       "rel-topic-auto-ch095-zh-426c10c476-zh-7040814932-03",
       "rel-topic-auto-ch111-zh-426c10c476-zh-d80aa539c6-06",
-      "rel-topic-auto-ch112-zh-426c10c476-zh-eb8d05a837-00"
+      "rel-topic-auto-ch112-zh-426c10c476-zh-eb8d05a837-00",
+      "rel-topic-auto-ch113-zh-a8908cdbf9-zh-426c10c476-02"
     ],
     "id": "card-topic-auto-person-zh-426c10c476",
     "name": "妙玉",
@@ -34463,6 +34882,8 @@
       "ev-topic-auto-ch103-characters-009-zh-6f32b64daf"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch049-zh-95ef8bb291-zh-434b359884-00",
+      "rel-topic-auto-ch050-zh-95ef8bb291-zh-434b359884-05",
       "rel-topic-auto-ch051-zh-434b359884-zh-6c09b797d9-00"
     ],
     "id": "card-topic-auto-person-zh-434b359884",
@@ -34484,7 +34905,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch051-relationships-004-zh-58f3851e8a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch051-zh-d58a1be932-zh-43c2673972-04"
+    ],
     "id": "card-topic-auto-person-zh-43c2673972",
     "name": "袭人回家",
     "related_card_ids": [],
@@ -34500,7 +34923,9 @@
       "ev-topic-auto-ch058-relationships-001-zh-f217591db3",
       "ev-topic-auto-ch059-characters-003-zh-5567893c19"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch058-zh-b90e0c7c6e-zh-45ab791066-01"
+    ],
     "id": "card-topic-auto-person-zh-45ab791066",
     "name": "蕊官",
     "related_card_ids": [],
@@ -34567,7 +34992,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch112-relationships-005-zh-2ea2b11f5e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch112-zh-a642edec65-zh-49c0f3bc53-05"
+    ],
     "id": "card-topic-auto-person-zh-49c0f3bc53",
     "name": "周瑞",
     "related_card_ids": [],
@@ -34596,11 +35023,16 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch020-zh-4a0b5206bd-zh-2942c31957-06",
       "rel-topic-auto-ch025-zh-4a0b5206bd-zh-223993ad0f-00",
+      "rel-topic-auto-ch027-zh-54145105ff-zh-4a0b5206bd-03",
+      "rel-topic-auto-ch055-zh-2152406afd-zh-4a0b5206bd-00",
       "rel-topic-auto-ch060-zh-4a0b5206bd-zh-1e82bc3d48-00",
+      "rel-topic-auto-ch060-zh-6a215bbf8b-zh-4a0b5206bd-01",
+      "rel-topic-auto-ch060-zh-54145105ff-zh-4a0b5206bd-02",
+      "rel-topic-auto-ch061-zh-5cc220987e-zh-4a0b5206bd-03",
       "rel-topic-auto-ch067-zh-4a0b5206bd-zh-a7e2173148-06",
       "rel-topic-auto-ch072-zh-4a0b5206bd-zh-a642edec65-10",
-      "rel-topic-auto-ch094-zh-4a0b5206bd-zh-0c5e0d5bc3-05",
-      "rel-topic-auto-ch112-zh-4a0b5206bd-zh-7364419d6f-01"
+      "rel-topic-auto-ch081-zh-d58a1be932-zh-4a0b5206bd-06",
+      "rel-topic-auto-ch094-zh-4a0b5206bd-zh-0c5e0d5bc3-05"
     ],
     "id": "card-topic-auto-person-zh-4a0b5206bd",
     "name": "赵姨娘",
@@ -34641,6 +35073,7 @@
       "ev-topic-auto-ch105-relationships-003-zh-e274cfa40a"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch014-zh-8d20634cad-zh-4b99c4494f-02",
       "rel-topic-auto-ch105-zh-4b99c4494f-zh-a642edec65-03"
     ],
     "id": "card-topic-auto-person-zh-4b99c4494f",
@@ -34708,7 +35141,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch004-relationships-002-zh-9d230acd88"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch004-zh-c251070614-zh-4cc070feae-02"
+    ],
     "id": "card-topic-auto-person-zh-4cc070feae",
     "name": "冯渊",
     "related_card_ids": [],
@@ -34735,14 +35170,17 @@
       "ev-topic-auto-ch004-relationships-000-zh-091e81226e"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch001-zh-f2d234f487-zh-4cdcd6d89f-00",
       "rel-topic-auto-ch001-zh-4cdcd6d89f-zh-d51517583b-04",
       "rel-topic-auto-ch002-zh-4cdcd6d89f-zh-ebbc544280-00",
       "rel-topic-auto-ch002-zh-4cdcd6d89f-zh-3412afde7e-01",
+      "rel-topic-auto-ch002-zh-a91d2380ce-zh-4cdcd6d89f-04",
       "rel-topic-auto-ch003-zh-4cdcd6d89f-zh-ebbc544280-03",
       "rel-topic-auto-ch004-zh-4cdcd6d89f-zh-b895067f89-00",
       "rel-topic-auto-ch004-zh-4cdcd6d89f-zh-090f61e9fe-01",
       "rel-topic-auto-ch048-zh-4cdcd6d89f-zh-6808c3be3c-03",
-      "rel-topic-auto-ch103-zh-4cdcd6d89f-zh-f2d234f487-04"
+      "rel-topic-auto-ch103-zh-4cdcd6d89f-zh-f2d234f487-04",
+      "rel-topic-auto-ch107-zh-b17f0ac0c5-zh-4cdcd6d89f-12"
     ],
     "id": "card-topic-auto-person-zh-4cdcd6d89f",
     "name": "贾雨村",
@@ -34772,6 +35210,9 @@
       "ev-topic-auto-ch109-relationships-004-zh-52df9b8cc2"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch073-zh-6c812960c6-zh-4d9f8c884a-05",
+      "rel-topic-auto-ch073-zh-54145105ff-zh-4d9f8c884a-06",
+      "rel-topic-auto-ch079-zh-6808c3be3c-zh-4d9f8c884a-02",
       "rel-topic-auto-ch109-zh-4d9f8c884a-zh-95ef8bb291-04"
     ],
     "id": "card-topic-auto-person-zh-4d9f8c884a",
@@ -34830,7 +35271,9 @@
       "ev-topic-auto-ch030-relationships-001-zh-f380720f6c",
       "ev-topic-auto-ch030-key-events-004-zh-4f2e936efb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch030-zh-8d20634cad-zh-4f2e936efb-01"
+    ],
     "id": "card-topic-auto-person-zh-4f2e936efb",
     "name": "龄官画蔷",
     "related_card_ids": [],
@@ -34865,7 +35308,10 @@
       "ev-topic-auto-ch058-relationships-004-zh-2e4ac57640",
       "ev-topic-auto-ch058-relationships-005-zh-d1b20ce482"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch058-zh-1e82bc3d48-zh-51596c9222-04",
+      "rel-topic-auto-ch058-zh-7959d52660-zh-51596c9222-05"
+    ],
     "id": "card-topic-auto-person-zh-51596c9222",
     "name": "干娘",
     "related_card_ids": [],
@@ -34949,8 +35395,11 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch037-zh-572481bcdc-zh-f3af5a286c-01",
       "rel-topic-auto-ch039-zh-572481bcdc-zh-c240ccb710-04",
+      "rel-topic-auto-ch045-zh-d58a1be932-zh-572481bcdc-00",
       "rel-topic-auto-ch049-zh-572481bcdc-zh-2dd4b66ac1-04",
-      "rel-topic-auto-ch051-zh-572481bcdc-zh-6c09b797d9-03"
+      "rel-topic-auto-ch050-zh-8d20634cad-zh-572481bcdc-01",
+      "rel-topic-auto-ch051-zh-572481bcdc-zh-6c09b797d9-03",
+      "rel-topic-auto-ch055-zh-2152406afd-zh-572481bcdc-01"
     ],
     "id": "card-topic-auto-person-zh-572481bcdc",
     "name": "李纨",
@@ -34978,6 +35427,7 @@
       "ev-topic-auto-ch118-relationships-000-zh-07285eacdc"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch101-zh-8985a4e669-zh-5759fc8ae7-02",
       "rel-topic-auto-ch114-zh-5759fc8ae7-zh-898e26c888-02",
       "rel-topic-auto-ch117-zh-5759fc8ae7-zh-d2a2c1fb1f-07",
       "rel-topic-auto-ch118-zh-5759fc8ae7-zh-898e26c888-00"
@@ -35001,7 +35451,9 @@
       "ev-topic-auto-ch061-characters-010-zh-11d3034d47",
       "ev-topic-auto-ch061-relationships-004-zh-c833e10fe1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch061-zh-c1d37ed01e-zh-5815c7b0da-04"
+    ],
     "id": "card-topic-auto-person-zh-5815c7b0da",
     "name": "秦显家的",
     "related_card_ids": [],
@@ -35036,7 +35488,8 @@
       "ev-topic-auto-ch059-characters-000-zh-9974301559"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch008-zh-592cd00192-zh-a774258147-03"
+      "rel-topic-auto-ch008-zh-592cd00192-zh-a774258147-03",
+      "rel-topic-auto-ch020-zh-2942c31957-zh-592cd00192-05"
     ],
     "id": "card-topic-auto-person-zh-592cd00192",
     "name": "莺儿",
@@ -35055,7 +35508,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch075-relationships-005-zh-b1df36fb42"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch075-zh-6808c3be3c-zh-5939c549e4-05"
+    ],
     "id": "card-topic-auto-person-zh-5939c549e4",
     "name": "嫡庶关系",
     "related_card_ids": [],
@@ -35073,7 +35528,8 @@
       "ev-topic-auto-ch061-relationships-006-zh-3c449f5fe3"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch061-zh-5cc220987e-zh-4a0b5206bd-03"
+      "rel-topic-auto-ch061-zh-5cc220987e-zh-4a0b5206bd-03",
+      "rel-topic-auto-ch061-zh-8d20634cad-zh-5cc220987e-06"
     ],
     "id": "card-topic-auto-person-zh-5cc220987e",
     "name": "彩云",
@@ -35095,7 +35551,8 @@
       "ev-topic-auto-ch032-characters-002-zh-b05cc82a5d"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch021-zh-5d6b1458e5-zh-8d20634cad-00"
+      "rel-topic-auto-ch021-zh-5d6b1458e5-zh-8d20634cad-00",
+      "rel-topic-auto-ch021-zh-f06ce48f25-zh-5d6b1458e5-05"
     ],
     "id": "card-topic-auto-person-zh-5d6b1458e5",
     "name": "花袭人",
@@ -35114,7 +35571,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch071-relationships-001-zh-9369081e61"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch071-zh-74b20908db-zh-5d8da289ae-01"
+    ],
     "id": "card-topic-auto-person-zh-5d8da289ae",
     "name": "两个婆子",
     "related_card_ids": [],
@@ -35162,7 +35621,9 @@
       "ev-topic-auto-ch116-relationships-002-zh-71c37fda3b",
       "ev-topic-auto-ch116-objects-001-zh-577122bfd8"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch116-zh-8d20634cad-zh-5f99594a63-02"
+    ],
     "id": "card-topic-auto-person-zh-5f99594a63",
     "name": "绛珠仙草",
     "related_card_ids": [],
@@ -35194,7 +35655,9 @@
       "ev-topic-auto-ch001-characters-005-zh-6af329589c",
       "ev-topic-auto-ch001-relationships-003-zh-9d50cd3a0f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch001-zh-f2d234f487-zh-6060438a6d-03"
+    ],
     "id": "card-topic-auto-person-zh-6060438a6d",
     "name": "封肃",
     "related_card_ids": [],
@@ -35221,7 +35684,10 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch085-zh-62242a215d-zh-c251070614-03",
-      "rel-topic-auto-ch090-zh-62242a215d-zh-7040814932-05"
+      "rel-topic-auto-ch090-zh-399535aaf5-zh-62242a215d-04",
+      "rel-topic-auto-ch090-zh-62242a215d-zh-7040814932-05",
+      "rel-topic-auto-ch091-zh-34c989788b-zh-62242a215d-01",
+      "rel-topic-auto-ch091-zh-399535aaf5-zh-62242a215d-02"
     ],
     "id": "card-topic-auto-person-zh-62242a215d",
     "name": "薛蝌",
@@ -35296,7 +35762,10 @@
       "ev-topic-auto-ch063-characters-013-zh-3c02ad7f62"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch006-zh-d58a1be932-zh-6308a9c2d1-03",
+      "rel-topic-auto-ch012-zh-d58a1be932-zh-6308a9c2d1-01",
       "rel-topic-auto-ch012-zh-6308a9c2d1-zh-0469afba0e-03",
+      "rel-topic-auto-ch013-zh-a8b6888ebf-zh-6308a9c2d1-03",
       "rel-topic-auto-ch053-zh-6308a9c2d1-zh-d58a1be932-02",
       "rel-topic-auto-ch063-zh-6308a9c2d1-zh-6fa56282ca-04",
       "rel-topic-auto-ch063-zh-6308a9c2d1-zh-c9fa586836-05",
@@ -35430,7 +35899,9 @@
       "ev-topic-auto-ch095-characters-004-zh-3f3bf97a02",
       "ev-topic-auto-ch095-relationships-002-zh-8b3664ddcb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch095-zh-95ef8bb291-zh-651f0d2606-02"
+    ],
     "id": "card-topic-auto-person-zh-651f0d2606",
     "name": "元春",
     "related_card_ids": [],
@@ -35481,8 +35952,12 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch010-zh-66178aea3e-zh-751345646f-01",
       "rel-topic-auto-ch043-zh-66178aea3e-zh-71b66992dc-02",
+      "rel-topic-auto-ch068-zh-d58a1be932-zh-66178aea3e-01",
       "rel-topic-auto-ch075-zh-66178aea3e-zh-29e25cae9b-00",
-      "rel-topic-auto-ch102-zh-66178aea3e-zh-38d7c7b547-01"
+      "rel-topic-auto-ch102-zh-66178aea3e-zh-38d7c7b547-01",
+      "rel-topic-auto-ch106-zh-95ef8bb291-zh-66178aea3e-05",
+      "rel-topic-auto-ch115-zh-8decd4cefa-zh-66178aea3e-01",
+      "rel-topic-auto-ch117-zh-397ad61dd2-zh-66178aea3e-08"
     ],
     "id": "card-topic-auto-person-zh-66178aea3e",
     "name": "尤氏",
@@ -35517,11 +35992,16 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch024-zh-666f252fa6-zh-8d20634cad-00",
       "rel-topic-auto-ch024-zh-666f252fa6-zh-d58a1be932-01",
+      "rel-topic-auto-ch024-zh-34ede07937-zh-666f252fa6-02",
+      "rel-topic-auto-ch024-zh-4df8ead44b-zh-666f252fa6-03",
+      "rel-topic-auto-ch024-zh-8c4a6d6004-zh-666f252fa6-06",
+      "rel-topic-auto-ch026-zh-8c4a6d6004-zh-666f252fa6-00",
       "rel-topic-auto-ch026-zh-666f252fa6-zh-af8c874f04-01",
+      "rel-topic-auto-ch027-zh-8c4a6d6004-zh-666f252fa6-01",
       "rel-topic-auto-ch037-zh-666f252fa6-zh-bd87deca88-02",
+      "rel-topic-auto-ch085-zh-8d20634cad-zh-666f252fa6-02",
       "rel-topic-auto-ch088-zh-666f252fa6-zh-d58a1be932-03",
-      "rel-topic-auto-ch088-zh-666f252fa6-zh-8c4a6d6004-04",
-      "rel-topic-auto-ch104-zh-666f252fa6-zh-a034a448ae-02"
+      "rel-topic-auto-ch088-zh-666f252fa6-zh-8c4a6d6004-04"
     ],
     "id": "card-topic-auto-person-zh-666f252fa6",
     "name": "贾芸",
@@ -35566,7 +36046,10 @@
       "ev-topic-auto-ch086-relationships-001-zh-bf927732c6",
       "ev-topic-auto-ch086-relationships-003-zh-ada819e2fb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch086-zh-7a90e7707e-zh-66a86d3536-01",
+      "rel-topic-auto-ch086-zh-785d63dbcc-zh-66a86d3536-03"
+    ],
     "id": "card-topic-auto-person-zh-66a86d3536",
     "name": "薛蟠案",
     "related_card_ids": [],
@@ -35584,7 +36067,8 @@
       "ev-topic-auto-ch072-relationships-012-zh-5d9da9e66b"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch072-zh-6778645971-zh-8985a4e669-07"
+      "rel-topic-auto-ch072-zh-6778645971-zh-8985a4e669-07",
+      "rel-topic-auto-ch072-zh-8985a4e669-zh-6778645971-12"
     ],
     "id": "card-topic-auto-person-zh-6778645971",
     "name": "林之孝",
@@ -35615,12 +36099,17 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch046-zh-6808c3be3c-zh-cddadc5dd2-00",
+      "rel-topic-auto-ch046-zh-cddadc5dd2-zh-6808c3be3c-03",
+      "rel-topic-auto-ch047-zh-95ef8bb291-zh-6808c3be3c-00",
       "rel-topic-auto-ch048-zh-6808c3be3c-zh-82c24361a8-02",
+      "rel-topic-auto-ch048-zh-4cdcd6d89f-zh-6808c3be3c-03",
       "rel-topic-auto-ch075-zh-6808c3be3c-zh-95ef8bb291-04",
       "rel-topic-auto-ch075-zh-6808c3be3c-zh-5939c549e4-05",
       "rel-topic-auto-ch079-zh-6808c3be3c-zh-4d9f8c884a-02",
       "rel-topic-auto-ch102-zh-6808c3be3c-zh-d5e623bc33-03",
-      "rel-topic-auto-ch105-zh-6808c3be3c-zh-4a5130e75c-00"
+      "rel-topic-auto-ch105-zh-6808c3be3c-zh-4a5130e75c-00",
+      "rel-topic-auto-ch106-zh-20b4dc0793-zh-6808c3be3c-03",
+      "rel-topic-auto-ch107-zh-95ef8bb291-zh-6808c3be3c-00"
     ],
     "id": "card-topic-auto-person-zh-6808c3be3c",
     "name": "贾赦",
@@ -35641,7 +36130,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch085-relationships-000-zh-94976ebd2d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch085-zh-8d20634cad-zh-684e8af2fa-00"
+    ],
     "id": "card-topic-auto-person-zh-684e8af2fa",
     "name": "北静郡王",
     "related_card_ids": [],
@@ -35712,7 +36203,9 @@
       "ev-topic-auto-ch015-characters-004-zh-d373617f07",
       "ev-topic-auto-ch015-relationships-002-zh-2523bd9032"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch015-zh-ab6ccd21ba-zh-6a89354d70-02"
+    ],
     "id": "card-topic-auto-person-zh-6a89354d70",
     "name": "智能儿",
     "related_card_ids": [],
@@ -35762,7 +36255,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch053-relationships-004-zh-769d78961e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch053-zh-95ef8bb291-zh-6d3cdcdabe-04"
+    ],
     "id": "card-topic-auto-person-zh-6d3cdcdabe",
     "name": "元宵家宴",
     "related_card_ids": [],
@@ -35777,7 +36272,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch120-relationships-006-zh-2f0bf1f941"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch120-zh-3338472d4b-zh-6f88ea8df9-06"
+    ],
     "id": "card-topic-auto-person-zh-6f88ea8df9",
     "name": "曹雪芹",
     "related_card_ids": [],
@@ -35804,9 +36301,16 @@
       "ev-topic-auto-ch069-characters-001-zh-d67e86ad91"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch063-zh-6308a9c2d1-zh-6fa56282ca-04",
       "rel-topic-auto-ch064-zh-6fa56282ca-zh-f67d9fa2de-04",
+      "rel-topic-auto-ch065-zh-8985a4e669-zh-6fa56282ca-00",
       "rel-topic-auto-ch065-zh-6fa56282ca-zh-c9fa586836-03",
-      "rel-topic-auto-ch068-zh-6fa56282ca-zh-d58a1be932-04"
+      "rel-topic-auto-ch068-zh-d58a1be932-zh-6fa56282ca-00",
+      "rel-topic-auto-ch068-zh-6fa56282ca-zh-d58a1be932-04",
+      "rel-topic-auto-ch069-zh-d58a1be932-zh-6fa56282ca-00",
+      "rel-topic-auto-ch069-zh-c240ccb710-zh-6fa56282ca-02",
+      "rel-topic-auto-ch069-zh-8985a4e669-zh-6fa56282ca-03",
+      "rel-topic-auto-ch113-zh-d2f5e628f4-zh-6fa56282ca-01"
     ],
     "id": "card-topic-auto-person-zh-6fa56282ca",
     "name": "尤二姐",
@@ -35840,7 +36344,13 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch049-zh-7040814932-zh-7c2332fde0-03",
-      "rel-topic-auto-ch063-zh-7040814932-zh-8d20634cad-03"
+      "rel-topic-auto-ch051-zh-c240ccb710-zh-7040814932-05",
+      "rel-topic-auto-ch057-zh-c0cce0d33c-zh-7040814932-02",
+      "rel-topic-auto-ch057-zh-f06ce48f25-zh-7040814932-03",
+      "rel-topic-auto-ch063-zh-7040814932-zh-8d20634cad-03",
+      "rel-topic-auto-ch090-zh-d58a1be932-zh-7040814932-03",
+      "rel-topic-auto-ch090-zh-62242a215d-zh-7040814932-05",
+      "rel-topic-auto-ch095-zh-426c10c476-zh-7040814932-03"
     ],
     "id": "card-topic-auto-person-zh-7040814932",
     "name": "邢岫烟",
@@ -35897,7 +36407,11 @@
       "ev-topic-auto-ch043-relationships-001-zh-7491b69408",
       "ev-topic-auto-ch043-relationships-002-zh-59eccb4f76"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch043-zh-95ef8bb291-zh-71b66992dc-00",
+      "rel-topic-auto-ch043-zh-d58a1be932-zh-71b66992dc-01",
+      "rel-topic-auto-ch043-zh-66178aea3e-zh-71b66992dc-02"
+    ],
     "id": "card-topic-auto-person-zh-71b66992dc",
     "name": "攒金庆寿",
     "related_card_ids": [],
@@ -35912,7 +36426,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch112-relationships-001-zh-ec369454a9"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch112-zh-4a0b5206bd-zh-7364419d6f-01"
+    ],
     "id": "card-topic-auto-person-zh-7364419d6f",
     "name": "魇魔法",
     "related_card_ids": [],
@@ -35927,7 +36443,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch044-relationships-002-zh-8b73e64493"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch044-zh-8985a4e669-zh-73b4d4c654-02"
+    ],
     "id": "card-topic-auto-person-zh-73b4d4c654",
     "name": "鲍二媳妇",
     "related_card_ids": [],
@@ -35996,6 +36514,7 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch065-zh-74efb53745-zh-793dc1225e-05",
+      "rel-topic-auto-ch067-zh-d58a1be932-zh-74efb53745-04",
       "rel-topic-auto-ch067-zh-74efb53745-zh-6d2f025c14-05"
     ],
     "id": "card-topic-auto-person-zh-74efb53745",
@@ -36027,8 +36546,13 @@
       "ev-topic-auto-ch013-relationships-002-zh-6fe8c32043"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch005-zh-8d20634cad-zh-751345646f-00",
       "rel-topic-auto-ch007-zh-751345646f-zh-ab6ccd21ba-03",
+      "rel-topic-auto-ch010-zh-66178aea3e-zh-751345646f-01",
+      "rel-topic-auto-ch011-zh-d58a1be932-zh-751345646f-00",
       "rel-topic-auto-ch013-zh-751345646f-zh-d58a1be932-00",
+      "rel-topic-auto-ch013-zh-8d20634cad-zh-751345646f-01",
+      "rel-topic-auto-ch013-zh-415942350d-zh-751345646f-02",
       "rel-topic-auto-ch111-zh-751345646f-zh-cddadc5dd2-00"
     ],
     "id": "card-topic-auto-person-zh-751345646f",
@@ -36094,7 +36618,9 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch009-zh-7677d9c5fd-zh-bf294f71cc-06",
+      "rel-topic-auto-ch012-zh-d58a1be932-zh-7677d9c5fd-02",
       "rel-topic-auto-ch012-zh-7677d9c5fd-zh-0469afba0e-04",
+      "rel-topic-auto-ch018-zh-e40e8860a3-zh-7677d9c5fd-07",
       "rel-topic-auto-ch036-zh-7677d9c5fd-zh-e40e8860a3-04"
     ],
     "id": "card-topic-auto-person-zh-7677d9c5fd",
@@ -36141,7 +36667,10 @@
       "ev-topic-auto-ch120-relationships-004-zh-91d9fbd9c4"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch086-zh-785d63dbcc-zh-66a86d3536-03"
+      "rel-topic-auto-ch028-zh-8d20634cad-zh-785d63dbcc-00",
+      "rel-topic-auto-ch086-zh-785d63dbcc-zh-66a86d3536-03",
+      "rel-topic-auto-ch086-zh-8d20634cad-zh-785d63dbcc-04",
+      "rel-topic-auto-ch120-zh-ac19e14301-zh-785d63dbcc-04"
     ],
     "id": "card-topic-auto-person-zh-785d63dbcc",
     "name": "蒋玉菡",
@@ -36162,7 +36691,9 @@
       "ev-topic-auto-ch060-objects-003-zh-f5b0db080d",
       "ev-topic-auto-ch061-objects-001-zh-fa11844ef4"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch060-zh-d31bb55dd3-zh-7900f290c0-05"
+    ],
     "id": "card-topic-auto-person-zh-7900f290c0",
     "name": "茯苓霜",
     "related_card_ids": [],
@@ -36226,7 +36757,12 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch061-zh-7968200045-zh-dc3c63608c-01",
-      "rel-topic-auto-ch092-zh-7968200045-zh-8719f3c05b-04"
+      "rel-topic-auto-ch072-zh-cddadc5dd2-zh-7968200045-00",
+      "rel-topic-auto-ch074-zh-8719f3c05b-zh-7968200045-04",
+      "rel-topic-auto-ch077-zh-74b20908db-zh-7968200045-06",
+      "rel-topic-auto-ch077-zh-7c2332fde0-zh-7968200045-07",
+      "rel-topic-auto-ch092-zh-7968200045-zh-8719f3c05b-04",
+      "rel-topic-auto-ch092-zh-d58a1be932-zh-7968200045-05"
     ],
     "id": "card-topic-auto-person-zh-7968200045",
     "name": "司棋",
@@ -36272,7 +36808,9 @@
       "ev-topic-auto-ch108-characters-006-zh-1a40dc15f2"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch077-zh-7c2332fde0-zh-7968200045-07"
+      "rel-topic-auto-ch049-zh-7040814932-zh-7c2332fde0-03",
+      "rel-topic-auto-ch077-zh-7c2332fde0-zh-7968200045-07",
+      "rel-topic-auto-ch081-zh-8d20634cad-zh-7c2332fde0-00"
     ],
     "id": "card-topic-auto-person-zh-7c2332fde0",
     "name": "迎春",
@@ -36292,7 +36830,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch081-relationships-004-zh-0c63319514"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch081-zh-8d20634cad-zh-7d33bb8740-04"
+    ],
     "id": "card-topic-auto-person-zh-7d33bb8740",
     "name": "钓鱼结果",
     "related_card_ids": [],
@@ -36332,7 +36872,11 @@
       "ev-topic-auto-ch052-relationships-005-zh-70d45693d0",
       "ev-topic-auto-ch052-objects-000-zh-259ce6183f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch049-zh-c240ccb710-zh-82f2e7237e-06",
+      "rel-topic-auto-ch052-zh-c240ccb710-zh-82f2e7237e-01",
+      "rel-topic-auto-ch052-zh-af8c874f04-zh-82f2e7237e-05"
+    ],
     "id": "card-topic-auto-person-zh-82f2e7237e",
     "name": "虾须镯",
     "related_card_ids": [],
@@ -36350,7 +36894,10 @@
       "ev-topic-auto-ch086-relationships-000-zh-5dcb916241",
       "ev-topic-auto-ch086-relationships-002-zh-085ebadd0f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch086-zh-c251070614-zh-846434cf9a-00",
+      "rel-topic-auto-ch086-zh-de939fe868-zh-846434cf9a-02"
+    ],
     "id": "card-topic-auto-person-zh-846434cf9a",
     "name": "张三命案",
     "related_card_ids": [],
@@ -36366,7 +36913,9 @@
       "ev-topic-auto-ch031-characters-005-zh-5d03c198eb",
       "ev-topic-auto-ch031-relationships-005-zh-4b059b5d2c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch031-zh-ae9a003d91-zh-856f5cfce4-05"
+    ],
     "id": "card-topic-auto-person-zh-856f5cfce4",
     "name": "翠缕",
     "related_card_ids": [],
@@ -36384,7 +36933,8 @@
       "ev-topic-auto-ch092-relationships-004-zh-3243cc3f37"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch074-zh-8719f3c05b-zh-7968200045-04"
+      "rel-topic-auto-ch074-zh-8719f3c05b-zh-7968200045-04",
+      "rel-topic-auto-ch092-zh-7968200045-zh-8719f3c05b-04"
     ],
     "id": "card-topic-auto-person-zh-8719f3c05b",
     "name": "潘又安",
@@ -36461,17 +37011,17 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch007-zh-8985a4e669-zh-d58a1be932-02",
+      "rel-topic-auto-ch015-zh-d58a1be932-zh-8985a4e669-01",
+      "rel-topic-auto-ch021-zh-c240ccb710-zh-8985a4e669-02",
       "rel-topic-auto-ch021-zh-8985a4e669-zh-e1d69787f9-04",
+      "rel-topic-auto-ch023-zh-d58a1be932-zh-8985a4e669-02",
       "rel-topic-auto-ch044-zh-8985a4e669-zh-d58a1be932-01",
       "rel-topic-auto-ch044-zh-8985a4e669-zh-73b4d4c654-02",
       "rel-topic-auto-ch064-zh-8985a4e669-zh-f67d9fa2de-03",
+      "rel-topic-auto-ch064-zh-6308a9c2d1-zh-8985a4e669-05",
+      "rel-topic-auto-ch064-zh-0edf84dee6-zh-8985a4e669-06",
       "rel-topic-auto-ch065-zh-8985a4e669-zh-6fa56282ca-00",
-      "rel-topic-auto-ch066-zh-8985a4e669-zh-1ddbf804e8-06",
-      "rel-topic-auto-ch066-zh-8985a4e669-zh-1ddbf804e8-07",
-      "rel-topic-auto-ch069-zh-8985a4e669-zh-6fa56282ca-03",
-      "rel-topic-auto-ch072-zh-8985a4e669-zh-cddadc5dd2-03",
-      "rel-topic-auto-ch072-zh-8985a4e669-zh-08ead604d4-06",
-      "rel-topic-auto-ch072-zh-8985a4e669-zh-6778645971-12"
+      "rel-topic-auto-ch066-zh-8985a4e669-zh-1ddbf804e8-06"
     ],
     "id": "card-topic-auto-person-zh-8985a4e669",
     "name": "贾琏",
@@ -36504,8 +37054,17 @@
       "ev-topic-auto-ch118-relationships-000-zh-07285eacdc"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch042-zh-acc4c397d1-zh-898e26c888-01",
       "rel-topic-auto-ch088-zh-898e26c888-zh-666f252fa6-05",
-      "rel-topic-auto-ch092-zh-898e26c888-zh-d58a1be932-02"
+      "rel-topic-auto-ch092-zh-8d20634cad-zh-898e26c888-00",
+      "rel-topic-auto-ch092-zh-8d20634cad-zh-898e26c888-01",
+      "rel-topic-auto-ch092-zh-898e26c888-zh-d58a1be932-02",
+      "rel-topic-auto-ch114-zh-5759fc8ae7-zh-898e26c888-02",
+      "rel-topic-auto-ch117-zh-8985a4e669-zh-898e26c888-05",
+      "rel-topic-auto-ch118-zh-5759fc8ae7-zh-898e26c888-00",
+      "rel-topic-auto-ch118-zh-d8bbce6461-zh-898e26c888-02",
+      "rel-topic-auto-ch119-zh-2942c31957-zh-898e26c888-03",
+      "rel-topic-auto-ch119-zh-acc4c397d1-zh-898e26c888-04"
     ],
     "id": "card-topic-auto-person-zh-898e26c888",
     "name": "巧姐",
@@ -36559,7 +37118,9 @@
       "ev-topic-auto-ch052-later-associations-004-zh-bde1162320",
       "ev-topic-auto-ch089-objects-000-zh-f5fd30d8eb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch052-zh-3c97c4d73c-zh-8ac40876f1-02"
+    ],
     "id": "card-topic-auto-person-zh-8ac40876f1",
     "name": "雀金裘",
     "related_card_ids": [],
@@ -36595,7 +37156,10 @@
       "ev-topic-auto-ch021-relationships-001-zh-6be2c10ef8",
       "ev-topic-auto-ch077-relationships-001-zh-d929e2d2ff"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch021-zh-8d20634cad-zh-8c1bff7bb6-01",
+      "rel-topic-auto-ch077-zh-a7e2173148-zh-8c1bff7bb6-01"
+    ],
     "id": "card-topic-auto-person-zh-8c1bff7bb6",
     "name": "四儿",
     "related_card_ids": [],
@@ -36611,7 +37175,9 @@
       "ev-topic-auto-ch105-relationships-006-zh-8cad4cadd9",
       "ev-topic-auto-ch105-later-associations-003-zh-6f60b67af7"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch105-zh-a52fe38395-zh-8c33555d72-06"
+    ],
     "id": "card-topic-auto-person-zh-8c33555d72",
     "name": "平安州",
     "related_card_ids": [],
@@ -36640,9 +37206,13 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch024-zh-8c4a6d6004-zh-8d20634cad-04",
+      "rel-topic-auto-ch024-zh-dad168a957-zh-8c4a6d6004-05",
       "rel-topic-auto-ch024-zh-8c4a6d6004-zh-666f252fa6-06",
+      "rel-topic-auto-ch025-zh-8d20634cad-zh-8c4a6d6004-07",
       "rel-topic-auto-ch026-zh-8c4a6d6004-zh-666f252fa6-00",
-      "rel-topic-auto-ch027-zh-8c4a6d6004-zh-666f252fa6-01"
+      "rel-topic-auto-ch027-zh-8c4a6d6004-zh-666f252fa6-01",
+      "rel-topic-auto-ch027-zh-d58a1be932-zh-8c4a6d6004-02",
+      "rel-topic-auto-ch088-zh-666f252fa6-zh-8c4a6d6004-04"
     ],
     "id": "card-topic-auto-person-zh-8c4a6d6004",
     "name": "小红",
@@ -36678,15 +37248,15 @@
       "rel-topic-auto-ch002-zh-8d20634cad-zh-9790506bde-05",
       "rel-topic-auto-ch003-zh-8d20634cad-zh-2d6600c0fd-01",
       "rel-topic-auto-ch005-zh-8d20634cad-zh-751345646f-00",
+      "rel-topic-auto-ch005-zh-7fd4f26429-zh-8d20634cad-01",
       "rel-topic-auto-ch006-zh-8d20634cad-zh-ac19e14301-00",
       "rel-topic-auto-ch007-zh-8d20634cad-zh-ab6ccd21ba-00",
       "rel-topic-auto-ch008-zh-8d20634cad-zh-2d6600c0fd-00",
       "rel-topic-auto-ch008-zh-8d20634cad-zh-f06ce48f25-01",
       "rel-topic-auto-ch008-zh-8d20634cad-zh-ac19e14301-02",
-      "rel-topic-auto-ch009-zh-8d20634cad-zh-ab6ccd21ba-03",
-      "rel-topic-auto-ch011-zh-8d20634cad-zh-06c2585669-03",
-      "rel-topic-auto-ch013-zh-8d20634cad-zh-751345646f-01",
-      "rel-topic-auto-ch013-zh-8d20634cad-zh-d58a1be932-05"
+      "rel-topic-auto-ch008-zh-62c246f10a-zh-8d20634cad-04",
+      "rel-topic-auto-ch009-zh-a642edec65-zh-8d20634cad-00",
+      "rel-topic-auto-ch009-zh-8d20634cad-zh-ab6ccd21ba-03"
     ],
     "id": "card-topic-auto-person-zh-8d20634cad",
     "name": "贾宝玉",
@@ -36708,7 +37278,9 @@
       "ev-topic-auto-ch012-relationships-006-zh-bf3540ab3e",
       "ev-topic-auto-ch012-objects-000-zh-e338b07cda"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch012-zh-0469afba0e-zh-8d63dbf1eb-06"
+    ],
     "id": "card-topic-auto-person-zh-8d63dbf1eb",
     "name": "风月宝鉴",
     "related_card_ids": [],
@@ -36732,7 +37304,8 @@
       "ev-topic-auto-ch102-places-001-zh-83050be533"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch002-zh-8daad6c33d-zh-a034a448ae-06"
+      "rel-topic-auto-ch002-zh-8daad6c33d-zh-a034a448ae-06",
+      "rel-topic-auto-ch074-zh-8decd4cefa-zh-8daad6c33d-03"
     ],
     "id": "card-topic-auto-person-zh-8daad6c33d",
     "name": "宁国府",
@@ -36819,7 +37392,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch076-relationships-002-zh-9e36cb8f78"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch076-zh-95ef8bb291-zh-8fa8346040-02"
+    ],
     "id": "card-topic-auto-person-zh-8fa8346040",
     "name": "笛声",
     "related_card_ids": [],
@@ -36834,7 +37409,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch088-relationships-002-zh-81235bfa90"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch088-zh-415942350d-zh-8fd0c51f80-02"
+    ],
     "id": "card-topic-auto-person-zh-8fd0c51f80",
     "name": "鲍二",
     "related_card_ids": [],
@@ -36849,7 +37426,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch051-relationships-006-zh-4fdb6c01e5"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch051-zh-3c97c4d73c-zh-91bd4950ac-06"
+    ],
     "id": "card-topic-auto-person-zh-91bd4950ac",
     "name": "晴雯生病",
     "related_card_ids": [],
@@ -36876,18 +37455,18 @@
       "ev-topic-auto-ch029-characters-000-zh-652b11916d"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch003-zh-2d6600c0fd-zh-95ef8bb291-00",
+      "rel-topic-auto-ch003-zh-d58a1be932-zh-95ef8bb291-02",
       "rel-topic-auto-ch008-zh-95ef8bb291-zh-ab6ccd21ba-05",
+      "rel-topic-auto-ch011-zh-d58a1be932-zh-95ef8bb291-04",
       "rel-topic-auto-ch012-zh-95ef8bb291-zh-2d6600c0fd-08",
+      "rel-topic-auto-ch018-zh-63555aa851-zh-95ef8bb291-02",
+      "rel-topic-auto-ch025-zh-223993ad0f-zh-95ef8bb291-05",
+      "rel-topic-auto-ch029-zh-6495d09801-zh-95ef8bb291-02",
       "rel-topic-auto-ch029-zh-95ef8bb291-zh-5c1dcb242c-03",
       "rel-topic-auto-ch033-zh-95ef8bb291-zh-8d20634cad-04",
-      "rel-topic-auto-ch035-zh-95ef8bb291-zh-f06ce48f25-04",
-      "rel-topic-auto-ch038-zh-95ef8bb291-zh-d58a1be932-00",
-      "rel-topic-auto-ch040-zh-95ef8bb291-zh-4797e8cf9b-01",
-      "rel-topic-auto-ch040-zh-95ef8bb291-zh-182bd9a072-02",
-      "rel-topic-auto-ch040-zh-95ef8bb291-zh-ca4228831b-05",
-      "rel-topic-auto-ch042-zh-95ef8bb291-zh-397ad61dd2-02",
-      "rel-topic-auto-ch043-zh-95ef8bb291-zh-71b66992dc-00",
-      "rel-topic-auto-ch044-zh-95ef8bb291-zh-84ef650a3a-04"
+      "rel-topic-auto-ch035-zh-d58a1be932-zh-95ef8bb291-03",
+      "rel-topic-auto-ch035-zh-95ef8bb291-zh-f06ce48f25-04"
     ],
     "id": "card-topic-auto-person-zh-95ef8bb291",
     "name": "贾母",
@@ -36972,7 +37551,11 @@
       "ev-topic-auto-ch115-relationships-000-zh-d1af82a669"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch056-zh-9790506bde-zh-5a8ff3a9cf-06"
+      "rel-topic-auto-ch002-zh-8d20634cad-zh-9790506bde-05",
+      "rel-topic-auto-ch056-zh-8d20634cad-zh-9790506bde-05",
+      "rel-topic-auto-ch056-zh-9790506bde-zh-5a8ff3a9cf-06",
+      "rel-topic-auto-ch114-zh-8d20634cad-zh-9790506bde-04",
+      "rel-topic-auto-ch115-zh-8d20634cad-zh-9790506bde-00"
     ],
     "id": "card-topic-auto-person-zh-9790506bde",
     "name": "甄宝玉",
@@ -36992,7 +37575,9 @@
       "ev-topic-auto-ch068-characters-006-zh-fff42f0ee5",
       "ev-topic-auto-ch068-relationships-002-zh-82f8b3b0fc"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch068-zh-d58a1be932-zh-9889fb337e-02"
+    ],
     "id": "card-topic-auto-person-zh-9889fb337e",
     "name": "张华",
     "related_card_ids": [],
@@ -37059,7 +37644,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch058-relationships-000-zh-9e09260226"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch058-zh-b90e0c7c6e-zh-99bf247492-00"
+    ],
     "id": "card-topic-auto-person-zh-99bf247492",
     "name": "菂官",
     "related_card_ids": [],
@@ -37091,7 +37678,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch103-relationships-003-zh-425b243568"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch103-zh-f06ce48f25-zh-9ab37b22b4-03"
+    ],
     "id": "card-topic-auto-person-zh-9ab37b22b4",
     "name": "宝蟾招供",
     "related_card_ids": [],
@@ -37106,7 +37695,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch070-relationships-005-zh-8362506169"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch070-zh-54145105ff-zh-9aca3c6f41-05"
+    ],
     "id": "card-topic-auto-person-zh-9aca3c6f41",
     "name": "远嫁分离",
     "related_card_ids": [],
@@ -37121,7 +37712,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch075-relationships-001-zh-a5043f918c"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch075-zh-415942350d-zh-9b00582c55-01"
+    ],
     "id": "card-topic-auto-person-zh-9b00582c55",
     "name": "祠堂异兆",
     "related_card_ids": [],
@@ -37136,7 +37729,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch019-relationships-003-zh-e7ba6a5d9b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch019-zh-bf294f71cc-zh-9b64d88fe6-03"
+    ],
     "id": "card-topic-auto-person-zh-9b64d88fe6",
     "name": "万儿",
     "related_card_ids": [],
@@ -37168,7 +37763,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch063-relationships-001-zh-f9436c8fb2"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch063-zh-8d20634cad-zh-9c1b73255f-01"
+    ],
     "id": "card-topic-auto-person-zh-9c1b73255f",
     "name": "麝月签文",
     "related_card_ids": [],
@@ -37215,7 +37812,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch005-relationships-002-zh-fc31f4c466"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch005-zh-7fd4f26429-zh-9e588cc793-02"
+    ],
     "id": "card-topic-auto-person-zh-9e588cc793",
     "name": "兼美",
     "related_card_ids": [],
@@ -37349,15 +37948,15 @@
       "rel-topic-auto-ch009-zh-a642edec65-zh-8d20634cad-00",
       "rel-topic-auto-ch009-zh-a642edec65-zh-17dc31275f-01",
       "rel-topic-auto-ch017-zh-a642edec65-zh-8d20634cad-00",
+      "rel-topic-auto-ch018-zh-63555aa851-zh-a642edec65-01",
       "rel-topic-auto-ch033-zh-a642edec65-zh-8d20634cad-03",
+      "rel-topic-auto-ch072-zh-4a0b5206bd-zh-a642edec65-10",
       "rel-topic-auto-ch078-zh-a642edec65-zh-beb08b8db3-04",
       "rel-topic-auto-ch081-zh-a642edec65-zh-8d20634cad-07",
       "rel-topic-auto-ch081-zh-a642edec65-zh-fbaf3e0925-08",
-      "rel-topic-auto-ch084-zh-a642edec65-zh-8d20634cad-01",
-      "rel-topic-auto-ch099-zh-a642edec65-zh-40ed1e3a15-00",
-      "rel-topic-auto-ch099-zh-a642edec65-zh-08e2c06c60-02",
-      "rel-topic-auto-ch099-zh-a642edec65-zh-1f7e12a779-03",
-      "rel-topic-auto-ch102-zh-a642edec65-zh-8c179599f2-04"
+      "rel-topic-auto-ch083-zh-63555aa851-zh-a642edec65-02",
+      "rel-topic-auto-ch084-zh-95ef8bb291-zh-a642edec65-00",
+      "rel-topic-auto-ch084-zh-a642edec65-zh-8d20634cad-01"
     ],
     "id": "card-topic-auto-person-zh-a642edec65",
     "name": "贾政",
@@ -37381,7 +37980,9 @@
       "ev-topic-auto-ch096-objects-001-zh-61e2bea497",
       "ev-topic-auto-ch097-objects-002-zh-30885f4926"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch008-zh-592cd00192-zh-a774258147-03"
+    ],
     "id": "card-topic-auto-person-zh-a774258147",
     "name": "金锁",
     "related_card_ids": [],
@@ -37411,18 +38012,18 @@
       "ev-topic-auto-ch046-relationships-007-zh-722388af52"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch004-zh-c0cce0d33c-zh-a7e2173148-04",
+      "rel-topic-auto-ch006-zh-23602a3322-zh-a7e2173148-01",
+      "rel-topic-auto-ch032-zh-f06ce48f25-zh-a7e2173148-02",
       "rel-topic-auto-ch033-zh-a7e2173148-zh-8d20634cad-05",
+      "rel-topic-auto-ch034-zh-ac19e14301-zh-a7e2173148-01",
       "rel-topic-auto-ch035-zh-a7e2173148-zh-ac19e14301-07",
       "rel-topic-auto-ch036-zh-a7e2173148-zh-ac19e14301-05",
+      "rel-topic-auto-ch046-zh-54145105ff-zh-a7e2173148-07",
+      "rel-topic-auto-ch067-zh-4a0b5206bd-zh-a7e2173148-06",
       "rel-topic-auto-ch077-zh-a7e2173148-zh-3c97c4d73c-00",
       "rel-topic-auto-ch077-zh-a7e2173148-zh-8c1bff7bb6-01",
-      "rel-topic-auto-ch077-zh-a7e2173148-zh-1e82bc3d48-02",
-      "rel-topic-auto-ch078-zh-a7e2173148-zh-3c97c4d73c-00",
-      "rel-topic-auto-ch078-zh-a7e2173148-zh-ac19e14301-01",
-      "rel-topic-auto-ch081-zh-a7e2173148-zh-8d20634cad-01",
-      "rel-topic-auto-ch082-zh-a7e2173148-zh-2613fc18cf-03",
-      "rel-topic-auto-ch095-zh-a7e2173148-zh-8d20634cad-06",
-      "rel-topic-auto-ch102-zh-a7e2173148-zh-f06ce48f25-00"
+      "rel-topic-auto-ch077-zh-a7e2173148-zh-1e82bc3d48-02"
     ],
     "id": "card-topic-auto-person-zh-a7e2173148",
     "name": "王夫人",
@@ -37474,8 +38075,10 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch020-zh-a8908cdbf9-zh-ac19e14301-02",
       "rel-topic-auto-ch020-zh-a8908cdbf9-zh-2d6600c0fd-03",
+      "rel-topic-auto-ch040-zh-4797e8cf9b-zh-a8908cdbf9-04",
       "rel-topic-auto-ch049-zh-a8908cdbf9-zh-0fdcf714f0-01",
       "rel-topic-auto-ch078-zh-a8908cdbf9-zh-3c97c4d73c-02",
+      "rel-topic-auto-ch078-zh-adb00d451c-zh-a8908cdbf9-03",
       "rel-topic-auto-ch113-zh-a8908cdbf9-zh-426c10c476-02",
       "rel-topic-auto-ch113-zh-a8908cdbf9-zh-d8fc26cd64-03"
     ],
@@ -37556,7 +38159,10 @@
       "ev-topic-auto-ch001-relationships-001-zh-5de3c9fcb2",
       "ev-topic-auto-ch004-relationships-003-zh-69ff1e742a"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch001-zh-f2d234f487-zh-aa2685191f-01",
+      "rel-topic-auto-ch004-zh-c251070614-zh-aa2685191f-03"
+    ],
     "id": "card-topic-auto-person-zh-aa2685191f",
     "name": "英莲",
     "related_card_ids": [],
@@ -37572,7 +38178,9 @@
       "ev-topic-auto-ch099-characters-008-zh-28dba54639",
       "ev-topic-auto-ch099-relationships-001-zh-9d1a824303"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch099-zh-40ed1e3a15-zh-aa6611486d-01"
+    ],
     "id": "card-topic-auto-person-zh-aa6611486d",
     "name": "詹会",
     "related_card_ids": [],
@@ -37615,7 +38223,13 @@
       "ev-topic-auto-ch016-relationships-002-zh-c854c88d71"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch015-zh-ab6ccd21ba-zh-6a89354d70-02"
+      "rel-topic-auto-ch007-zh-8d20634cad-zh-ab6ccd21ba-00",
+      "rel-topic-auto-ch007-zh-751345646f-zh-ab6ccd21ba-03",
+      "rel-topic-auto-ch008-zh-95ef8bb291-zh-ab6ccd21ba-05",
+      "rel-topic-auto-ch009-zh-8d20634cad-zh-ab6ccd21ba-03",
+      "rel-topic-auto-ch015-zh-ab6ccd21ba-zh-6a89354d70-02",
+      "rel-topic-auto-ch015-zh-8d20634cad-zh-ab6ccd21ba-03",
+      "rel-topic-auto-ch016-zh-8d20634cad-zh-ab6ccd21ba-02"
     ],
     "id": "card-topic-auto-person-zh-ab6ccd21ba",
     "name": "秦钟",
@@ -37667,15 +38281,18 @@
       "ev-topic-auto-ch028-characters-006-zh-48710ee022"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch006-zh-8d20634cad-zh-ac19e14301-00",
+      "rel-topic-auto-ch008-zh-8d20634cad-zh-ac19e14301-02",
+      "rel-topic-auto-ch019-zh-8d20634cad-zh-ac19e14301-00",
+      "rel-topic-auto-ch019-zh-6d0df8dbcd-zh-ac19e14301-05",
+      "rel-topic-auto-ch020-zh-a8908cdbf9-zh-ac19e14301-02",
+      "rel-topic-auto-ch030-zh-8d20634cad-zh-ac19e14301-03",
+      "rel-topic-auto-ch031-zh-3c97c4d73c-zh-ac19e14301-01",
       "rel-topic-auto-ch032-zh-ac19e14301-zh-8d20634cad-01",
       "rel-topic-auto-ch034-zh-ac19e14301-zh-a7e2173148-01",
-      "rel-topic-auto-ch077-zh-ac19e14301-zh-8d20634cad-05",
-      "rel-topic-auto-ch082-zh-ac19e14301-zh-2d6600c0fd-02",
-      "rel-topic-auto-ch096-zh-ac19e14301-zh-a7e2173148-01",
-      "rel-topic-auto-ch099-zh-ac19e14301-zh-8d20634cad-06",
-      "rel-topic-auto-ch117-zh-ac19e14301-zh-0bbdfbb4c6-01",
-      "rel-topic-auto-ch118-zh-ac19e14301-zh-8d20634cad-07",
-      "rel-topic-auto-ch120-zh-ac19e14301-zh-785d63dbcc-04"
+      "rel-topic-auto-ch035-zh-a7e2173148-zh-ac19e14301-07",
+      "rel-topic-auto-ch036-zh-a7e2173148-zh-ac19e14301-05",
+      "rel-topic-auto-ch039-zh-c240ccb710-zh-ac19e14301-01"
     ],
     "id": "card-topic-auto-person-zh-ac19e14301",
     "name": "袭人",
@@ -37709,9 +38326,14 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch039-zh-acc4c397d1-zh-95ef8bb291-00",
+      "rel-topic-auto-ch039-zh-8d20634cad-zh-acc4c397d1-02",
       "rel-topic-auto-ch039-zh-acc4c397d1-zh-1d4b0dc0cb-03",
       "rel-topic-auto-ch040-zh-acc4c397d1-zh-95ef8bb291-03",
+      "rel-topic-auto-ch041-zh-426c10c476-zh-acc4c397d1-01",
       "rel-topic-auto-ch042-zh-acc4c397d1-zh-898e26c888-01",
+      "rel-topic-auto-ch042-zh-2d6600c0fd-zh-acc4c397d1-04",
+      "rel-topic-auto-ch042-zh-d58a1be932-zh-acc4c397d1-05",
+      "rel-topic-auto-ch113-zh-d2f5e628f4-zh-acc4c397d1-00",
       "rel-topic-auto-ch119-zh-acc4c397d1-zh-898e26c888-04"
     ],
     "id": "card-topic-auto-person-zh-acc4c397d1",
@@ -37767,7 +38389,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch053-relationships-003-zh-05f824781b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch053-zh-95ef8bb291-zh-adba978df6-03"
+    ],
     "id": "card-topic-auto-person-zh-adba978df6",
     "name": "全族祭祀",
     "related_card_ids": [],
@@ -37795,12 +38419,16 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch021-zh-ae9a003d91-zh-8d20634cad-06",
+      "rel-topic-auto-ch031-zh-2d6600c0fd-zh-ae9a003d91-02",
       "rel-topic-auto-ch031-zh-ae9a003d91-zh-83de5caa9c-03",
       "rel-topic-auto-ch031-zh-ae9a003d91-zh-856f5cfce4-05",
+      "rel-topic-auto-ch037-zh-f06ce48f25-zh-ae9a003d91-04",
       "rel-topic-auto-ch038-zh-ae9a003d91-zh-6ff5de52ba-05",
+      "rel-topic-auto-ch049-zh-154cf9aafa-zh-ae9a003d91-07",
       "rel-topic-auto-ch050-zh-ae9a003d91-zh-865792a799-00",
       "rel-topic-auto-ch062-zh-ae9a003d91-zh-8d20634cad-02",
       "rel-topic-auto-ch070-zh-ae9a003d91-zh-dabc8b0f63-03",
+      "rel-topic-auto-ch076-zh-2d6600c0fd-zh-ae9a003d91-00",
       "rel-topic-auto-ch108-zh-ae9a003d91-zh-d396b671b8-04"
     ],
     "id": "card-topic-auto-person-zh-ae9a003d91",
@@ -37845,6 +38473,7 @@
       "ev-topic-auto-ch052-relationships-005-zh-70d45693d0"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch026-zh-666f252fa6-zh-af8c874f04-01",
       "rel-topic-auto-ch052-zh-af8c874f04-zh-82f2e7237e-05"
     ],
     "id": "card-topic-auto-person-zh-af8c874f04",
@@ -37864,7 +38493,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch059-relationships-002-zh-89ecde6c7d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch059-zh-75e6d5201f-zh-b178888f5a-02"
+    ],
     "id": "card-topic-auto-person-zh-b178888f5a",
     "name": "春燕娘",
     "related_card_ids": [],
@@ -37890,6 +38521,7 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch093-zh-b17f0ac0c5-zh-83da0e4e17-01",
       "rel-topic-auto-ch107-zh-b17f0ac0c5-zh-4cdcd6d89f-12",
+      "rel-topic-auto-ch107-zh-a642edec65-zh-b17f0ac0c5-13",
       "rel-topic-auto-ch111-zh-b17f0ac0c5-zh-221cae98f3-04",
       "rel-topic-auto-ch112-zh-b17f0ac0c5-zh-221cae98f3-04"
     ],
@@ -37928,7 +38560,9 @@
       "ev-topic-auto-ch004-characters-001-zh-3316087287",
       "ev-topic-auto-ch004-relationships-000-zh-091e81226e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch004-zh-4cdcd6d89f-zh-b895067f89-00"
+    ],
     "id": "card-topic-auto-person-zh-b895067f89",
     "name": "门子",
     "related_card_ids": [],
@@ -37950,7 +38584,8 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch058-zh-b90e0c7c6e-zh-99bf247492-00",
-      "rel-topic-auto-ch058-zh-b90e0c7c6e-zh-45ab791066-01"
+      "rel-topic-auto-ch058-zh-b90e0c7c6e-zh-45ab791066-01",
+      "rel-topic-auto-ch058-zh-8d20634cad-zh-b90e0c7c6e-02"
     ],
     "id": "card-topic-auto-person-zh-b90e0c7c6e",
     "name": "藕官",
@@ -37970,7 +38605,9 @@
       "ev-topic-auto-ch015-characters-003-zh-2edc27b8af",
       "ev-topic-auto-ch015-relationships-000-zh-01ae0f5dc6"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch015-zh-d58a1be932-zh-bbfb1cf804-00"
+    ],
     "id": "card-topic-auto-person-zh-bbfb1cf804",
     "name": "净虚",
     "related_card_ids": [],
@@ -37989,6 +38626,7 @@
       "ev-topic-auto-ch037-objects-000-zh-073e3172d2"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch037-zh-666f252fa6-zh-bd87deca88-02",
       "rel-topic-auto-ch037-zh-bd87deca88-zh-e2563f7d66-03"
     ],
     "id": "card-topic-auto-person-zh-bd87deca88",
@@ -38014,6 +38652,7 @@
       "ev-topic-auto-ch023-relationships-004-zh-7edfd96e50"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch009-zh-7677d9c5fd-zh-bf294f71cc-06",
       "rel-topic-auto-ch009-zh-bf294f71cc-zh-3632970bfb-07",
       "rel-topic-auto-ch019-zh-bf294f71cc-zh-9b64d88fe6-03",
       "rel-topic-auto-ch023-zh-bf294f71cc-zh-8d20634cad-04"
@@ -38040,6 +38679,7 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch001-zh-bfc09b4578-zh-f2d234f487-05",
+      "rel-topic-auto-ch001-zh-a3a8afcb33-zh-bfc09b4578-06",
       "rel-topic-auto-ch120-zh-bfc09b4578-zh-8d20634cad-01"
     ],
     "id": "card-topic-auto-person-zh-bfc09b4578",
@@ -38089,9 +38729,12 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch004-zh-c0cce0d33c-zh-a7e2173148-04",
+      "rel-topic-auto-ch047-zh-f06ce48f25-zh-c0cce0d33c-04",
       "rel-topic-auto-ch050-zh-c0cce0d33c-zh-95ef8bb291-04",
       "rel-topic-auto-ch057-zh-c0cce0d33c-zh-7040814932-02",
-      "rel-topic-auto-ch057-zh-c0cce0d33c-zh-2d6600c0fd-04"
+      "rel-topic-auto-ch057-zh-c0cce0d33c-zh-2d6600c0fd-04",
+      "rel-topic-auto-ch080-zh-399535aaf5-zh-c0cce0d33c-04",
+      "rel-topic-auto-ch100-zh-c251070614-zh-c0cce0d33c-02"
     ],
     "id": "card-topic-auto-person-zh-c0cce0d33c",
     "name": "薛姨妈",
@@ -38112,7 +38755,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch107-relationships-007-zh-45f03f73f4"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch107-zh-a642edec65-zh-c16c3de370-07"
+    ],
     "id": "card-topic-auto-person-zh-c16c3de370",
     "name": "变卖金子",
     "related_card_ids": [],
@@ -38179,18 +38824,18 @@
       "ev-topic-auto-ch039-relationships-001-zh-b8815ecd69"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch006-zh-d58a1be932-zh-c240ccb710-02",
       "rel-topic-auto-ch016-zh-c240ccb710-zh-d58a1be932-04",
       "rel-topic-auto-ch021-zh-c240ccb710-zh-8985a4e669-02",
       "rel-topic-auto-ch021-zh-c240ccb710-zh-d58a1be932-03",
       "rel-topic-auto-ch038-zh-c240ccb710-zh-d58a1be932-02",
       "rel-topic-auto-ch039-zh-c240ccb710-zh-ac19e14301-01",
+      "rel-topic-auto-ch039-zh-572481bcdc-zh-c240ccb710-04",
+      "rel-topic-auto-ch044-zh-d58a1be932-zh-c240ccb710-00",
+      "rel-topic-auto-ch044-zh-8d20634cad-zh-c240ccb710-03",
       "rel-topic-auto-ch049-zh-c240ccb710-zh-82f2e7237e-06",
       "rel-topic-auto-ch051-zh-c240ccb710-zh-7040814932-05",
-      "rel-topic-auto-ch052-zh-c240ccb710-zh-8d20634cad-00",
-      "rel-topic-auto-ch052-zh-c240ccb710-zh-82f2e7237e-01",
-      "rel-topic-auto-ch055-zh-c240ccb710-zh-2152406afd-03",
-      "rel-topic-auto-ch059-zh-c240ccb710-zh-11a83fdbd3-04",
-      "rel-topic-auto-ch061-zh-c240ccb710-zh-2152406afd-02"
+      "rel-topic-auto-ch052-zh-c240ccb710-zh-8d20634cad-00"
     ],
     "id": "card-topic-auto-person-zh-c240ccb710",
     "name": "平儿",
@@ -38226,15 +38871,15 @@
       "rel-topic-auto-ch004-zh-c251070614-zh-4cc070feae-02",
       "rel-topic-auto-ch004-zh-c251070614-zh-aa2685191f-03",
       "rel-topic-auto-ch009-zh-c251070614-zh-320e9a1194-04",
+      "rel-topic-auto-ch009-zh-0469afba0e-zh-c251070614-05",
+      "rel-topic-auto-ch009-zh-3632970bfb-zh-c251070614-09",
       "rel-topic-auto-ch013-zh-c251070614-zh-415942350d-04",
       "rel-topic-auto-ch026-zh-c251070614-zh-8d20634cad-03",
       "rel-topic-auto-ch033-zh-c251070614-zh-13711a9647-06",
       "rel-topic-auto-ch034-zh-c251070614-zh-f06ce48f25-02",
       "rel-topic-auto-ch035-zh-c251070614-zh-f06ce48f25-02",
-      "rel-topic-auto-ch048-zh-c251070614-zh-154cf9aafa-00",
-      "rel-topic-auto-ch080-zh-c251070614-zh-eb96d3b50d-01",
-      "rel-topic-auto-ch086-zh-c251070614-zh-846434cf9a-00",
-      "rel-topic-auto-ch100-zh-c251070614-zh-c0cce0d33c-02"
+      "rel-topic-auto-ch047-zh-1ddbf804e8-zh-c251070614-02",
+      "rel-topic-auto-ch048-zh-c251070614-zh-154cf9aafa-00"
     ],
     "id": "card-topic-auto-person-zh-c251070614",
     "name": "薛蟠",
@@ -38272,7 +38917,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch076-relationships-003-zh-7926ed03f3"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch076-zh-3549881ef3-zh-c33f03a018-03"
+    ],
     "id": "card-topic-auto-person-zh-c33f03a018",
     "name": "家人离散",
     "related_card_ids": [],
@@ -38344,7 +38991,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch072-relationships-008-zh-3a49442f9d"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch072-zh-d58a1be932-zh-c5a8529a80-08"
+    ],
     "id": "card-topic-auto-person-zh-c5a8529a80",
     "name": "彩霞之母",
     "related_card_ids": [],
@@ -38377,7 +39026,8 @@
       "ev-topic-auto-ch059-relationships-003-zh-c035ba6e18"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch059-zh-c824bbdb9d-zh-03e523ef69-01"
+      "rel-topic-auto-ch059-zh-c824bbdb9d-zh-03e523ef69-01",
+      "rel-topic-auto-ch059-zh-8d20634cad-zh-c824bbdb9d-03"
     ],
     "id": "card-topic-auto-person-zh-c824bbdb9d",
     "name": "春燕",
@@ -38407,10 +39057,16 @@
       "ev-topic-auto-ch066-relationships-002-zh-b92c0e0fba"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch063-zh-6308a9c2d1-zh-c9fa586836-05",
+      "rel-topic-auto-ch065-zh-415942350d-zh-c9fa586836-01",
       "rel-topic-auto-ch065-zh-c9fa586836-zh-c4b146062f-02",
+      "rel-topic-auto-ch065-zh-6fa56282ca-zh-c9fa586836-03",
       "rel-topic-auto-ch065-zh-c9fa586836-zh-6229a0fb79-04",
       "rel-topic-auto-ch066-zh-c9fa586836-zh-1ddbf804e8-00",
-      "rel-topic-auto-ch066-zh-c9fa586836-zh-1ddbf804e8-03"
+      "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-01",
+      "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-02",
+      "rel-topic-auto-ch066-zh-c9fa586836-zh-1ddbf804e8-03",
+      "rel-topic-auto-ch066-zh-1ddbf804e8-zh-c9fa586836-04"
     ],
     "id": "card-topic-auto-person-zh-c9fa586836",
     "name": "尤三姐",
@@ -38443,12 +39099,18 @@
       "ev-topic-auto-ch046-relationships-005-zh-942d0d581e"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch038-zh-d58a1be932-zh-cddadc5dd2-01",
+      "rel-topic-auto-ch040-zh-d2f5e628f4-zh-cddadc5dd2-00",
+      "rel-topic-auto-ch046-zh-6808c3be3c-zh-cddadc5dd2-00",
+      "rel-topic-auto-ch046-zh-d8bbce6461-zh-cddadc5dd2-01",
       "rel-topic-auto-ch046-zh-cddadc5dd2-zh-6808c3be3c-03",
       "rel-topic-auto-ch046-zh-cddadc5dd2-zh-fa83970e65-04",
       "rel-topic-auto-ch046-zh-cddadc5dd2-zh-d8bbce6461-05",
+      "rel-topic-auto-ch046-zh-95ef8bb291-zh-cddadc5dd2-06",
       "rel-topic-auto-ch054-zh-cddadc5dd2-zh-ac19e14301-08",
       "rel-topic-auto-ch071-zh-cddadc5dd2-zh-1f3bec550c-02",
-      "rel-topic-auto-ch072-zh-cddadc5dd2-zh-7968200045-00"
+      "rel-topic-auto-ch072-zh-cddadc5dd2-zh-7968200045-00",
+      "rel-topic-auto-ch072-zh-c240ccb710-zh-cddadc5dd2-01"
     ],
     "id": "card-topic-auto-person-zh-cddadc5dd2",
     "name": "鸳鸯",
@@ -38470,7 +39132,10 @@
       "ev-topic-auto-ch056-relationships-003-zh-62cb8a7000",
       "ev-topic-auto-ch056-relationships-004-zh-c2e62a1546"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch056-zh-f06ce48f25-zh-cefc62e935-03",
+      "rel-topic-auto-ch056-zh-62606218ed-zh-cefc62e935-04"
+    ],
     "id": "card-topic-auto-person-zh-cefc62e935",
     "name": "莺儿妈",
     "related_card_ids": [],
@@ -38496,8 +39161,13 @@
       "ev-topic-auto-ch109-later-associations-001-sep-sep"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch060-zh-1e82bc3d48-zh-d1e23b3403-03",
+      "rel-topic-auto-ch060-zh-022eb2437b-zh-d1e23b3403-06",
       "rel-topic-auto-ch061-zh-d1e23b3403-zh-1e82bc3d48-00",
-      "rel-topic-auto-ch109-zh-d1e23b3403-zh-3c97c4d73c-02"
+      "rel-topic-auto-ch092-zh-d58a1be932-zh-d1e23b3403-03",
+      "rel-topic-auto-ch109-zh-8d20634cad-zh-d1e23b3403-01",
+      "rel-topic-auto-ch109-zh-d1e23b3403-zh-3c97c4d73c-02",
+      "rel-topic-auto-ch109-zh-f06ce48f25-zh-d1e23b3403-03"
     ],
     "id": "card-topic-auto-person-zh-d1e23b3403",
     "name": "柳五儿",
@@ -38583,7 +39253,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch108-relationships-004-zh-ec6d9cc155"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch108-zh-ae9a003d91-zh-d396b671b8-04"
+    ],
     "id": "card-topic-auto-person-zh-d396b671b8",
     "name": "芙蓉神",
     "related_card_ids": [],
@@ -38598,7 +39270,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch001-relationships-004-zh-c57fd9a714"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch001-zh-4cdcd6d89f-zh-d51517583b-04"
+    ],
     "id": "card-topic-auto-person-zh-d51517583b",
     "name": "甄家丫鬟",
     "related_card_ids": [],
@@ -38628,15 +39302,15 @@
       "rel-topic-auto-ch003-zh-d58a1be932-zh-95ef8bb291-02",
       "rel-topic-auto-ch006-zh-d58a1be932-zh-c240ccb710-02",
       "rel-topic-auto-ch006-zh-d58a1be932-zh-6308a9c2d1-03",
+      "rel-topic-auto-ch007-zh-8985a4e669-zh-d58a1be932-02",
       "rel-topic-auto-ch011-zh-d58a1be932-zh-751345646f-00",
+      "rel-topic-auto-ch011-zh-0469afba0e-zh-d58a1be932-01",
       "rel-topic-auto-ch011-zh-d58a1be932-zh-0469afba0e-02",
       "rel-topic-auto-ch011-zh-d58a1be932-zh-95ef8bb291-04",
       "rel-topic-auto-ch012-zh-d58a1be932-zh-0469afba0e-00",
       "rel-topic-auto-ch012-zh-d58a1be932-zh-6308a9c2d1-01",
       "rel-topic-auto-ch012-zh-d58a1be932-zh-7677d9c5fd-02",
-      "rel-topic-auto-ch014-zh-d58a1be932-zh-993a3b70f9-00",
-      "rel-topic-auto-ch014-zh-d58a1be932-zh-ebb5c69baf-01",
-      "rel-topic-auto-ch015-zh-d58a1be932-zh-bbfb1cf804-00"
+      "rel-topic-auto-ch013-zh-751345646f-zh-d58a1be932-00"
     ],
     "id": "card-topic-auto-person-zh-d58a1be932",
     "name": "王熙凤",
@@ -38676,7 +39350,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch111-relationships-006-112"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch111-zh-426c10c476-zh-d80aa539c6-06"
+    ],
     "id": "card-topic-auto-person-zh-d80aa539c6",
     "name": "盗贼",
     "related_card_ids": [],
@@ -38691,7 +39367,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch081-relationships-003-zh-c86c42c211"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch081-zh-8d20634cad-zh-d80faf23fe-03"
+    ],
     "id": "card-topic-auto-person-zh-d80faf23fe",
     "name": "四美钓鱼",
     "related_card_ids": [],
@@ -38719,9 +39397,13 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch046-zh-d8bbce6461-zh-cddadc5dd2-01",
+      "rel-topic-auto-ch046-zh-d58a1be932-zh-d8bbce6461-02",
+      "rel-topic-auto-ch046-zh-cddadc5dd2-zh-d8bbce6461-05",
+      "rel-topic-auto-ch047-zh-95ef8bb291-zh-d8bbce6461-01",
       "rel-topic-auto-ch071-zh-d8bbce6461-zh-d58a1be932-00",
       "rel-topic-auto-ch073-zh-d8bbce6461-zh-39a1f1c4ce-01",
       "rel-topic-auto-ch110-zh-d8bbce6461-zh-d58a1be932-03",
+      "rel-topic-auto-ch118-zh-07ecb35cba-zh-d8bbce6461-01",
       "rel-topic-auto-ch118-zh-d8bbce6461-zh-898e26c888-02"
     ],
     "id": "card-topic-auto-person-zh-d8bbce6461",
@@ -38757,7 +39439,9 @@
     "graph_relation_ids": [
       "rel-topic-auto-ch057-zh-d8fc26cd64-zh-8d20634cad-00",
       "rel-topic-auto-ch089-zh-d8fc26cd64-zh-2d6600c0fd-05",
+      "rel-topic-auto-ch098-zh-2d6600c0fd-zh-d8fc26cd64-02",
       "rel-topic-auto-ch111-zh-d8fc26cd64-zh-de98ed11a0-07",
+      "rel-topic-auto-ch113-zh-a8908cdbf9-zh-d8fc26cd64-03",
       "rel-topic-auto-ch113-zh-d8fc26cd64-zh-2d6600c0fd-04",
       "rel-topic-auto-ch117-zh-d8fc26cd64-zh-0bbdfbb4c6-02",
       "rel-topic-auto-ch118-zh-d8fc26cd64-zh-397ad61dd2-04"
@@ -38781,7 +39465,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch054-relationships-002-zh-f6d5ee7026"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch054-zh-d58a1be932-zh-d94735e0f6-02"
+    ],
     "id": "card-topic-auto-person-zh-d94735e0f6",
     "name": "贾母批判",
     "related_card_ids": [],
@@ -38875,7 +39561,9 @@
       "ev-topic-auto-ch061-characters-003-zh-618bace843",
       "ev-topic-auto-ch061-relationships-001-zh-d178b18166"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch061-zh-7968200045-zh-dc3c63608c-01"
+    ],
     "id": "card-topic-auto-person-zh-dc3c63608c",
     "name": "莲花儿",
     "related_card_ids": [],
@@ -38944,7 +39632,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch111-relationships-007-zh-ae5fb177af"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch111-zh-d8fc26cd64-zh-de98ed11a0-07"
+    ],
     "id": "card-topic-auto-person-zh-de98ed11a0",
     "name": "鸳鸯之死",
     "related_card_ids": [],
@@ -38960,7 +39650,9 @@
       "ev-topic-auto-ch001-characters-004-zh-22e3b2287a",
       "ev-topic-auto-ch001-relationships-002-zh-ee3eb307e0"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch001-zh-f2d234f487-zh-e046125d0c-02"
+    ],
     "id": "card-topic-auto-person-zh-e046125d0c",
     "name": "封氏",
     "related_card_ids": [],
@@ -38976,7 +39668,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch021-relationships-004-zh-60948dfc06"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch021-zh-8985a4e669-zh-e1d69787f9-04"
+    ],
     "id": "card-topic-auto-person-zh-e1d69787f9",
     "name": "多姑娘儿",
     "related_card_ids": [],
@@ -39050,7 +39744,9 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch018-zh-e40e8860a3-zh-7677d9c5fd-07",
-      "rel-topic-auto-ch036-zh-e40e8860a3-zh-2d6600c0fd-03"
+      "rel-topic-auto-ch036-zh-8d20634cad-zh-e40e8860a3-02",
+      "rel-topic-auto-ch036-zh-e40e8860a3-zh-2d6600c0fd-03",
+      "rel-topic-auto-ch036-zh-7677d9c5fd-zh-e40e8860a3-04"
     ],
     "id": "card-topic-auto-person-zh-e40e8860a3",
     "name": "龄官",
@@ -39106,7 +39802,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch112-relationships-000-zh-924c2b1ef0"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch112-zh-426c10c476-zh-eb8d05a837-00"
+    ],
     "id": "card-topic-auto-person-zh-eb8d05a837",
     "name": "伙贼",
     "related_card_ids": [],
@@ -39124,7 +39822,11 @@
       "ev-topic-auto-ch080-relationships-001-zh-e9fc93c2f9",
       "ev-topic-auto-ch080-relationships-003-zh-3b5268ca7b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch080-zh-399535aaf5-zh-eb96d3b50d-00",
+      "rel-topic-auto-ch080-zh-c251070614-zh-eb96d3b50d-01",
+      "rel-topic-auto-ch080-zh-f06ce48f25-zh-eb96d3b50d-03"
+    ],
     "id": "card-topic-auto-person-zh-eb96d3b50d",
     "name": "秋菱（香菱）",
     "related_card_ids": [],
@@ -39142,7 +39844,10 @@
       "ev-topic-auto-ch002-relationships-000-zh-3f1756205b",
       "ev-topic-auto-ch003-relationships-003-zh-b7effb706f"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch002-zh-4cdcd6d89f-zh-ebbc544280-00",
+      "rel-topic-auto-ch003-zh-4cdcd6d89f-zh-ebbc544280-03"
+    ],
     "id": "card-topic-auto-person-zh-ebbc544280",
     "name": "林如海",
     "related_card_ids": [],
@@ -39159,7 +39864,9 @@
       "ev-topic-auto-ch091-characters-006-zh-a665f051cf",
       "ev-topic-auto-ch091-relationships-003-zh-50e74dcdea"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch091-zh-399535aaf5-zh-ec77f72d63-03"
+    ],
     "id": "card-topic-auto-person-zh-ec77f72d63",
     "name": "夏三",
     "related_card_ids": [],
@@ -39179,6 +39886,7 @@
       "ev-topic-auto-ch093-relationships-003-zh-25cfc19f3f"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch053-zh-415942350d-zh-ef6cf35ad5-00",
       "rel-topic-auto-ch093-zh-ef6cf35ad5-zh-0076f4c484-02",
       "rel-topic-auto-ch093-zh-ef6cf35ad5-zh-87f7f5a33c-03"
     ],
@@ -39216,7 +39924,9 @@
       "ev-topic-auto-ch093-characters-004-zh-5fc792aa56",
       "ev-topic-auto-ch093-relationships-006-zh-58f9f329aa"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch093-zh-8d20634cad-zh-f1b6d79504-06"
+    ],
     "id": "card-topic-auto-person-zh-f1b6d79504",
     "name": "蒋玉函",
     "related_card_ids": [],
@@ -39232,7 +39942,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch085-relationships-004-zh-ada4c93ebe"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch085-zh-399535aaf5-zh-f24ea463d2-04"
+    ],
     "id": "card-topic-auto-person-zh-f24ea463d2",
     "name": "薛家众人",
     "related_card_ids": [],
@@ -39248,7 +39960,9 @@
       "ev-topic-auto-ch069-characters-002-zh-ff880d8d32",
       "ev-topic-auto-ch069-relationships-001-zh-51de8e65fb"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch069-zh-d58a1be932-zh-f27d465388-01"
+    ],
     "id": "card-topic-auto-person-zh-f27d465388",
     "name": "秋桐",
     "related_card_ids": [],
@@ -39280,6 +39994,8 @@
       "rel-topic-auto-ch001-zh-f2d234f487-zh-aa2685191f-01",
       "rel-topic-auto-ch001-zh-f2d234f487-zh-e046125d0c-02",
       "rel-topic-auto-ch001-zh-f2d234f487-zh-6060438a6d-03",
+      "rel-topic-auto-ch001-zh-bfc09b4578-zh-f2d234f487-05",
+      "rel-topic-auto-ch103-zh-4cdcd6d89f-zh-f2d234f487-04",
       "rel-topic-auto-ch120-zh-f2d234f487-zh-8d20634cad-02",
       "rel-topic-auto-ch120-zh-f2d234f487-zh-154cf9aafa-03",
       "rel-topic-auto-ch120-zh-f2d234f487-zh-8a2267fcb0-05"
@@ -39320,7 +40036,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch060-relationships-004-zh-19f7c7037e"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch060-zh-d31bb55dd3-zh-f6b9a0246f-04"
+    ],
     "id": "card-topic-auto-person-zh-f6b9a0246f",
     "name": "娘家侄儿",
     "related_card_ids": [],
@@ -39381,6 +40099,7 @@
     ],
     "graph_relation_ids": [
       "rel-topic-auto-ch012-zh-fbaf3e0925-zh-0469afba0e-07",
+      "rel-topic-auto-ch081-zh-a642edec65-zh-fbaf3e0925-08",
       "rel-topic-auto-ch082-zh-fbaf3e0925-zh-8d20634cad-01"
     ],
     "id": "card-topic-auto-person-zh-fbaf3e0925",
@@ -39404,7 +40123,11 @@
       "ev-topic-auto-ch119-characters-007-zh-331bb34308",
       "ev-topic-auto-ch119-relationships-006-zh-99d5688c6b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch088-zh-95ef8bb291-zh-fbd752155a-00",
+      "rel-topic-auto-ch088-zh-8d20634cad-zh-fbd752155a-01",
+      "rel-topic-auto-ch119-zh-28be68377f-zh-fbd752155a-06"
+    ],
     "id": "card-topic-auto-person-zh-fbd752155a",
     "name": "贾兰",
     "related_card_ids": [],
@@ -39436,7 +40159,9 @@
     "evidence_ids": [
       "ev-topic-auto-ch081-relationships-005-zh-a31968b9a1"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch081-zh-95ef8bb291-zh-ffe083f453-05"
+    ],
     "id": "card-topic-auto-person-zh-ffe083f453",
     "name": "马道婆案",
     "related_card_ids": [],
@@ -39457,7 +40182,9 @@
       "ev-topic-auto-ch093-later-associations-004-sep-sep-sep-sep"
     ],
     "graph_relation_ids": [
-      "rel-topic-auto-ch088-zh-0076f4c484-zh-d58a1be932-07"
+      "rel-topic-auto-ch088-zh-0076f4c484-zh-d58a1be932-07",
+      "rel-topic-auto-ch093-zh-ef6cf35ad5-zh-0076f4c484-02",
+      "rel-topic-auto-ch093-zh-9690da19b5-zh-0076f4c484-08"
     ],
     "id": "card-topic-auto-place-zh-0076f4c484",
     "name": "水月庵",
@@ -39608,6 +40335,10 @@
       "ev-topic-auto-ch111-relationships-002-zh-e35ff2add1"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch011-zh-8d20634cad-zh-06c2585669-03",
+      "rel-topic-auto-ch017-zh-9a5bc6d29e-zh-06c2585669-02",
+      "rel-topic-auto-ch098-zh-8d20634cad-zh-06c2585669-04",
+      "rel-topic-auto-ch098-zh-2d6600c0fd-zh-06c2585669-05",
       "rel-topic-auto-ch111-zh-06c2585669-zh-cddadc5dd2-02"
     ],
     "id": "card-topic-auto-place-zh-06c2585669",
@@ -40496,7 +41227,9 @@
       "ev-topic-auto-ch115-places-004-zh-8d74ff7cc6",
       "ev-topic-auto-ch117-places-004-zh-bcd3be1b4b"
     ],
-    "graph_relation_ids": [],
+    "graph_relation_ids": [
+      "rel-topic-auto-ch049-zh-2832726df9-zh-451be0d290-05"
+    ],
     "id": "card-topic-auto-place-zh-451be0d290",
     "name": "栊翠庵",
     "related_card_ids": [],
@@ -42981,6 +43714,7 @@
       "ev-topic-auto-ch071-places-001-zh-6aa8e22421"
     ],
     "graph_relation_ids": [
+      "rel-topic-auto-ch018-zh-63555aa851-zh-e363c74c25-06",
       "rel-topic-auto-ch023-zh-e363c74c25-zh-a69e9a76ef-03"
     ],
     "id": "card-topic-auto-place-zh-e363c74c25",

@@ -42,6 +42,14 @@ GRAPH_ALIAS_RELATION_FRAGMENTS = (
     "等同",
 )
 GRAPH_GENERIC_RELATION_TOKENS = {"人物关系", "人物关联", "关系", "关联"}
+TOPIC_CATEGORY_ORDER = ["人物关系", "关键事件", "判词命运", "意象伏笔", "可引用事实"]
+TOPIC_CATEGORY_DESCRIPTIONS = {
+    "人物关系": "围绕人物、亲属、婚恋、主仆、称谓和对照关系组织。",
+    "关键事件": "围绕重要情节的起因、经过、结果和章回出处组织。",
+    "判词命运": "围绕诗词判语、命运照应和人物归宿组织。",
+    "意象伏笔": "围绕物件、场景、诗文意象和跨章伏笔组织。",
+    "可引用事实": "围绕可直接引用的事实依据组织。",
+}
 
 
 @dataclass(frozen=True)
@@ -91,7 +99,7 @@ def handle_api_request(
     parsed_url = urlparse(path)
     parsed_path = parsed_url.path
     if method == "GET" and parsed_path == "/api/home":
-        return 200, {"commonEntries": context.store.common_entries}
+        return 200, {"commonEntries": _camel(context.store.common_entries)}
     if method == "GET" and parsed_path.startswith("/api/chapters/"):
         number = int(parsed_path.rsplit("/", 1)[1])
         return 200, chapter_payload(context, number)
@@ -101,14 +109,16 @@ def handle_api_request(
         cards = [context.store.knowledge_card(card_id) for card_id in topic.card_ids]
         relations = [context.store.graph_relation(relation_id) for relation_id in topic.relation_ids]
         evidence = [context.store.evidence(evidence_id) for evidence_id in topic.evidence_ids]
+        graph_payload = _topic_graph_payload(context.store, topic, cards=cards)
         return 200, {
-            "topic": _camel(asdict(topic)),
+            "topic": _topic_api_payload(topic, graph_payload=graph_payload, cards=cards, evidence=evidence),
+            "topicContext": _camel(_topic_context_payload(graph_payload, topic=topic, evidence=evidence)),
             "cards": [_camel(asdict(card)) for card in cards],
             "relations": [_camel(asdict(relation)) for relation in relations],
             "evidence": [_camel(asdict(item)) for item in evidence],
         }
     if method == "GET" and parsed_path == "/api/topics":
-        return 200, {"topics": [_camel(asdict(topic)) for topic in context.store.topics]}
+        return 200, _topic_list_payload(context.store)
     if method == "GET" and parsed_path.startswith("/api/cards/"):
         card_id = parsed_path.rsplit("/", 1)[1]
         card = context.store.knowledge_card(card_id)
@@ -181,6 +191,264 @@ def chapter_payload(context: AppContext, number: int) -> dict[str, Any]:
     cleaned_payload = _clean_student_payload(payload)
     context.chapter_response_cache[number] = cleaned_payload
     return cleaned_payload
+
+
+def _topic_list_payload(store: Any) -> dict[str, Any]:
+    topics = list(store.topics)
+    graph_payloads = _topic_graph_payloads(store, topics)
+    topic_payloads = [_topic_api_payload(topic, graph_payload=graph_payloads.get(topic.title)) for topic in topics]
+    grouped_by_category: dict[str, list[dict[str, Any]]] = {}
+    for topic in topic_payloads:
+        category = str(topic.get("category") or "")
+        grouped_by_category.setdefault(category, []).append(topic)
+
+    topic_groups: list[dict[str, Any]] = []
+    known_categories = [category for category in TOPIC_CATEGORY_ORDER if category in grouped_by_category]
+    extra_categories = sorted(category for category in grouped_by_category if category not in TOPIC_CATEGORY_ORDER)
+    for category in [*known_categories, *extra_categories]:
+        grouped_topics = grouped_by_category[category]
+        if not grouped_topics:
+            continue
+        topic_groups.append(
+            {
+                "category": category,
+                "description": TOPIC_CATEGORY_DESCRIPTIONS.get(category, "围绕相关专题线索组织。"),
+                "count": len(grouped_topics),
+                "topics": grouped_topics,
+            }
+        )
+
+    return {"topics": topic_payloads, "topicGroups": topic_groups}
+
+
+def _topic_api_payload(
+    topic: Any,
+    *,
+    graph_payload: dict[str, Any] | None = None,
+    store: Any | None = None,
+    cards: list[Any] | None = None,
+    evidence: list[Any] | None = None,
+) -> dict[str, Any]:
+    payload = _camel(asdict(topic))
+    summary = _topic_summary(topic, graph_payload=graph_payload, store=store, cards=cards, evidence=evidence)
+    if summary:
+        payload["description"] = summary
+    return payload
+
+
+def _topic_summary(
+    topic: Any,
+    *,
+    graph_payload: dict[str, Any] | None = None,
+    store: Any | None = None,
+    cards: list[Any] | None = None,
+    evidence: list[Any] | None = None,
+) -> str:
+    graph_description = _graph_description(graph_payload)
+    if graph_description:
+        return _truncate_topic_text(graph_description, 150)
+
+    title = getattr(topic, "title", "")
+    topic_evidence = evidence if evidence is not None else _topic_evidence(store, getattr(topic, "evidence_ids", []), limit=6)
+    evidence_snippets = [
+        snippet
+        for item in topic_evidence
+        if (snippet := _topic_focused_text(getattr(item, "evidence_text", ""), title, 150))
+    ]
+    self_contained_evidence = next((snippet for snippet in evidence_snippets if not _starts_with_context_pronoun(snippet)), "")
+    if self_contained_evidence:
+        return self_contained_evidence
+
+    topic_cards = cards if cards is not None else _topic_cards(store, getattr(topic, "card_ids", []), limit=6)
+    card_snippets = [
+        snippet
+        for card in topic_cards
+        if (snippet := _topic_focused_text(getattr(card, "brief", ""), title, 150))
+    ]
+    self_contained_card = next((snippet for snippet in card_snippets if not _starts_with_context_pronoun(snippet)), "")
+    if self_contained_card:
+        return self_contained_card
+    if evidence_snippets:
+        return evidence_snippets[0]
+    if card_snippets:
+        return card_snippets[0]
+
+    for card in topic_cards:
+        brief = _compact_topic_text(getattr(card, "brief", ""))
+        if brief and not _is_template_topic_text(brief, getattr(topic, "title", "")):
+            return _truncate_topic_text(brief, 150)
+
+    return str(getattr(topic, "description", "") or "")
+
+
+def _topic_context_payload(
+    graph_payload: dict[str, Any] | None,
+    *,
+    topic: Any | None = None,
+    evidence: list[Any] | None = None,
+) -> dict[str, Any]:
+    introduction = _graph_description(graph_payload)
+    if not introduction and topic is not None:
+        introduction = _topic_evidence_introduction(topic, evidence=evidence)
+    return {
+        "introduction": _truncate_topic_text(introduction, 900),
+        "graph_relations": _topic_graph_relations(graph_payload),
+    }
+
+
+def _topic_graph_payloads(store: Any, topics: list[Any]) -> dict[str, dict[str, Any]]:
+    names = [str(getattr(topic, "title", "") or "").strip() for topic in topics]
+    if store is not None and hasattr(store, "entity_graph_descriptions_for_names"):
+        try:
+            return {
+                name: {"description": description}
+                for name, description in store.entity_graph_descriptions_for_names(names).items()
+                if description
+            }
+        except KeyError:
+            return {}
+    return _entity_graph_payloads(store, names)
+
+
+def _topic_graph_payload(store: Any, topic: Any, *, cards: list[Any] | None = None) -> dict[str, Any] | None:
+    del cards
+    name = str(getattr(topic, "title", "") or "").strip()
+    if not name:
+        return None
+    return _entity_graph_payloads(store, [name]).get(name)
+
+
+def _entity_graph_payloads(store: Any, names: list[str]) -> dict[str, dict[str, Any]]:
+    if store is None or not hasattr(store, "entity_graph_payloads_for_names"):
+        return {}
+    clean_names = [name for name in dict.fromkeys(str(item or "").strip() for item in names) if name]
+    if not clean_names:
+        return {}
+    try:
+        return store.entity_graph_payloads_for_names(clean_names)
+    except KeyError:
+        return {}
+
+
+def _topic_cards(store: Any | None, card_ids: list[str], *, limit: int) -> list[Any]:
+    if store is None:
+        return []
+    cards: list[Any] = []
+    for card_id in card_ids[:limit]:
+        try:
+            cards.append(store.knowledge_card(card_id))
+        except KeyError:
+            continue
+    return cards
+
+
+def _topic_evidence(store: Any | None, evidence_ids: list[str], *, limit: int) -> list[Any]:
+    if store is None:
+        return []
+    evidence: list[Any] = []
+    for evidence_id in evidence_ids[:limit]:
+        try:
+            evidence.append(store.evidence(evidence_id))
+        except KeyError:
+            continue
+    return evidence
+
+
+def _graph_description(graph_payload: dict[str, Any] | None) -> str:
+    if not graph_payload:
+        return ""
+    return _compact_topic_text(graph_payload.get("description"))
+
+
+def _topic_evidence_introduction(topic: Any, *, evidence: list[Any] | None = None) -> str:
+    title = getattr(topic, "title", "")
+    snippets = [
+        snippet
+        for item in evidence or []
+        if (snippet := _topic_focused_text(getattr(item, "evidence_text", ""), title, 240))
+    ]
+    self_contained = [snippet for snippet in snippets if not _starts_with_context_pronoun(snippet)]
+    return "；".join(_limit_topic_snippets(self_contained or snippets, 4))
+
+
+def _topic_graph_relations(graph_payload: dict[str, Any] | None, *, limit: int = 12) -> list[dict[str, str]]:
+    if not graph_payload:
+        return []
+    relations: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for item in graph_payload.get("neighbors") or []:
+        if not isinstance(item, Mapping):
+            continue
+        name = _compact_topic_text(item.get("name"))
+        if not name or name in seen:
+            continue
+        relationship = _truncate_topic_text(item.get("relationship"), 48)
+        description = _truncate_topic_text(item.get("description"), 180)
+        if not relationship and not description:
+            continue
+        seen.add(name)
+        relations.append({"name": name, "relationship": relationship, "description": description})
+        if len(relations) >= limit:
+            break
+    return relations
+
+
+def _compact_topic_text(value: Any) -> str:
+    return re.sub(r"\s+", " ", _clean_student_text(str(value or ""))).strip()
+
+
+def _truncate_topic_text(value: Any, limit: int) -> str:
+    text = _compact_topic_text(value)
+    if len(text) <= limit:
+        return text
+    boundary = max(text.rfind(mark, 0, limit) for mark in ("。", "；", "！", "？"))
+    if boundary >= limit // 2:
+        return text[: boundary + 1]
+    return text[:limit].rstrip() + "…"
+
+
+def _topic_focused_text(value: Any, title: str, limit: int) -> str:
+    text = _compact_topic_text(value)
+    clean_title = str(title or "").strip()
+    if not text:
+        return ""
+    if not clean_title:
+        return _truncate_topic_text(text, limit)
+    index = text.find(clean_title)
+    if index == -1:
+        return ""
+    sentence_start = max(text.rfind(mark, 0, index) for mark in ("。", "；", "！", "？"))
+    start = sentence_start + 1 if sentence_start >= 0 else 0
+    while start < len(text) and text[start] in " ：，、":
+        start += 1
+    sentence_end_candidates = [text.find(mark, index) for mark in ("。", "；", "！", "？")]
+    sentence_end = min([candidate for candidate in sentence_end_candidates if candidate != -1], default=-1)
+    if sentence_end == -1:
+        sentence_end = min(len(text), start + limit)
+    excerpt = text[start : sentence_end + 1].strip()
+    return _truncate_topic_text(excerpt, limit)
+
+
+def _limit_topic_snippets(snippets: list[str], limit: int) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for snippet in snippets:
+        text = _compact_topic_text(snippet)
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        result.append(text)
+        if len(result) >= limit:
+            break
+    return result
+
+
+def _starts_with_context_pronoun(text: str) -> bool:
+    return text.startswith(("他", "她", "其", "此", "这", "那"))
+
+
+def _is_template_topic_text(text: str, title: str) -> bool:
+    return text.startswith(f"围绕{title}") or text.startswith("围绕相关专题")
 
 
 def _camel(value: Any) -> Any:

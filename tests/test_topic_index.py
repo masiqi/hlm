@@ -104,7 +104,14 @@ def test_build_topic_index_generates_concrete_topics_with_resolvable_references(
     assert any(topic["category"] == "关键事件" and "黛玉葬花" in topic["title"] for topic in result.topics)
     assert any(topic["category"] == "判词命运" and "葬花吟" in topic["title"] for topic in result.topics)
     assert any(topic["category"] == "意象伏笔" and "落花" in topic["title"] for topic in result.topics)
-    assert any(topic["category"] == "可引用事实" for topic in result.topics)
+    assert not any(
+        topic["id"].startswith("topic-auto-") and topic["category"] == "可引用事实"
+        for topic in result.topics
+    )
+    assert not any(
+        topic["id"].startswith("topic-auto-") and topic["title"].endswith("可引用事实")
+        for topic in result.topics
+    )
 
     for topic in result.topics:
         if topic["id"].startswith("topic-auto-"):
@@ -117,10 +124,191 @@ def test_build_topic_index_generates_concrete_topics_with_resolvable_references(
     assert topic_ids
 
 
+def test_build_topic_index_publishes_aggregated_topic_entries_not_leaf_fact_topics():
+    review_cards = []
+    for chapter in range(1, 15):
+        review_cards.append(
+            _review_card(
+                id=f"review-{chapter:03d}",
+                chapter=chapter,
+                characters=[
+                    {
+                        "name": "林黛玉",
+                        "actions": [f"第{chapter}回行动"],
+                        "traits": ["敏感"],
+                        "importance": "反复出现的人物线索",
+                    }
+                ],
+                key_events=[
+                    "黛玉葬花并吟《葬花吟》",
+                    f"只在第{chapter}回出现的一次性细节",
+                ],
+                objects=[{"name": "落花", "meaning": f"第{chapter}回意象"}],
+                literary_texts=[
+                    {
+                        "title": "葬花吟",
+                        "quote": "花谢花飞花满天",
+                        "explanation": f"第{chapter}回命运线索",
+                    }
+                ],
+            )
+        )
+
+    result = build_topic_index(
+        review_cards=review_cards,
+        topics=[],
+        evidence=[],
+        knowledge_cards=[],
+        graph_relations=[],
+    )
+    generated_topics = [topic for topic in result.topics if topic["id"].startswith("topic-auto-")]
+
+    assert len(generated_topics) <= 180
+    assert any(topic["title"] == "林黛玉" for topic in generated_topics)
+    assert any(topic["title"] == "黛玉葬花" for topic in generated_topics)
+    assert any(topic["title"] == "葬花吟" for topic in generated_topics)
+    assert any(topic["title"] == "落花" for topic in generated_topics)
+    assert not any(topic["category"] == "可引用事实" for topic in generated_topics)
+    assert not any(topic["title"].endswith("可引用事实") for topic in generated_topics)
+    category_titles = [(topic["category"], topic["title"]) for topic in generated_topics]
+    assert len(category_titles) == len(set(category_titles))
+
+
+def test_build_topic_index_filters_title_only_key_event_fragments():
+    review_cards = [
+        _review_card(
+            id=f"review-{chapter:03d}",
+            chapter=chapter,
+            key_events=[f"第{chapter}回众人闲谈一件过场小事"],
+            characters=[],
+            relationships=[],
+            objects=[],
+            literary_texts=[],
+            later_associations=[],
+        )
+        for chapter in range(1, 40)
+    ]
+    review_cards.extend(
+        [
+            _review_card(
+                id="review-101",
+                chapter=101,
+                key_events=["宝钗夜拟菊花题，筹划螃蟹宴"],
+                characters=[],
+                relationships=[],
+                objects=[],
+                literary_texts=[],
+                later_associations=[],
+            ),
+            _review_card(
+                id="review-102",
+                chapter=102,
+                key_events=["藕香榭螃蟹宴赏桂"],
+                characters=[],
+                relationships=[],
+                objects=[],
+                literary_texts=[],
+                later_associations=[],
+            ),
+            _review_card(
+                id="review-103",
+                chapter=103,
+                plain_summary="芒种节众人祭饯花神，黛玉葬花并吟《葬花吟》，宝玉听后恸倒，二人的情感误会也由此展开。",
+                key_events=["黛玉葬花并吟《葬花吟》"],
+                characters=[],
+                relationships=[],
+                objects=[],
+                literary_texts=[],
+                later_associations=[],
+            ),
+        ]
+    )
+
+    result = build_topic_index(review_cards, [], [], [], [])
+
+    event_titles = {
+        topic["title"]
+        for topic in result.topics
+        if topic["id"].startswith("topic-auto-") and topic["category"] == "关键事件"
+    }
+    assert "螃蟹宴" in event_titles
+    assert "黛玉葬花" in event_titles
+    assert not any(title.startswith("第") and "过场小事" in title for title in event_titles)
+    daiyu_topic = next(topic for topic in result.topics if topic["title"] == "黛玉葬花" and topic["category"] == "关键事件")
+    evidence_by_id = {item["id"]: item for item in result.evidence}
+    daiyu_evidence = [evidence_by_id[evidence_id]["evidence_text"] for evidence_id in daiyu_topic["evidence_ids"]]
+    assert any("宝玉听后恸倒" in text for text in daiyu_evidence)
+
+
+def test_build_topic_index_does_not_publish_empty_seed_category_placeholders():
+    seed_topic = {
+        "id": "topic-character-relations",
+        "title": "人物关系",
+        "category": "人物关系",
+        "description": "围绕身份、别称、称谓、亲属、主仆、婚恋和对照关系组织。",
+        "card_ids": ["card-lindaiyu", "card-jiatanchun"],
+        "relation_ids": [],
+        "typical_question_patterns": ["说明人物关系及章回依据"],
+        "quotable_fact_ids": [],
+        "evidence_ids": [],
+    }
+
+    result = build_topic_index([_review_card()], [seed_topic], [], [], [])
+
+    assert all(topic["id"] != "topic-character-relations" for topic in result.topics)
+    assert all(topic["title"] != "人物关系" for topic in result.topics)
+
+
+def test_build_topic_index_character_topics_collect_related_relations():
+    review_card = _review_card(
+        characters=[
+            {
+                "name": "司棋",
+                "actions": ["被搜出私情证物"],
+                "traits": ["刚烈"],
+                "importance": "大观园丫鬟悲剧线索",
+            },
+            {
+                "name": "潘又安",
+                "actions": ["与司棋私相往来"],
+                "traits": ["痴情"],
+                "importance": "司棋私情线索中的关键人物",
+            },
+        ],
+        relationships=[
+            {
+                "source": "潘又安",
+                "type": "私情",
+                "target": "司棋",
+                "description": "潘又安与司棋互有情意。",
+                "chapter_evidence": "抄检时搜出潘又安给司棋的书信。",
+            },
+            {
+                "source": "司棋",
+                "type": "主使",
+                "target": "莲花儿",
+                "description": "司棋因厨房小事指使莲花儿传话。",
+                "chapter_evidence": "莲花儿添话引出厨房风波。",
+            },
+        ],
+    )
+
+    result = build_topic_index([review_card], [], [], [], [])
+    siqi_topic = next(topic for topic in result.topics if topic["title"] == "司棋")
+    relation_descriptions = {
+        relation["id"]: relation["description"]
+        for relation in result.graph_relations
+    }
+
+    assert len(siqi_topic["relation_ids"]) >= 2
+    assert any("潘又安与司棋" in relation_descriptions[relation_id] for relation_id in siqi_topic["relation_ids"])
+    assert any("司棋与莲花儿" in relation_descriptions[relation_id] for relation_id in siqi_topic["relation_ids"])
+
+
 def test_build_topic_index_preserves_seed_records_and_is_idempotent():
     seed_topic = {
-        "id": "topic-image-foreshadowing",
-        "title": "意象伏笔",
+        "id": "topic-curated-image-foreshadowing",
+        "title": "手工整理的意象伏笔",
         "category": "意象伏笔",
         "description": "围绕物件、花木、诗文和跨章照应组织。",
         "card_ids": [],
@@ -143,7 +331,7 @@ def test_build_topic_index_preserves_seed_records_and_is_idempotent():
     assert first.evidence == second.evidence
     assert first.knowledge_cards == second.knowledge_cards
     assert first.graph_relations == second.graph_relations
-    assert any(topic["id"] == "topic-image-foreshadowing" for topic in second.topics)
+    assert any(topic["id"] == "topic-curated-image-foreshadowing" for topic in second.topics)
 
 
 def test_build_topic_index_rejects_forbidden_student_terms():
