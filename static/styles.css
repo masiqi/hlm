@@ -27,6 +27,7 @@ button {
   background: #fff;
   color: #1f2933;
   cursor: pointer;
+  padding: 0 12px;
 }
 
 main {
@@ -46,6 +47,17 @@ main {
 .ask-row {
   display: grid;
   grid-template-columns: 1fr 120px;
+  gap: 8px;
+}
+
+.ask-box,
+.home-actions {
+  margin-bottom: 20px;
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

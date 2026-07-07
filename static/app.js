@@ -781,18 +781,30 @@ async function loadTopics() {
         `<article><h3>${escapeHtml(topic.title)}</h3><p>${escapeHtml(topic.description)}</p><button data-topic-id="${escapeHtml(topic.id)}">查看专题</button></article>`,
     )
     .join("");
+  document.querySelector(panelContentSelector("#topic-knowledge-panel")).innerHTML = "";
+  closeKnowledgePanel("topic-knowledge-panel");
+}
+
+function renderChapterJumpButton(label, chapter, labelIsEscaped = false) {
+  const chapterNumber = Number(chapter);
+  const text = labelIsEscaped ? label : escapeHtml(label);
+  if (!Number.isInteger(chapterNumber) || chapterNumber < 1) return text;
+  return `<button class="text-link" data-chapter-number="${escapeHtml(chapterNumber)}">${text}</button>`;
 }
 
 async function loadTopicDetail(topicId) {
   const data = await getJson(`/api/topics/${topicId}`);
   const cards = data.cards.map((card) => `<li><button data-card-id="${escapeHtml(card.id)}">${escapeHtml(card.name)}</button></li>`).join("");
-  const relations = data.relations.map((relation) => `<li>${escapeHtml(relation.description)}</li>`).join("");
+  const relations = data.relations
+    .map((relation) => `<li>${renderChapterJumpButton(escapeHtml(relation.description), relation.chapters?.[0], true)}</li>`)
+    .join("");
   const facts = data.evidence
-    .map((item) => `<li class="source">第 ${escapeHtml(item.chapter)} 回：${escapeHtml(item.evidenceText)}</li>`)
+    .map((item) => `<li class="source">${renderChapterJumpButton(`第 ${item.chapter || ""} 回：${item.evidenceText}`, item.chapter)}</li>`)
     .join("");
   const patterns = data.topic.typicalQuestionPatterns.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   document.querySelector("#topic-list").innerHTML = `
     <article>
+      <button data-topic-list-return type="button">返回专题</button>
       <h3>${escapeHtml(data.topic.title)}</h3>
       <p>${escapeHtml(data.topic.description)}</p>
       <h4>核心知识卡</h4>
@@ -824,6 +836,7 @@ document.addEventListener("click", (event) => {
   const sourceNeedleTarget = target.closest("[data-source-needle]");
   const traceChapterTarget = target.closest("[data-trace-chapter-number]");
   const panelCloseTarget = target.closest("[data-panel-close]");
+  const topicListReturnTarget = target.closest("[data-topic-list-return]");
   if (viewTarget) {
     showView(viewTarget.dataset.view);
     if (viewTarget.dataset.view === "chapters") loadChapter();
@@ -848,6 +861,10 @@ document.addEventListener("click", (event) => {
   if (topicTarget) {
     showView("topics");
     loadTopicDetail(topicTarget.dataset.topicId);
+  }
+  if (topicListReturnTarget) {
+    showView("topics");
+    loadTopics();
   }
   if (chapterTarget) {
     showView("chapters");
