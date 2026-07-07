@@ -1,6 +1,12 @@
 import json
+import subprocess
+import sys
+from pathlib import Path
 
 from hlm_kg.topic_index import build_topic_index
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _review_card(**overrides):
@@ -66,6 +72,18 @@ def _seed_topic():
         "quotable_fact_ids": [],
         "evidence_ids": [],
     }
+
+
+def _write_cli_inputs(tmp_path):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    review_cards_path = tmp_path / "chapter_review_cards.json"
+    review_cards_path.write_text(json.dumps([_review_card()], ensure_ascii=False), encoding="utf-8")
+    (data_dir / "topics.json").write_text(json.dumps([_seed_topic()], ensure_ascii=False), encoding="utf-8")
+    (data_dir / "evidence.json").write_text("[]", encoding="utf-8")
+    (data_dir / "knowledge_cards.json").write_text("[]", encoding="utf-8")
+    (data_dir / "graph_relations.json").write_text("[]", encoding="utf-8")
+    return data_dir, review_cards_path
 
 
 def test_build_topic_index_generates_concrete_topics_with_resolvable_references():
@@ -145,16 +163,9 @@ def test_build_topic_index_rejects_forbidden_student_terms():
 def test_build_topic_index_cli_dry_run_does_not_write(tmp_path, capsys):
     from scripts.build_topic_index import main
 
-    data_dir = tmp_path / "data"
-    data_dir.mkdir()
-    review_cards_path = tmp_path / "chapter_review_cards.json"
+    data_dir, review_cards_path = _write_cli_inputs(tmp_path)
     topics_path = data_dir / "topics.json"
-    original_topics = [_seed_topic()]
-    review_cards_path.write_text(json.dumps([_review_card()], ensure_ascii=False), encoding="utf-8")
-    topics_path.write_text(json.dumps(original_topics, ensure_ascii=False), encoding="utf-8")
-    (data_dir / "evidence.json").write_text("[]", encoding="utf-8")
-    (data_dir / "knowledge_cards.json").write_text("[]", encoding="utf-8")
-    (data_dir / "graph_relations.json").write_text("[]", encoding="utf-8")
+    original_topics = json.loads(topics_path.read_text(encoding="utf-8"))
 
     exit_code = main(["--data-dir", str(data_dir), "--review-cards", str(review_cards_path)])
 
@@ -168,15 +179,7 @@ def test_build_topic_index_cli_dry_run_does_not_write(tmp_path, capsys):
 def test_build_topic_index_cli_write_updates_topic_index_files(tmp_path):
     from scripts.build_topic_index import main
 
-    data_dir = tmp_path / "data"
-    data_dir.mkdir()
-    review_cards_path = tmp_path / "chapter_review_cards.json"
-    seed_topic = _seed_topic()
-    review_cards_path.write_text(json.dumps([_review_card()], ensure_ascii=False), encoding="utf-8")
-    (data_dir / "topics.json").write_text(json.dumps([seed_topic], ensure_ascii=False), encoding="utf-8")
-    (data_dir / "evidence.json").write_text("[]", encoding="utf-8")
-    (data_dir / "knowledge_cards.json").write_text("[]", encoding="utf-8")
-    (data_dir / "graph_relations.json").write_text("[]", encoding="utf-8")
+    data_dir, review_cards_path = _write_cli_inputs(tmp_path)
 
     exit_code = main(["--data-dir", str(data_dir), "--review-cards", str(review_cards_path), "--write"])
 
@@ -190,3 +193,25 @@ def test_build_topic_index_cli_write_updates_topic_index_files(tmp_path):
     assert any(item["id"].startswith("ev-topic-auto-") for item in evidence)
     assert any(item["id"].startswith("card-topic-auto-") for item in cards)
     assert any(item["id"].startswith("rel-topic-auto-") for item in relations)
+
+
+def test_build_topic_index_script_runs_directly_from_project_root(tmp_path):
+    data_dir, review_cards_path = _write_cli_inputs(tmp_path)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "build_topic_index.py"),
+            "--data-dir",
+            str(data_dir),
+            "--review-cards",
+            str(review_cards_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "dry-run" in completed.stdout
