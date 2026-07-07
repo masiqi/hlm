@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run validate-samples generate-chapter-cards generate-all-chapter-materials import-chapter-cards build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed sync-chapter-card-postgres build-entity-trace-cache build-entity-graph-cache sync-entity-graph-cache-postgres build-static-chapter-cache
+.PHONY: help env split-chapters analyze-questions dry-run validate-samples generate-chapter-cards generate-all-chapter-materials import-chapter-cards build-topic-index build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed sync-chapter-card-postgres build-entity-trace-cache build-entity-graph-cache sync-entity-graph-cache-postgres build-static-chapter-cache
 
 help:
 	@echo "Targets:"
@@ -10,6 +10,7 @@ help:
 	@echo "  make generate-chapter-cards ARGS='--chapters 3,5,8'"
 	@echo "  make generate-all-chapter-materials ARGS='--chapters 1-120'"
 	@echo "  make import-chapter-cards INPUT=cards.json OUTPUT=data/app/chapter_review_cards.json DATA_DIR=data/app"
+	@echo "  make build-topic-index Build the evidence-backed topic index from chapter cards"
 	@echo "  make lightrag-up       Start LightRAG Server/WebUI with Docker Compose"
 	@echo "  make build-kg          Run real scan/indexing flow against LightRAG"
 	@echo "  make test              Run local tests"
@@ -46,6 +47,9 @@ generate-all-chapter-materials:
 
 import-chapter-cards:
 	python scripts/import_chapter_cards.py $(INPUT) $(OUTPUT) $(or $(DATA_DIR),data/app)
+
+build-topic-index:
+	python scripts/build_topic_index.py --data-dir data/app --review-cards data/app/chapter_review_cards.json --write
 
 lightrag-up: env
 	docker compose up -d lightrag

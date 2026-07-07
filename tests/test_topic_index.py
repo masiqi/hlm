@@ -1,3 +1,5 @@
+import json
+
 from hlm_kg.topic_index import build_topic_index
 
 
@@ -50,6 +52,20 @@ def _review_card(**overrides):
     }
     card.update(overrides)
     return card
+
+
+def _seed_topic():
+    return {
+        "id": "topic-seed",
+        "title": "种子专题",
+        "category": "可引用事实",
+        "description": "保留人工整理。",
+        "card_ids": [],
+        "relation_ids": [],
+        "typical_question_patterns": [],
+        "quotable_fact_ids": [],
+        "evidence_ids": [],
+    }
 
 
 def test_build_topic_index_generates_concrete_topics_with_resolvable_references():
@@ -124,3 +140,53 @@ def test_build_topic_index_rejects_forbidden_student_terms():
     combined = str(result.topics) + str(result.evidence) + str(result.knowledge_cards) + str(result.graph_relations)
     assert "题库" not in combined
     assert result.summary["skipped_candidates"] >= 1
+
+
+def test_build_topic_index_cli_dry_run_does_not_write(tmp_path, capsys):
+    from scripts.build_topic_index import main
+
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    review_cards_path = tmp_path / "chapter_review_cards.json"
+    topics_path = data_dir / "topics.json"
+    original_topics = [_seed_topic()]
+    review_cards_path.write_text(json.dumps([_review_card()], ensure_ascii=False), encoding="utf-8")
+    topics_path.write_text(json.dumps(original_topics, ensure_ascii=False), encoding="utf-8")
+    (data_dir / "evidence.json").write_text("[]", encoding="utf-8")
+    (data_dir / "knowledge_cards.json").write_text("[]", encoding="utf-8")
+    (data_dir / "graph_relations.json").write_text("[]", encoding="utf-8")
+
+    exit_code = main(["--data-dir", str(data_dir), "--review-cards", str(review_cards_path)])
+
+    assert exit_code == 0
+    assert json.loads(topics_path.read_text(encoding="utf-8")) == original_topics
+    output = capsys.readouterr().out
+    assert "dry-run" in output
+    assert "generated_topics" in output
+
+
+def test_build_topic_index_cli_write_updates_topic_index_files(tmp_path):
+    from scripts.build_topic_index import main
+
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    review_cards_path = tmp_path / "chapter_review_cards.json"
+    seed_topic = _seed_topic()
+    review_cards_path.write_text(json.dumps([_review_card()], ensure_ascii=False), encoding="utf-8")
+    (data_dir / "topics.json").write_text(json.dumps([seed_topic], ensure_ascii=False), encoding="utf-8")
+    (data_dir / "evidence.json").write_text("[]", encoding="utf-8")
+    (data_dir / "knowledge_cards.json").write_text("[]", encoding="utf-8")
+    (data_dir / "graph_relations.json").write_text("[]", encoding="utf-8")
+
+    exit_code = main(["--data-dir", str(data_dir), "--review-cards", str(review_cards_path), "--write"])
+
+    assert exit_code == 0
+    topics = json.loads((data_dir / "topics.json").read_text(encoding="utf-8"))
+    evidence = json.loads((data_dir / "evidence.json").read_text(encoding="utf-8"))
+    cards = json.loads((data_dir / "knowledge_cards.json").read_text(encoding="utf-8"))
+    relations = json.loads((data_dir / "graph_relations.json").read_text(encoding="utf-8"))
+    assert any(topic["id"] == "topic-seed" for topic in topics)
+    assert any(topic["id"].startswith("topic-auto-") for topic in topics)
+    assert any(item["id"].startswith("ev-topic-auto-") for item in evidence)
+    assert any(item["id"].startswith("card-topic-auto-") for item in cards)
+    assert any(item["id"].startswith("rel-topic-auto-") for item in relations)
