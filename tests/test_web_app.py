@@ -2182,6 +2182,26 @@ def test_api_topics_returns_five_categories():
     }
 
 
+def test_api_generated_topic_detail_returns_evidence_backed_content():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+    )
+    topic_id = next(
+        topic.id
+        for topic in context.store.topics
+        if topic.id.startswith("topic-auto-") and topic.evidence_ids
+    )
+
+    status, payload = handle_api_request(context, "GET", f"/api/topics/{topic_id}")
+
+    assert status == 200
+    assert payload["topic"]["id"] == topic_id
+    assert payload["evidence"]
+    assert payload["evidence"][0]["chapter"]
+
+
 def test_api_card_returns_student_facing_knowledge_panel_payload():
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),

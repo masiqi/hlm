@@ -204,6 +204,20 @@ def test_content_store_exposes_seed_knowledge_cards_relations_topics_and_entries
     assert any(entry["id"] == "entry-daiyu-burying-flowers" for entry in store.common_entries)
 
 
+def test_content_store_exposes_generated_topic_library():
+    store = ContentStore.from_paths(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+    )
+
+    generated_topics = [topic for topic in store.topics if topic.id.startswith("topic-auto-")]
+
+    assert len(generated_topics) >= 50
+    assert any(topic.category == "判词命运" for topic in generated_topics)
+    assert any(topic.title == "林黛玉" for topic in generated_topics)
+    assert any("葬花" in topic.title for topic in generated_topics)
+
+
 def test_common_entries_support_routing_targets():
     store = ContentStore.from_paths(
         manifest_path=Path("book/chapters_manifest.json"),
