@@ -28,6 +28,7 @@ class PostgresContentStore:
         self._review_card_scan_cache: list[ChapterReviewCard] | None = None
         self._entity_trace_chapter_cache: dict[int, dict[str, dict[str, Any]]] = {}
         self._entity_graph_cache: dict[str, dict[str, Any]] = {}
+        self._entity_graph_description_cache: dict[str, str] = {}
 
     def chapter(self, number: int) -> Chapter:
         row = self._fetchone("SELECT * FROM chapters WHERE number = %s", (number,))
@@ -80,7 +81,7 @@ class PostgresContentStore:
         return {item.id: item for item in self._all_evidence()}
 
     def evidence(self, evidence_id: str) -> Evidence:
-        row = self._fetchone(
+        row = self._maybe_one(
             """
             SELECT e.*, c.number AS chapter_number
             FROM evidence e
@@ -89,10 +90,18 @@ class PostgresContentStore:
             """,
             (evidence_id,),
         )
+        if row is None:
+            if self.fallback_store is not None:
+                return self.fallback_store.evidence(evidence_id)
+            raise KeyError(evidence_id)
         return _evidence_from_row(row)
 
     def knowledge_card(self, card_id: str) -> KnowledgeCard:
-        row = self._fetchone("SELECT * FROM entities WHERE id = %s", (card_id,))
+        row = self._maybe_one("SELECT * FROM entities WHERE id = %s", (card_id,))
+        if row is None:
+            if self.fallback_store is not None:
+                return self.fallback_store.knowledge_card(card_id)
+            raise KeyError(card_id)
         metadata = dict(row["metadata"] or {})
         return KnowledgeCard(
             id=str(row["id"]),
@@ -112,7 +121,11 @@ class PostgresContentStore:
         return self.fallback_store.topic(topic_id)
 
     def graph_relation(self, relation_id: str) -> GraphRelation:
-        row = self._fetchone("SELECT * FROM relations WHERE id = %s", (relation_id,))
+        row = self._maybe_one("SELECT * FROM relations WHERE id = %s", (relation_id,))
+        if row is None:
+            if self.fallback_store is not None:
+                return self.fallback_store.graph_relation(relation_id)
+            raise KeyError(relation_id)
         return _relation_from_row(row)
 
     def annotations_for_chapter(self, number: int) -> list[ChapterAnnotation]:
@@ -236,6 +249,29 @@ class PostgresContentStore:
             name: dict(self._entity_graph_cache[name])
             for name in unique_names
             if name in self._entity_graph_cache
+        }
+
+    def entity_graph_descriptions_for_names(self, names: list[str]) -> dict[str, str]:
+        clean_names = [str(name or "").strip() for name in names if str(name or "").strip()]
+        unique_names = list(dict.fromkeys(clean_names))
+        missing_names = [name for name in unique_names if name not in self._entity_graph_description_cache]
+        if missing_names:
+            rows = self._fetchall(
+                """
+                SELECT entity_name, description
+                FROM entity_graph_cache
+                WHERE entity_name = ANY(%s)
+                """,
+                (missing_names,),
+            )
+            for row in rows:
+                description = str(row.get("description") or "").strip()
+                if description:
+                    self._entity_graph_description_cache[str(row["entity_name"])] = description
+        return {
+            name: self._entity_graph_description_cache[name]
+            for name in unique_names
+            if name in self._entity_graph_description_cache
         }
 
     @property

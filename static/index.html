@@ -4,26 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>红楼梦阅读助手</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=topic-context" />
   </head>
   <body>
     <header class="topbar">
       <h1>红楼梦阅读助手</h1>
       <nav aria-label="主导航">
-        <button data-view="ask">问一问</button>
-        <button data-view="chapters">读章节</button>
-        <button data-view="topics">看专题</button>
+        <button data-view="ask" type="button">问一问</button>
+        <button data-view="chapters" type="button">读一读</button>
+        <button data-view="topics" type="button">看专题</button>
       </nav>
     </header>
     <main>
       <section id="home" class="view active">
-        <form id="ask-form" class="ask-box">
-          <label for="question">输入你对《红楼梦》的疑问</label>
-          <div class="ask-row">
-            <input id="question" name="question" autocomplete="off" />
-            <button type="submit">查找依据</button>
-          </div>
-        </form>
+        <div class="home-actions" aria-label="主要入口">
+          <button data-view="ask" type="button">问一问</button>
+          <button data-target-type="chapter" data-target="1" type="button">读一读</button>
+          <button data-view="topics" type="button">看专题</button>
+        </div>
         <section>
           <h2>常见理解入口</h2>
           <div id="common-entries" class="entry-grid"></div>
@@ -31,10 +29,17 @@
       </section>
       <section id="ask" class="view">
         <h2>问一问</h2>
+        <form id="ask-form" class="ask-box">
+          <label for="question">输入你对《红楼梦》的疑问</label>
+          <div class="ask-row">
+            <input id="question" name="question" autocomplete="off" />
+            <button type="submit">查找依据</button>
+          </div>
+        </form>
         <div id="answer"></div>
       </section>
       <section id="chapters" class="view">
-        <h2>读章节</h2>
+        <h2>读一读</h2>
         <div class="chapter-toolbar">
           <button id="previous-chapter" type="button" data-chapter-step="-1">上一回</button>
           <label for="chapter-select">选择章回</label>
@@ -51,13 +56,13 @@
       </section>
       <section id="topics" class="view">
         <h2>看专题</h2>
-        <div id="topic-list" class="topic-grid"></div>
+        <div id="topic-list" class="topic-groups"></div>
         <aside id="topic-knowledge-panel" class="knowledge-panel">
           <button class="panel-close" data-panel-close="topic-knowledge-panel" type="button">关闭</button>
           <div class="knowledge-panel-content"></div>
         </aside>
       </section>
     </main>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=topic-router"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-from hlm_kg.domain import ChapterAnnotation, TraceItem
+from hlm_kg.domain import ChapterAnnotation, Evidence, GraphRelation, KnowledgeCard, TraceItem
 from hlm_kg.postgres_store import PostgresContentStore
 
 
@@ -216,6 +216,89 @@ def test_postgres_store_reads_entity_graph_payloads_for_names():
             "metadata": {"source": "lightrag_graph"},
         }
     }
+
+
+def test_postgres_store_reads_lightweight_entity_graph_descriptions_for_names():
+    calls = []
+
+    def fetcher(query, params):
+        calls.append((query, params))
+        assert params == (["顽石", "通灵宝玉"],)
+        assert "raw_graph" not in query
+        assert "neighbors" not in query
+        return [
+            {
+                "entity_name": "顽石",
+                "description": "无才补天被弃于青埂峰下的石头。",
+            }
+        ]
+
+    store = PostgresContentStore("postgresql://unused", fetcher=fetcher)
+
+    payloads = store.entity_graph_descriptions_for_names(["顽石", "通灵宝玉"])
+
+    assert len(calls) == 1
+    assert "entity_graph_cache" in calls[0][0]
+    assert payloads == {"顽石": "无才补天被弃于青埂峰下的石头。"}
+
+
+def test_postgres_store_falls_back_for_generated_topic_detail_records():
+    fallback_card = KnowledgeCard(
+        id="card-topic-auto-person-lindaiyu",
+        name="林黛玉",
+        type="person",
+        brief="林黛玉相关人物。",
+        text_understanding=[],
+        understanding_angles=[],
+        graph_relation_ids=[],
+        evidence_ids=["ev-topic-auto-ch027-characters-000-lindaiyu"],
+        related_card_ids=[],
+    )
+    fallback_evidence = Evidence(
+        id="ev-topic-auto-ch027-characters-000-lindaiyu",
+        source_type="processed_material",
+        chapter=27,
+        location="第 27 回章节资料：characters",
+        quote=None,
+        evidence_text="林黛玉：葬花并吟诗。",
+        entity_ids=[fallback_card.id],
+        relation_id=None,
+        confidence="explicit",
+        provenance="data/app/chapter_review_cards.json:review-027:characters:0",
+        derived_from_ids=[],
+    )
+    fallback_relation = GraphRelation(
+        id="rel-topic-auto-ch027-lindaiyu-flower-00",
+        subject_id=fallback_card.id,
+        predicate="image",
+        object_id="card-topic-auto-image-flower",
+        chapters=[27],
+        evidence_ids=[fallback_evidence.id],
+        provenance="curated",
+        description="林黛玉与落花的意象关系。",
+    )
+
+    class FallbackStore:
+        def knowledge_card(self, card_id):
+            assert card_id == fallback_card.id
+            return fallback_card
+
+        def evidence(self, evidence_id):
+            assert evidence_id == fallback_evidence.id
+            return fallback_evidence
+
+        def graph_relation(self, relation_id):
+            assert relation_id == fallback_relation.id
+            return fallback_relation
+
+    def fetcher(query, params):
+        return []
+
+    store = PostgresContentStore("postgresql://unused", fallback_store=FallbackStore(), fetcher=fetcher)
+
+    assert store.knowledge_card(fallback_card.id) == fallback_card
+    assert store.evidence(fallback_evidence.id) == fallback_evidence
+    assert store.graph_relation(fallback_relation.id) == fallback_relation
 
 
 def test_postgres_store_preserves_expanded_review_card_fields_from_raw_card():

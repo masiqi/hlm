@@ -68,19 +68,28 @@ def build_entity_graph_cache_for_context(
     max_nodes: int = 100,
     existing: dict[str, Any] | None = None,
     skip_existing: bool = False,
+    include_topic_titles: bool = False,
 ) -> dict[str, dict[str, Any]]:
     if context.retrieval_client is None or not hasattr(context.retrieval_client, "graph"):
         raise RuntimeError("LIGHTRAG_BASE_URL is not set; cannot build entity graph cache")
 
     cache: dict[str, dict[str, Any]] = dict(existing or {})
-    names = entity_names_for_chapters(context.store, chapters)
+    names = graph_cache_names_for_store(context.store, chapters, include_topic_titles=include_topic_titles)
     for index, name in enumerate(names, start=1):
         if skip_existing and isinstance(cache.get(name), dict):
             print(f"[{index}/{len(names)}] skipped graph cache: {name}", flush=True)
             continue
         print(f"[{index}/{len(names)}] fetching graph cache: {name}", flush=True)
-        graph = context.retrieval_client.graph(name, max_depth=max_depth, max_nodes=max_nodes)
-        cache[name] = graph_payload_from_lightrag_graph(name, graph)
+        payload = graph_payload_for_name(
+            context.retrieval_client,
+            name,
+            max_depth=max_depth,
+            max_nodes=max_nodes,
+        )
+        if payload is None:
+            print(f"[{index}/{len(names)}] skipped empty graph cache: {name}", flush=True)
+            continue
+        cache[name] = payload
     return cache
 
 
@@ -97,8 +106,51 @@ def entity_names_for_chapters(store: Any, chapters: list[int]) -> list[str]:
     return list(dict.fromkeys(names))
 
 
+def graph_cache_names_for_store(store: Any, chapters: list[int], *, include_topic_titles: bool = False) -> list[str]:
+    names = entity_names_for_chapters(store, chapters)
+    if include_topic_titles:
+        for topic in getattr(store, "topics", []):
+            if isinstance(topic, Mapping):
+                title = str(topic.get("title") or "").strip()
+            else:
+                title = str(getattr(topic, "title", "") or "").strip()
+            if title:
+                names.append(title)
+    return list(dict.fromkeys(names))
+
+
 def entity_graph_cache_rows(cache: Any) -> list[dict[str, Any]]:
     return _import_entity_graph_cache_rows(cache)
+
+
+def graph_payload_for_name(client: Any, name: str, *, max_depth: int, max_nodes: int) -> dict[str, Any] | None:
+    graph = client.graph(name, max_depth=max_depth, max_nodes=max_nodes)
+    payload = graph_payload_from_lightrag_graph(name, graph)
+    if graph_payload_has_content(payload):
+        return payload
+    if not hasattr(client, "search_labels"):
+        return None
+    for label in client.search_labels(name, limit=5):
+        candidate_label = str(label or "").strip()
+        if not candidate_label or candidate_label == name:
+            continue
+        graph = client.graph(candidate_label, max_depth=max_depth, max_nodes=max_nodes)
+        payload = graph_payload_from_lightrag_graph(candidate_label, graph)
+        if graph_payload_has_content(payload):
+            metadata = dict(payload.get("metadata") or {})
+            metadata["requested_label"] = name
+            metadata["source_label"] = candidate_label
+            payload["metadata"] = metadata
+            return payload
+    return None
+
+
+def graph_payload_has_content(payload: Mapping[str, Any]) -> bool:
+    return bool(
+        str(payload.get("description") or "").strip()
+        or payload.get("neighbors")
+        or payload.get("extended_neighbors")
+    )
 
 
 def names_to_sync(selected_names: list[str], existing: dict[str, Any], *, skip_existing: bool) -> list[str]:
@@ -302,7 +354,7 @@ def _context_with_lightrag_timeout(context: Any, *, timeout_seconds: float | Non
     )
 
 
-def main(argv: list[str] | None = None) -> int:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build page-ready entity graph detail cache from LightRAG /graphs.")
     parser.add_argument("--chapters", default="1-3", help="Chapter selection, e.g. 1-3 or 1,2,3.")
     parser.add_argument("--manifest", type=Path, default=Path("book/chapters_manifest.json"))
@@ -316,8 +368,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-depth", type=int, default=1)
     parser.add_argument("--max-nodes", type=int, default=100)
     parser.add_argument("--lightrag-timeout", type=float, default=None, help="Override LightRAG request timeout in seconds.")
-    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    parser.add_argument(
+        "--include-topic-titles",
+        action="store_true",
+        help="Also fetch graph cache entries for published topic titles such as 螃蟹宴.",
+    )
+    return parser.parse_args(sys.argv[1:] if argv is None else argv)
 
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     try:
         chapters = parse_chapter_selection(args.chapters)
         context = create_app_context(
@@ -330,7 +390,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         context = _context_with_lightrag_timeout(context, timeout_seconds=args.lightrag_timeout)
         existing = {} if args.replace else read_cache(args.output)
-        selected_names = entity_names_for_chapters(context.store, chapters)
+        selected_names = graph_cache_names_for_store(
+            context.store,
+            chapters,
+            include_topic_titles=args.include_topic_titles,
+        )
         sync_names = names_to_sync(selected_names, existing, skip_existing=args.skip_existing)
         cache = build_entity_graph_cache_for_context(
             context=context,
@@ -339,6 +403,7 @@ def main(argv: list[str] | None = None) -> int:
             max_nodes=args.max_nodes,
             existing=existing,
             skip_existing=args.skip_existing,
+            include_topic_titles=args.include_topic_titles,
         )
         write_cache(args.output, cache)
         if args.sync_postgres:

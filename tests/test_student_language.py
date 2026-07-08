@@ -30,8 +30,30 @@ def test_static_ui_contains_three_entry_points():
     html = Path("static/index.html").read_text(encoding="utf-8")
 
     assert "问一问" in html
-    assert "读章节" in html
+    assert "读一读" in html
+    assert "读章节" not in html
     assert "看专题" in html
+
+
+def test_static_home_contains_primary_navigation_entries():
+    html = Path("static/index.html").read_text(encoding="utf-8")
+    home = html[html.index('<section id="home"') : html.index('<section id="ask"')]
+
+    assert 'class="home-actions"' in home
+    assert '<button data-view="ask" type="button">问一问</button>' in home
+    assert '<button data-target-type="chapter" data-target="1" type="button">读一读</button>' in home
+    assert '<button data-view="topics" type="button">看专题</button>' in home
+
+
+def test_static_ask_view_contains_question_form():
+    html = Path("static/index.html").read_text(encoding="utf-8")
+    home = html[html.index('<section id="home"') : html.index('<section id="ask"')]
+    ask = html[html.index('<section id="ask"') : html.index('<section id="chapters"')]
+
+    assert 'id="ask-form"' not in home
+    assert 'id="ask-form"' in ask
+    assert 'id="question"' in ask
+    assert 'id="answer"' in ask
 
 
 def test_static_ui_has_no_account_or_history_features():
@@ -94,7 +116,7 @@ def test_static_chapter_view_has_chapter_selector():
     assert 'for="chapter-select"' in html
     assert "initChapterSelector" in js
     assert "for (let number = 1; number <= 120; number += 1)" in js
-    assert 'loadChapter(Number(event.currentTarget.value))' in js
+    assert 'navigate({ view: "chapters", chapterNumber: Number(event.currentTarget.value) })' in js
     assert "chapterSelect.value = String(data.chapter.number)" in js
     assert "async function loadChapter(number = 1)" in js
     assert "updateChapterNavigation" in js
@@ -148,6 +170,21 @@ def test_static_ask_view_renders_answer_states_and_continuation_links():
     assert "data-chapter-number" in js
     assert "data-card-id" in js
     assert "data-topic-id" in js
+
+
+def test_static_topic_detail_renders_real_navigation_buttons():
+    js = Path("static/app.js").read_text(encoding="utf-8")
+    helper_start = js.index("function renderChapterJumpButton")
+    start = js.index("async function loadTopicDetail")
+    end = js.index("document.addEventListener", start)
+    topic_helpers = js[helper_start:end]
+    topic_detail = js[start:end]
+
+    assert "renderChapterJumpButton" in topic_detail
+    assert "relation.chapters?.[0]" in topic_detail
+    assert "item.chapter" in topic_detail
+    assert "data-chapter-number" in topic_helpers
+    assert "data-topic-list-return" in topic_detail
 
 
 def test_static_entity_popover_renders_theme_extensions_separately():

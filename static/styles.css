@@ -27,6 +27,7 @@ button {
   background: #fff;
   color: #1f2933;
   cursor: pointer;
+  padding: 0 12px;
 }
 
 main {
@@ -49,6 +50,17 @@ main {
   gap: 8px;
 }
 
+.ask-box,
+.home-actions {
+  margin-bottom: 20px;
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .ask-row input {
   min-height: 40px;
   border: 1px solid #b8ad98;
@@ -61,6 +73,66 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
+}
+
+.topic-groups {
+  display: grid;
+  gap: 20px;
+}
+
+.topic-group {
+  padding: 16px;
+  border: 1px solid #d8d2c4;
+  border-radius: 8px;
+  background: #fffdf7;
+}
+
+.topic-group-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.topic-group-header::-webkit-details-marker {
+  display: none;
+}
+
+.topic-group[open] .topic-group-header {
+  margin-bottom: 12px;
+}
+
+.topic-group-header h3,
+.topic-group-header p {
+  margin: 0;
+}
+
+.topic-group-header h3 {
+  font-size: 18px;
+}
+
+.topic-group-header p {
+  margin-top: 4px;
+  color: #5f6f78;
+  line-height: 1.6;
+}
+
+.topic-group-header span {
+  flex: 0 0 auto;
+  color: #5f6f78;
+  font-size: 14px;
+}
+
+.topic-group article h4 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.topic-detail article {
+  max-width: 820px;
 }
 
 .chapter-layout {
