@@ -113,6 +113,30 @@ class KeywordEchoEvidenceJudge:
         return EvidenceJudgment(supported=False, refusal_reason="NO_DIRECT_SUPPORT")
 
 
+class TerminalChronologyEvidenceJudge:
+    def __init__(self) -> None:
+        self.calls = []
+
+    def judge(self, candidate, contract):
+        self.calls.append(candidate)
+        text = "\n".join([candidate.title, candidate.description, candidate.relationship_keywords or ""])
+        if "满屋里瞧了一瞧" in text:
+            return EvidenceJudgment(
+                supported=True,
+                answer_text="若按最后可见动作看，贾母是回光返照后睁眼满屋里瞧了一瞧；随后喉间略一响动，脸变笑容而去。",
+                evidence_text="贾母合了一回眼，又睁着满屋里瞧了一瞧；听见贾母喉间略一响动，脸变笑容，竟是去了。",
+                claim_type="event_sequence",
+            )
+        if candidate.kind in {"relationship", "entity"} and "史丫头没良心" in text:
+            return EvidenceJudgment(
+                supported=True,
+                answer_text="贾母临终前说“最可恶的是史丫头没良心，怎么总不来瞧我”。",
+                evidence_text="候选图谱资料称贾母临终前说“最可恶的是史丫头没良心，怎么总不来瞧我”。",
+                claim_type="event_sequence",
+            )
+        return EvidenceJudgment(supported=False, refusal_reason="NO_DIRECT_SUPPORT")
+
+
 def test_ask_engine_does_not_return_hardcoded_daiyu_sample_answer_without_retrieval():
     answer = make_engine().ask("黛玉葬花体现了什么？")
 
@@ -674,7 +698,7 @@ def test_ask_engine_chooses_death_chapter_from_broad_relationship_sources():
     assert [link.target_id for link in answer.continuation_links] == ["97"]
 
 
-def test_ask_engine_reranks_contract_matching_retrieval_evidence_before_judging():
+def test_ask_engine_answers_terminal_sequence_from_original_before_retrieval_noise():
     distractors = [
         {
             "src_id": "贾母",
@@ -722,20 +746,22 @@ def test_ask_engine_reranks_contract_matching_retrieval_evidence_before_judging(
         claim_type="event_sequence",
     )
 
+    client = FakeLightRAGClient(response)
     answer = make_engine(
         open_person_semantics(
             "贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
         ),
         evidence_judge=judge,
-    ).ask("贾母生前做的最后一件事儿是什么", retrieval_client=FakeLightRAGClient(response))
+    ).ask("贾母生前做的最后一件事儿是什么", retrieval_client=client)
 
     validate_answer(answer)
     assert answer.status == "answered"
     assert answer.evidence[0].chapter == 110
     assert "满屋里瞧了一瞧" in answer.short_conclusion[0].text
     assert "泛泛关系" not in answer.short_conclusion[0].text
-    assert any("临终场景" in candidate.title for candidate, _contract in judge.calls)
+    assert client.queries == []
+    assert any(candidate.kind == "chunk" and "满屋里瞧了一瞧" in candidate.description for candidate, _contract in judge.calls)
 
 
 def test_ask_engine_prefers_later_supported_candidate_for_terminal_sequence_questions():
@@ -786,6 +812,69 @@ def test_ask_engine_prefers_later_supported_candidate_for_terminal_sequence_ques
     assert answer.evidence[0].chapter == 110
     assert "满屋里瞧了一瞧" in answer.short_conclusion[0].text
     assert "分派自己剩余的金银财物" not in answer.short_conclusion[0].text
+
+
+def test_ask_engine_verifies_terminal_graph_answer_against_original_text():
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "贾母",
+                    "tgt_id": "史湘云",
+                    "keywords": "临终,最后记录",
+                    "description": "贾母临终前说最可恶的是史丫头没良心，怎么总不来瞧我。",
+                    "source_id": "doc-108-chunk-001",
+                    "file_path": "108-第一百八回-强欢笑蘅芜庆生辰 死缠绵潇湘闻鬼哭.txt",
+                }
+            ],
+            "chunks": [],
+            "references": [],
+        },
+        "metadata": {"query_mode": "hybrid"},
+    }
+    judge = TerminalChronologyEvidenceJudge()
+
+    answer = make_engine(
+        QuestionSemantics(
+            question_focus="贾母临终前最后被记录的行动、话语或状态",
+            required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
+            constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            subject_type_hint="person",
+            answer_shape="short_direct",
+        ),
+        evidence_judge=judge,
+    ).ask("贾母生前做的最后一件事儿是什么", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "answered"
+    assert answer.evidence[0].source_type == "original_text"
+    assert answer.evidence[0].chapter == 110
+    assert "满屋里瞧了一瞧" in answer.short_conclusion[0].text
+    assert "史丫头没良心" not in answer.short_conclusion[0].text
+    assert any(candidate.kind == "chunk" and "满屋里瞧了一瞧" in candidate.description for candidate in judge.calls)
+
+
+def test_ask_engine_answers_terminal_question_from_local_original_before_retrieval():
+    judge = TerminalChronologyEvidenceJudge()
+
+    answer = make_engine(
+        QuestionSemantics(
+            question_focus="贾母临终前最后被记录的行动、话语或状态",
+            required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
+            constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            subject_type_hint="person",
+            answer_shape="short_direct",
+        ),
+        evidence_judge=judge,
+    ).ask("贾母生前做的最后一件事儿是什么", retrieval_client=FailingRetrievalClient())
+
+    validate_answer(answer)
+    assert answer.status == "answered"
+    assert answer.evidence[0].source_type == "original_text"
+    assert answer.evidence[0].chapter == 110
+    assert "满屋里瞧了一瞧" in answer.short_conclusion[0].text
 
 
 def test_ask_engine_chooses_terminal_source_from_broad_terminal_relationship():

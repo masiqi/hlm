@@ -123,6 +123,7 @@ const CHAPTER_TITLES = [
 ];
 let currentChapterPayload = null;
 let chapterLoadRequestId = 0;
+let askRequestId = 0;
 let activeEntityPopoverId = null;
 let activeChapterTab = "plot";
 
@@ -619,13 +620,48 @@ function renderAnswer(answer) {
   showView("ask");
 }
 
+function renderAskPending(question, message) {
+  const container = document.querySelector("#answer");
+  container.innerHTML = `
+    <div class="ask-status" role="status">
+      <strong>正在查找可回溯依据</strong>
+      <p>${escapeHtml(message)}</p>
+      <p class="muted">问题：${escapeHtml(question)}</p>
+    </div>
+  `;
+  showView("ask");
+}
+
+function renderAskError(message) {
+  const container = document.querySelector("#answer");
+  container.innerHTML = `
+    <h3>暂时无法完成检索</h3>
+    <p>${escapeHtml(message)}</p>
+  `;
+  showView("ask");
+}
+
 async function ask(question) {
-  const answer = await getJson("/api/ask", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
-  });
-  renderAnswer(answer);
+  const requestId = ++askRequestId;
+  const submitButton = document.querySelector("#ask-form button[type='submit']");
+  if (submitButton) submitButton.disabled = true;
+  renderAskPending(question, "正在检索候选资料，并核对是否能直接回答这个问题。");
+  const slowTimer = window.setTimeout(() => {
+    if (requestId === askRequestId) renderAskPending(question, "问题仍在处理：正在回到原文或可追溯资料中核验证据。");
+  }, 20000);
+  try {
+    const answer = await getJson("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    });
+    if (requestId === askRequestId) renderAnswer(answer);
+  } catch (error) {
+    if (requestId === askRequestId) renderAskError(error.message || "请求失败，请稍后再试。");
+  } finally {
+    window.clearTimeout(slowTimer);
+    if (requestId === askRequestId && submitButton) submitButton.disabled = false;
+  }
 }
 
 async function loadHome() {

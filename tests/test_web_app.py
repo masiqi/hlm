@@ -73,6 +73,26 @@ class KeywordEvidenceJudge:
         return EvidenceJudgment(supported=False, refusal_reason="NO_DIRECT_SUPPORT")
 
 
+class TerminalChronologyEvidenceJudge:
+    def judge(self, candidate, contract):
+        text = "\n".join([candidate.title, candidate.description, candidate.relationship_keywords or ""])
+        if "满屋里瞧了一瞧" in text:
+            return EvidenceJudgment(
+                supported=True,
+                answer_text="若按最后可见动作看，贾母是回光返照后睁眼满屋里瞧了一瞧；随后喉间略一响动，脸变笑容而去。",
+                evidence_text="贾母合了一回眼，又睁着满屋里瞧了一瞧；听见贾母喉间略一响动，脸变笑容，竟是去了。",
+                claim_type="event_sequence",
+            )
+        if candidate.kind in {"relationship", "entity"} and "史丫头没良心" in text:
+            return EvidenceJudgment(
+                supported=True,
+                answer_text="贾母临终前说“最可恶的是史丫头没良心，怎么总不来瞧我”。",
+                evidence_text="候选图谱资料称贾母临终前说“最可恶的是史丫头没良心，怎么总不来瞧我”。",
+                claim_type="event_sequence",
+            )
+        return EvidenceJudgment(supported=False, refusal_reason="NO_DIRECT_SUPPORT")
+
+
 def _write_minimal_app_context_files(tmp_path: Path, review_cards: list[dict]) -> tuple[Path, Path, Path]:
     chapter_path = tmp_path / "book" / "chapters" / "001-第一回-甄士隐梦幻识通灵 贾雨村风尘怀闺秀.txt"
     chapter_path.parent.mkdir(parents=True)
@@ -2232,6 +2252,52 @@ def test_api_ask_extracts_death_answer_without_returning_relationship_essay():
     assert "姑表兄妹" not in evidence_text
     assert "急怒攻心" in evidence_text
     assert payload["evidence"][0]["chapter"] == 97
+
+
+def test_api_ask_verifies_terminal_graph_answer_against_original_text():
+    class TerminalRelationshipRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [],
+                    "relationships": [
+                        {
+                            "src_id": "贾母",
+                            "tgt_id": "史湘云",
+                            "keywords": "临终,最后记录",
+                            "description": "贾母临终前说最可恶的是史丫头没良心，怎么总不来瞧我。",
+                            "source_id": "doc-108-chunk-001",
+                            "file_path": "108-第一百八回-强欢笑蘅芜庆生辰 死缠绵潇湘闻鬼哭.txt",
+                        }
+                    ],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=TerminalRelationshipRetrievalClient(),
+        semantic_analyzer=person_semantics(
+            "贾母临终前最后被记录的行动、话语或状态",
+            required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
+            constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+        ),
+        evidence_judge=TerminalChronologyEvidenceJudge(),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "贾母生前做的最后一件事儿是什么"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    assert payload["evidence"][0]["sourceType"] == "original_text"
+    assert payload["evidence"][0]["chapter"] == 110
+    assert "满屋里瞧了一瞧" in payload["shortConclusion"][0]["text"]
+    assert "史丫头没良心" not in payload["shortConclusion"][0]["text"]
 
 
 def test_api_ask_resolves_short_subject_before_extracting_death_answer():
