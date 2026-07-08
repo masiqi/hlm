@@ -8,6 +8,9 @@ from hlm_kg.entity_resolver import EntityResolver, ResolvedEntity
 
 
 ANSWER_SHAPES = {"short_direct", "explanatory"}
+ANSWER_DIMENSIONS = frozenset(
+    {"chapter_location", "age", "health", "death", "terminal_chronology"}
+)
 QUESTION_FILLER_CHARS = frozenset("的了呢吗么什哪几多少大是有在和与及或请问一下个这那其何怎如为")
 
 
@@ -18,6 +21,7 @@ class QuestionPlan:
     intent: str
     question_focus: str
     constraints: tuple[str, ...]
+    answer_dimensions: tuple[str, ...]
     answer_shape: str
     required_evidence: tuple[str, ...]
     evidence_terms: tuple[str, ...]
@@ -40,6 +44,7 @@ class QuestionSemantics:
     required_evidence: tuple[str, ...] = ()
     retrieval_queries: tuple[str, ...] = ()
     constraints: tuple[str, ...] = ()
+    answer_dimensions: tuple[str, ...] = ()
     intent: str | None = None
     answer_shape: str | None = None
     subject_type_hint: str | None = None
@@ -67,12 +72,14 @@ class QuestionPlanner:
         evidence_terms = _question_evidence_terms(raw_question, subjects)
         intent = _normalize_intent(semantics.intent)
         answer_shape = _normalize_answer_shape(semantics.answer_shape)
+        answer_dimensions = _normalize_answer_dimensions(semantics.answer_dimensions)
         return QuestionPlan(
             raw_question=raw_question,
             subjects=subjects,
             intent=intent,
             question_focus=question_focus,
             constraints=constraints,
+            answer_dimensions=answer_dimensions,
             answer_shape=answer_shape,
             required_evidence=_required_evidence(subjects, semantics.required_evidence, question_focus),
             evidence_terms=evidence_terms,
@@ -116,6 +123,14 @@ def _analyze_question(
 
 def _normalize_constraints(values: tuple[str, ...]) -> tuple[str, ...]:
     return _normalize_string_tuple(values)
+
+
+def _normalize_answer_dimensions(values: tuple[str, ...]) -> tuple[str, ...]:
+    normalized: list[str] = []
+    for value in _normalize_string_tuple(values):
+        if value in ANSWER_DIMENSIONS and value not in normalized:
+            normalized.append(value)
+    return tuple(normalized)
 
 
 def _normalize_subject_type_hint(value: str | None) -> str | None:

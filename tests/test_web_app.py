@@ -25,6 +25,7 @@ def person_semantics(
     evidence_terms: tuple[str, ...] = (),
     required_evidence: tuple[str, ...] = (),
     constraints: tuple[str, ...] = (),
+    answer_dimensions: tuple[str, ...] = (),
 ) -> StaticSemanticAnalyzer:
     return StaticSemanticAnalyzer(
         QuestionSemantics(
@@ -32,6 +33,7 @@ def person_semantics(
             evidence_terms=evidence_terms,
             required_evidence=required_evidence,
             constraints=constraints,
+            answer_dimensions=answer_dimensions,
             subject_type_hint="person",
         )
     )
@@ -43,6 +45,7 @@ def location_semantics() -> StaticSemanticAnalyzer:
             question_focus="相关内容发生或出现的章回",
             evidence_terms=("发生章回", "发生在", "出现于", "出现在", "第", "回"),
             required_evidence=("候选证据必须直接说明相关内容发生或出现的章回",),
+            answer_dimensions=("chapter_location",),
         )
     )
 
@@ -2172,6 +2175,7 @@ def test_api_ask_falls_back_to_original_text_when_retrieval_hits_do_not_answer_a
             evidence_terms=("岁", "衔玉"),
             required_evidence=("候选证据必须直接说明贾宝玉首次出场或早期介绍中的年龄线索",),
             constraints=("first_mention",),
+            answer_dimensions=("age",),
         ),
         evidence_judge=KeywordEvidenceJudge(
             must_contain=("十来岁",),
@@ -2229,6 +2233,7 @@ def test_api_ask_extracts_death_answer_without_returning_relationship_essay():
             "林黛玉的死亡经过或原因",
             evidence_terms=("病情加重", "急怒攻心", "临终"),
             required_evidence=("候选证据必须直接说明林黛玉死亡的经过、原因或临终状态",),
+            answer_dimensions=("death",),
         ),
         evidence_judge=KeywordEvidenceJudge(
             must_contain=("急怒攻心", "临终"),
@@ -2286,6 +2291,7 @@ def test_api_ask_verifies_terminal_graph_answer_against_original_text():
             "贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
             constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            answer_dimensions=("terminal_chronology",),
         ),
         evidence_judge=TerminalChronologyEvidenceJudge(),
     )
@@ -2336,6 +2342,7 @@ def test_api_ask_resolves_short_subject_before_extracting_death_answer():
             "黛玉的死亡经过或原因",
             evidence_terms=("病情加重", "急怒攻心", "临终"),
             required_evidence=("候选证据必须直接说明黛玉死亡的经过、原因或临终状态",),
+            answer_dimensions=("death",),
         ),
         evidence_judge=KeywordEvidenceJudge(
             must_contain=("急怒攻心", "临终"),
@@ -2425,6 +2432,7 @@ def test_api_ask_falls_back_to_original_text_for_health_question_when_relationsh
             "林黛玉的病症或身体状况",
             evidence_terms=("病", "症", "药"),
             required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+            answer_dimensions=("health",),
         ),
         evidence_judge=KeywordEvidenceJudge(
             must_contain=("不足之症",),
@@ -2453,6 +2461,7 @@ def test_api_ask_answers_health_question_from_original_text_without_retrieval_cl
             "林黛玉的病症或身体状况",
             evidence_terms=("病", "症", "药"),
             required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+            answer_dimensions=("health",),
         ),
         evidence_judge=KeywordEvidenceJudge(
             must_contain=("不足之症",),

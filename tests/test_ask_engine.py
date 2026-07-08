@@ -29,6 +29,7 @@ def open_person_semantics(
     required_evidence: tuple[str, ...] = (),
     constraints: tuple[str, ...] = (),
     answer_shape: str | None = None,
+    answer_dimensions: tuple[str, ...] = (),
 ) -> QuestionSemantics:
     return QuestionSemantics(
         question_focus=focus,
@@ -36,6 +37,7 @@ def open_person_semantics(
         required_evidence=required_evidence,
         constraints=constraints,
         answer_shape=answer_shape,
+        answer_dimensions=answer_dimensions,
         subject_type_hint="person",
     )
 
@@ -45,6 +47,7 @@ def location_semantics() -> QuestionSemantics:
         question_focus="相关内容发生或出现的章回",
         evidence_terms=("发生章回", "发生在", "出现于", "出现在", "第", "回"),
         required_evidence=("候选证据必须直接说明相关内容发生或出现的章回",),
+        answer_dimensions=("chapter_location",),
     )
 
 
@@ -387,6 +390,7 @@ def test_ask_engine_stops_judging_after_first_supported_candidate():
         open_person_semantics(
             "林黛玉的病症或身体状况",
             evidence_terms=("不足之症", "人参养荣丸", "弱不胜衣"),
+            answer_dimensions=("health",),
         ),
         evidence_judge=judge,
     ).ask("林黛玉生的什么病", retrieval_client=FakeLightRAGClient(response))
@@ -408,6 +412,7 @@ def test_ask_engine_answers_from_local_judged_evidence_before_retrieval():
         open_person_semantics(
             "林黛玉的病症或身体状况",
             evidence_terms=("不足之症", "人参养荣丸"),
+            answer_dimensions=("health",),
         ),
         evidence_judge=judge,
     ).ask("林黛玉生的什么病", retrieval_client=FailingRetrievalClient())
@@ -429,6 +434,7 @@ def test_ask_engine_does_not_use_subject_name_as_local_evidence_term():
         open_person_semantics(
             "林黛玉的病症或身体状况",
             evidence_terms=("林黛玉", "病症", "疾病", "不足之症", "肺疾", "咳嗽", "痰喘", "先天不足", "太医诊断", "药方"),
+            answer_dimensions=("health",),
         ),
         evidence_judge=judge,
     ).ask("林黛玉生的什么病", retrieval_client=FailingRetrievalClient())
@@ -514,6 +520,7 @@ def test_ask_engine_falls_back_to_original_text_when_retrieval_hits_do_not_answe
             evidence_terms=("岁", "衔玉"),
             required_evidence=("候选证据必须直接说明贾宝玉首次出场或早期介绍中的年龄线索",),
             constraints=("first_mention",),
+            answer_dimensions=("age",),
         ),
         evidence_judge=judge,
     ).ask("贾宝玉最早被资料介绍时多大年纪？", retrieval_client=FakeLightRAGClient(response))
@@ -547,7 +554,11 @@ def test_ask_engine_rejects_age_evidence_about_another_person():
     }
 
     answer = make_engine(
-        open_person_semantics("麝月这时候的年龄线索", evidence_terms=("岁",)),
+        open_person_semantics(
+            "麝月这时候的年龄线索",
+            evidence_terms=("岁",),
+            answer_dimensions=("age",),
+        ),
         evidence_judge=RejectAllEvidenceJudge(),
     ).ask("麝月这时候是几岁？", retrieval_client=FakeLightRAGClient(response))
 
@@ -583,6 +594,7 @@ def test_ask_engine_refuses_age_question_when_candidates_do_not_contain_age_evid
             "王熙凤首次出场时的年龄线索",
             evidence_terms=("岁",),
             constraints=("first_mention",),
+            answer_dimensions=("age",),
         ),
         evidence_judge=RejectAllEvidenceJudge(),
     ).ask("王熙凤第一次在书中出现的时候是几岁？", retrieval_client=FakeLightRAGClient(response))
@@ -631,6 +643,7 @@ def test_ask_engine_extracts_death_answer_instead_of_returning_relationship_essa
             "林黛玉的死亡经过或原因",
             evidence_terms=("病情加重", "急怒攻心", "临终"),
             required_evidence=("候选证据必须直接说明林黛玉死亡的经过、原因或临终状态",),
+            answer_dimensions=("death",),
         ),
         evidence_judge=judge,
     ).ask("林黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
@@ -687,6 +700,7 @@ def test_ask_engine_chooses_death_chapter_from_broad_relationship_sources():
         open_person_semantics(
             "林黛玉的死亡经过或原因",
             required_evidence=("候选证据必须直接说明林黛玉死亡的经过、原因或临终状态",),
+            answer_dimensions=("death",),
         ),
         evidence_judge=judge,
     ).ask("黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
@@ -751,6 +765,7 @@ def test_ask_engine_answers_terminal_sequence_from_original_before_retrieval_noi
         open_person_semantics(
             "贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
+            answer_dimensions=("terminal_chronology",),
         ),
         evidence_judge=judge,
     ).ask("贾母生前做的最后一件事儿是什么", retrieval_client=client)
@@ -801,6 +816,7 @@ def test_ask_engine_prefers_later_supported_candidate_for_terminal_sequence_ques
             question_focus="贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
             constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            answer_dimensions=("terminal_chronology",),
             subject_type_hint="person",
             answer_shape="short_direct",
         ),
@@ -841,6 +857,7 @@ def test_ask_engine_verifies_terminal_graph_answer_against_original_text():
             question_focus="贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
             constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            answer_dimensions=("terminal_chronology",),
             subject_type_hint="person",
             answer_shape="short_direct",
         ),
@@ -864,6 +881,7 @@ def test_ask_engine_answers_terminal_question_from_local_original_before_retriev
             question_focus="贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
             constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            answer_dimensions=("terminal_chronology",),
             subject_type_hint="person",
             answer_shape="short_direct",
         ),
@@ -907,6 +925,7 @@ def test_ask_engine_chooses_terminal_source_from_broad_terminal_relationship():
             question_focus="贾母临终前最后被记录的行动、话语或状态",
             required_evidence=("候选证据必须直接说明贾母临终或去世前后的行动、话语或状态，并支持判断最后记录的事情",),
             constraints=("time_bound_before_death", "final_in_sequence", "direct_action"),
+            answer_dimensions=("terminal_chronology",),
             subject_type_hint="person",
             answer_shape="short_direct",
         ),
@@ -948,6 +967,7 @@ def test_ask_engine_does_not_apply_health_filter_from_excluded_evidence_requirem
                 "候选证据需明确记载贾母临终时间线，且能锁定其生前最后实施的具体事项。",
                 "证据须直接对应去世前的时序终点，排除临终关怀、病情描写或非最终步骤的日常活动。",
             ),
+            answer_dimensions=("terminal_chronology",),
             subject_type_hint="person",
             answer_shape="short_direct",
         ),
@@ -995,6 +1015,7 @@ def test_ask_engine_resolves_short_subject_before_extracting_death_answer():
             "黛玉的死亡经过或原因",
             evidence_terms=("病情加重", "急怒攻心", "临终"),
             required_evidence=("候选证据必须直接说明黛玉死亡的经过、原因或临终状态",),
+            answer_dimensions=("death",),
         ),
         evidence_judge=judge,
     ).ask("黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
@@ -1031,6 +1052,7 @@ def test_ask_engine_rejects_death_evidence_about_another_person():
         open_person_semantics(
             "林黛玉的死亡经过或原因",
             evidence_terms=("病情加重", "急怒攻心", "临终"),
+            answer_dimensions=("death",),
         ),
         evidence_judge=RejectAllEvidenceJudge(),
     ).ask("林黛玉是怎么死的？", retrieval_client=FakeLightRAGClient(response))
@@ -1103,6 +1125,7 @@ def test_ask_engine_falls_back_to_original_text_when_relationship_hit_does_not_a
             "林黛玉的病症或身体状况",
             evidence_terms=("病", "症", "药"),
             required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+            answer_dimensions=("health",),
         ),
         evidence_judge=judge,
     ).ask("林黛玉生的什么病", retrieval_client=FakeLightRAGClient(response))
@@ -1130,6 +1153,7 @@ def test_ask_engine_answers_health_question_from_original_text_without_retrieval
             "林黛玉的病症或身体状况",
             evidence_terms=("病", "症", "药"),
             required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+            answer_dimensions=("health",),
         ),
         evidence_judge=judge,
     ).ask("林黛玉生的什么病")
@@ -1143,6 +1167,18 @@ def test_ask_engine_answers_health_question_from_original_text_without_retrieval
     assert answer.evidence[0].chapter == 3
     assert answer.evidence[0].source_type == "original_text"
     assert "从会吃饭时便吃药" in answer.evidence[0].evidence_text
+
+
+def test_ask_engine_does_not_infer_dimensions_from_planner_text_markers():
+    profile = make_engine(
+        QuestionSemantics(
+            question_focus="林黛玉的病症或身体状况",
+            required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+            subject_type_hint="person",
+        )
+    )._question_profile("林黛玉生的什么病")
+
+    assert profile.dimensions == frozenset()
 
 
 def test_ask_engine_returns_partial_for_mixed_query_data_question():

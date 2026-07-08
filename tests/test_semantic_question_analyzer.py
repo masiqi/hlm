@@ -36,6 +36,7 @@ def test_openai_question_analyzer_parses_structured_semantics(monkeypatch):
                                     "required_evidence": ["候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索"],
                                     "retrieval_queries": ["林黛玉 病症 服药 不足之症"],
                                     "constraints": [],
+                                    "answer_dimensions": ["health"],
                                     "intent": "ask_fact",
                                     "answer_shape": "short_direct",
                                     "subject_type_hint": "person",
@@ -61,6 +62,7 @@ def test_openai_question_analyzer_parses_structured_semantics(monkeypatch):
     assert semantics.retrieval_queries == ()
     assert semantics.intent == "ask_fact"
     assert semantics.answer_shape == "short_direct"
+    assert semantics.answer_dimensions == ("health",)
     assert semantics.subject_type_hint == "person"
     assert captured["timeout"] == 3
     assert captured["payload"]["max_tokens"] == 300
@@ -71,6 +73,7 @@ def test_openai_question_analyzer_parses_structured_semantics(monkeypatch):
     assert captured["payload"]["messages"][1]["role"] == "user"
     assert "retrieval_queries" not in captured["payload"]["messages"][1]["content"]
     assert "evidence_terms" not in captured["payload"]["messages"][1]["content"]
+    assert "answer_dimensions" in captured["payload"]["messages"][1]["content"]
 
 
 def test_openai_question_analyzer_accepts_string_contract_fields(monkeypatch):
@@ -85,6 +88,7 @@ def test_openai_question_analyzer_accepts_string_contract_fields(monkeypatch):
                                     "question_focus": "贾母临终前完成的最后一项具体事务或行为",
                                     "required_evidence": "原著中描写贾母病重弥留之际及交代后事的章节内容",
                                     "constraints": "严格依据原著，不使用影视改编",
+                                    "answer_dimensions": "terminal_chronology",
                                     "intent": "ask_fact",
                                     "answer_shape": "short_direct",
                                     "subject_type_hint": "person",
@@ -107,6 +111,7 @@ def test_openai_question_analyzer_accepts_string_contract_fields(monkeypatch):
     assert semantics.question_focus == "贾母临终前完成的最后一项具体事务或行为"
     assert semantics.required_evidence == ("原著中描写贾母病重弥留之际及交代后事的章节内容",)
     assert semantics.constraints == ("严格依据原著，不使用影视改编",)
+    assert semantics.answer_dimensions == ("terminal_chronology",)
 
 
 def test_openai_question_analyzer_sends_known_subject_candidates(monkeypatch):
@@ -124,6 +129,7 @@ def test_openai_question_analyzer_sends_known_subject_candidates(monkeypatch):
                                     "question_focus": "黛玉的死亡经过或原因",
                                     "required_evidence": ["候选证据必须直接说明所问人物的死亡经过或原因"],
                                     "constraints": [],
+                                    "answer_dimensions": ["death"],
                                     "intent": "ask_fact",
                                     "answer_shape": "short_direct",
                                     "subject_type_hint": "person",
@@ -172,6 +178,7 @@ def test_openai_question_analyzer_sends_known_subject_candidates(monkeypatch):
         }
     ]
     assert semantics.subject_type_hint == "person"
+    assert semantics.answer_dimensions == ("death",)
 
 
 def test_openai_question_analyzer_config_uses_ask_planner_env_before_general_llm_env():

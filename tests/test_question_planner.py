@@ -67,6 +67,7 @@ def open_semantics(
     required_evidence: tuple[str, ...] = (),
     retrieval_queries: tuple[str, ...] = (),
     constraints: tuple[str, ...] = (),
+    answer_dimensions: tuple[str, ...] = (),
     subject_type_hint: str | None = "person",
 ) -> QuestionSemantics:
     return QuestionSemantics(
@@ -75,6 +76,7 @@ def open_semantics(
         required_evidence=required_evidence,
         retrieval_queries=retrieval_queries,
         constraints=constraints,
+        answer_dimensions=answer_dimensions,
         subject_type_hint=subject_type_hint,
     )
 
@@ -86,6 +88,7 @@ def test_planner_does_not_infer_fixed_question_type_from_question_text_without_s
     assert plan.question_focus == ""
     assert plan.evidence_terms == ("死",)
     assert plan.constraints == ()
+    assert plan.answer_dimensions == ()
     assert plan.answer_shape == "explanatory"
 
 
@@ -97,6 +100,7 @@ def test_planner_degrades_to_unclassified_plan_when_semantic_analyzer_fails():
     assert plan.question_focus == ""
     assert "病" in plan.evidence_terms
     assert plan.constraints == ()
+    assert plan.answer_dimensions == ()
 
 
 def test_planner_maps_open_question_to_evidence_contract():
@@ -105,6 +109,7 @@ def test_planner_maps_open_question_to_evidence_contract():
             "林黛玉的死亡经过或原因",
             evidence_terms=("病情加重", "急怒攻心", "临终"),
             required_evidence=("候选证据必须直接说明林黛玉死亡的经过、原因或临终状态",),
+            answer_dimensions=("death",),
         )
     ).plan("林黛玉是怎么死的？")
 
@@ -112,6 +117,7 @@ def test_planner_maps_open_question_to_evidence_contract():
     assert plan.intent == "ask_fact"
     assert plan.question_focus == "林黛玉的死亡经过或原因"
     assert plan.evidence_terms == ("死",)
+    assert plan.answer_dimensions == ("death",)
     assert any("林黛玉" in requirement for requirement in plan.required_evidence)
     assert any("死亡" in requirement for requirement in plan.required_evidence)
 
@@ -157,12 +163,18 @@ def test_planner_keeps_object_subject_for_definition_question():
 
 def test_planner_records_first_mention_constraint_for_age_question():
     plan = make_planner(
-        open_semantics("贾宝玉首次出场时的年龄线索", evidence_terms=("岁",), constraints=("first_mention",))
+        open_semantics(
+            "贾宝玉首次出场时的年龄线索",
+            evidence_terms=("岁",),
+            constraints=("first_mention",),
+            answer_dimensions=("age",),
+        )
     ).plan("贾宝玉第一次在书中出现的时候是几岁？")
 
     assert [subject.canonical_name for subject in plan.subjects] == ["贾宝玉"]
     assert plan.question_focus == "贾宝玉首次出场时的年龄线索"
     assert "first_mention" in plan.constraints
+    assert plan.answer_dimensions == ("age",)
 
 
 def test_planner_maps_health_question_to_open_evidence_contract():
@@ -171,6 +183,7 @@ def test_planner_maps_health_question_to_open_evidence_contract():
             "林黛玉的病症或身体状况",
             evidence_terms=("病", "症", "药"),
             required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+            answer_dimensions=("health",),
         )
     ).plan("林黛玉生的什么病")
 
@@ -178,7 +191,19 @@ def test_planner_maps_health_question_to_open_evidence_contract():
     assert plan.intent == "ask_fact"
     assert plan.question_focus == "林黛玉的病症或身体状况"
     assert plan.evidence_terms == ("生病", "病")
+    assert plan.answer_dimensions == ("health",)
     assert any("病症" in requirement for requirement in plan.required_evidence)
+
+
+def test_planner_ignores_invalid_answer_dimensions_from_semantic_analyzer():
+    plan = make_planner(
+        open_semantics(
+            "林黛玉的病症或身体状况",
+            answer_dimensions=("health", "unknown", "health", " death "),
+        )
+    ).plan("林黛玉生的什么病")
+
+    assert plan.answer_dimensions == ("health", "death")
 
 
 def test_planner_does_not_trust_llm_answer_terms_or_retrieval_queries():

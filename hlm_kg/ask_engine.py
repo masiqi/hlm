@@ -19,7 +19,12 @@ from hlm_kg.domain import (
 from hlm_kg.evidence_adapter import EvidenceCandidate, normalize_query_data_response
 from hlm_kg.evidence_judge import EvidenceContract, EvidenceJudge, EvidenceJudgment
 from hlm_kg.entity_resolver import EntityResolver, ResolvedEntity
-from hlm_kg.question_planner import QUESTION_FILLER_CHARS, QuestionPlanner, SemanticQuestionAnalyzer
+from hlm_kg.question_planner import (
+    ANSWER_DIMENSIONS,
+    QUESTION_FILLER_CHARS,
+    QuestionPlanner,
+    SemanticQuestionAnalyzer,
+)
 
 
 OUT_OF_SCOPE_TERMS = ("作文", "现实", "八卦", "数学", "英语")
@@ -604,32 +609,11 @@ def _question_profile(question: str, store: Any | None = None, *, planner: Quest
 def _dimensions_from_plan(plan: Any | None) -> set[str]:
     if plan is None:
         return set()
-    dimensions: set[str] = set()
-    focus_text = str(getattr(plan, "question_focus", "") or "")
-    required_text = "\n".join(str(item) for item in getattr(plan, "required_evidence", ()) or ())
-    constraints_text = "\n".join(str(item) for item in getattr(plan, "constraints", ()) or ())
-    contract_text = "\n".join(
-        [
-            focus_text,
-            required_text,
-            constraints_text,
-        ]
-    )
-    constraints = {str(item) for item in getattr(plan, "constraints", ()) or ()}
-    if constraints & {"final_in_sequence", "time_bound_before_death"} or (
-        any(marker in contract_text for marker in ("时序终点", "最后被记录", "最后完成", "最后实施"))
-        and any(marker in contract_text for marker in ("去世前", "临终", "生前"))
-    ):
-        dimensions.add("terminal_chronology")
-    if any(term in contract_text for term in ("章回", "第几回", "哪一回", "发生或出现")):
-        dimensions.add("chapter_location")
-    if any(term in contract_text for term in ("死亡", "死因", "去世", "临终", "魂归", "绝粒", "急怒攻心")):
-        dimensions.add("death")
-    if any(term in focus_text for term in ("年龄", "年纪", "几岁", "多大", "岁")):
-        dimensions.add("age")
-    if any(term in focus_text for term in ("病症", "疾病", "身体状况", "长期服药", "病情", "患病")):
-        dimensions.add("health")
-    return dimensions
+    return {
+        clean
+        for value in getattr(plan, "answer_dimensions", ()) or ()
+        if (clean := str(value or "").strip()) in ANSWER_DIMENSIONS
+    }
 
 
 def _cards_for_resolved_subjects(subjects: tuple[ResolvedEntity, ...], store: Any | None) -> list[Any]:
