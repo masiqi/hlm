@@ -2715,12 +2715,49 @@ def test_topic_list_payload_reads_lightweight_graph_descriptions_when_available(
     assert payload["topics"][0]["description"] == "贾雨村在门子提醒下徇私枉法审理薛家命案。"
 
 
-def test_api_topics_enriches_topic_card_descriptions_from_entity_graph_cache():
-    context = create_app_context(
-        manifest_path=Path("book/chapters_manifest.json"),
-        data_dir=Path("data/app"),
-        static_dir=Path("static"),
+def _write_daguan_topic_graph_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    manifest_path, data_dir, static_dir = _write_minimal_app_context_files(tmp_path, [_review_card()])
+    (data_dir / "topics.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "topic-daguan",
+                    "title": "大观园",
+                    "category": "意象伏笔",
+                    "description": "围绕大观园的意象、伏笔和相关章回组织。",
+                    "card_ids": [],
+                    "relation_ids": [],
+                    "typical_question_patterns": ["说明地点意象及章回依据"],
+                    "quotable_fact_ids": [],
+                    "evidence_ids": [],
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
     )
+    (data_dir / "entity_graph_cache.json").write_text(
+        json.dumps(
+            {
+                "大观园": {
+                    "description": "大观园是《红楼梦》中贾府为迎接元妃省亲而修建的园林，后来成为宝玉、黛玉、宝钗等人的居住与活动空间。",
+                    "neighbors": [
+                        {"name": "妙玉", "relationship": "居住关联", "description": "栊翠庵被圈在园内，妙玉在此活动。"},
+                        {"name": "怡红院", "relationship": "园内居所", "description": "怡红院是宝玉在大观园中的居所。"},
+                        {"name": "绣春囊", "relationship": "事件线索", "description": "绣春囊事件引发抄检大观园。"},
+                    ],
+                }
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path, data_dir, static_dir
+
+
+def test_api_topics_enriches_topic_card_descriptions_from_entity_graph_cache(tmp_path):
+    manifest_path, data_dir, static_dir = _write_daguan_topic_graph_fixture(tmp_path)
+    context = create_app_context(manifest_path=manifest_path, data_dir=data_dir, static_dir=static_dir)
 
     status, payload = handle_api_request(context, "GET", "/api/topics")
 
@@ -2756,12 +2793,9 @@ def test_api_topics_uses_topic_specific_summary_instead_of_related_card_brief_fo
     assert "林黛玉是" not in xiangling_topic["description"]
 
 
-def test_api_topic_detail_returns_entity_graph_introduction_and_neighbors():
-    context = create_app_context(
-        manifest_path=Path("book/chapters_manifest.json"),
-        data_dir=Path("data/app"),
-        static_dir=Path("static"),
-    )
+def test_api_topic_detail_returns_entity_graph_introduction_and_neighbors(tmp_path):
+    manifest_path, data_dir, static_dir = _write_daguan_topic_graph_fixture(tmp_path)
+    context = create_app_context(manifest_path=manifest_path, data_dir=data_dir, static_dir=static_dir)
     topic_id = next(
         topic.id
         for topic in context.store.topics
