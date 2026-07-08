@@ -3,9 +3,74 @@ import json
 from pathlib import Path
 
 from hlm_kg.domain import Topic
+from hlm_kg.evidence_judge import EvidenceJudgment, OpenAIEvidenceJudge
+from hlm_kg.question_planner import QuestionSemantics
+from hlm_kg.semantic_question_analyzer import OpenAIQuestionAnalyzer
 from hlm_kg.web_app import create_app_context, find_available_port, handle_api_request, _topic_list_payload
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class StaticSemanticAnalyzer:
+    def __init__(self, semantics: QuestionSemantics):
+        self.semantics = semantics
+
+    def analyze(self, question: str, *, subjects):
+        return self.semantics
+
+
+def person_semantics(
+    focus: str,
+    *,
+    evidence_terms: tuple[str, ...] = (),
+    required_evidence: tuple[str, ...] = (),
+    constraints: tuple[str, ...] = (),
+) -> StaticSemanticAnalyzer:
+    return StaticSemanticAnalyzer(
+        QuestionSemantics(
+            question_focus=focus,
+            evidence_terms=evidence_terms,
+            required_evidence=required_evidence,
+            constraints=constraints,
+            subject_type_hint="person",
+        )
+    )
+
+
+def location_semantics() -> StaticSemanticAnalyzer:
+    return StaticSemanticAnalyzer(
+        QuestionSemantics(
+            question_focus="相关内容发生或出现的章回",
+            evidence_terms=("发生章回", "发生在", "出现于", "出现在", "第", "回"),
+            required_evidence=("候选证据必须直接说明相关内容发生或出现的章回",),
+        )
+    )
+
+
+class KeywordEvidenceJudge:
+    def __init__(
+        self,
+        *,
+        must_contain: tuple[str, ...],
+        answer_text: str,
+        evidence_text: str,
+        claim_type: str = "quotable_fact",
+    ) -> None:
+        self.must_contain = must_contain
+        self.answer_text = answer_text
+        self.evidence_text = evidence_text
+        self.claim_type = claim_type
+
+    def judge(self, candidate, contract):
+        text = "\n".join([candidate.title, candidate.description, candidate.relationship_keywords or ""])
+        if all(term in text for term in self.must_contain):
+            return EvidenceJudgment(
+                supported=True,
+                answer_text=self.answer_text,
+                evidence_text=self.evidence_text,
+                claim_type=self.claim_type,
+            )
+        return EvidenceJudgment(supported=False, refusal_reason="NO_DIRECT_SUPPORT")
 
 
 def _write_minimal_app_context_files(tmp_path: Path, review_cards: list[dict]) -> tuple[Path, Path, Path]:
@@ -1972,10 +2037,33 @@ def test_api_chapter_returns_original_text_when_review_card_is_missing(tmp_path)
 
 
 def test_api_ask_returns_structured_answer():
+    class DAIYUQuestionRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [],
+                    "relationships": [
+                        {
+                            "src_id": "林黛玉",
+                            "tgt_id": "黛玉葬花",
+                            "keywords": "人物表现,关键事件",
+                            "description": "黛玉葬花表现林黛玉的身世悲感与洁身自持。",
+                            "source_id": "doc-027-chunk-001",
+                            "file_path": "027-第二十七回-滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红.txt",
+                        }
+                    ],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
         static_dir=Path("static"),
+        retrieval_client=DAIYUQuestionRetrievalClient(),
     )
 
     status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "黛玉葬花体现了什么？"})
@@ -2018,6 +2106,7 @@ def test_api_ask_uses_configured_retrieval_client_for_chapter_location():
         data_dir=Path("data/app"),
         static_dir=Path("static"),
         retrieval_client=FakeRetrievalClient(),
+        semantic_analyzer=location_semantics(),
     )
 
     status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "宝黛初会发生在哪一回？"})
@@ -2058,6 +2147,17 @@ def test_api_ask_falls_back_to_original_text_when_retrieval_hits_do_not_answer_a
         data_dir=Path("data/app"),
         static_dir=Path("static"),
         retrieval_client=IrrelevantRelationshipRetrievalClient(),
+        semantic_analyzer=person_semantics(
+            "贾宝玉首次出场时的年龄线索",
+            evidence_terms=("岁", "衔玉"),
+            required_evidence=("候选证据必须直接说明贾宝玉首次出场或早期介绍中的年龄线索",),
+            constraints=("first_mention",),
+        ),
+        evidence_judge=KeywordEvidenceJudge(
+            must_contain=("十来岁",),
+            answer_text="贾宝玉最早被明确介绍的年龄线索是“十来岁”，可理解为十岁左右。",
+            evidence_text="原文说“如今长了十来岁”，这是贾宝玉早期出场相关的年龄线索。",
+        ),
     )
 
     status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "贾宝玉最早被资料介绍时多大年纪？"})
@@ -2105,6 +2205,17 @@ def test_api_ask_extracts_death_answer_without_returning_relationship_essay():
         data_dir=Path("data/app"),
         static_dir=Path("static"),
         retrieval_client=RelationshipWithDeathEvidenceRetrievalClient(),
+        semantic_analyzer=person_semantics(
+            "林黛玉的死亡经过或原因",
+            evidence_terms=("病情加重", "急怒攻心", "临终"),
+            required_evidence=("候选证据必须直接说明林黛玉死亡的经过、原因或临终状态",),
+        ),
+        evidence_judge=KeywordEvidenceJudge(
+            must_contain=("急怒攻心", "临终"),
+            answer_text="林黛玉的死亡经过可概括为：宝玉说亲的消息使她病情加重，急怒攻心，临终前直呼“宝玉”。",
+            evidence_text="宝玉说亲的消息直接导致黛玉病情加重，使其急怒攻心，惟求速死；临终前直声呼唤“宝玉”。",
+            claim_type="event_causality",
+        ),
     )
 
     status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "林黛玉是怎么死的？"})
@@ -2155,6 +2266,17 @@ def test_api_ask_resolves_short_subject_before_extracting_death_answer():
         data_dir=Path("data/app"),
         static_dir=Path("static"),
         retrieval_client=RelationshipWithDeathEvidenceRetrievalClient(),
+        semantic_analyzer=person_semantics(
+            "黛玉的死亡经过或原因",
+            evidence_terms=("病情加重", "急怒攻心", "临终"),
+            required_evidence=("候选证据必须直接说明黛玉死亡的经过、原因或临终状态",),
+        ),
+        evidence_judge=KeywordEvidenceJudge(
+            must_contain=("急怒攻心", "临终"),
+            answer_text="林黛玉的死亡经过可概括为：宝玉说亲的消息使她病情加重，急怒攻心，临终前直呼“宝玉”。",
+            evidence_text="宝玉说亲的消息直接导致黛玉病情加重，使其急怒攻心，惟求速死；临终前直声呼唤“宝玉”。",
+            claim_type="event_causality",
+        ),
     )
 
     status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "黛玉是怎么死的？"})
@@ -2202,6 +2324,88 @@ def test_api_ask_rejects_candidate_about_different_subject_for_definition_questi
     assert payload["refusal"]["reason"] == "NO_EVIDENCE"
 
 
+def test_api_ask_falls_back_to_original_text_for_health_question_when_relationship_hit_is_too_broad():
+    class RelationshipWithoutIllnessRetrievalClient:
+        def query_data(self, query: str, mode: str = "hybrid", **options):
+            return {
+                "status": "success",
+                "data": {
+                    "entities": [],
+                    "relationships": [
+                        {
+                            "src_id": "林黛玉",
+                            "tgt_id": "贾宝玉",
+                            "keywords": "知己关系,病情",
+                            "description": (
+                                "林黛玉与贾宝玉的关系是以姑表兄妹血缘为纽带、刻骨铭心的知己之恋。"
+                                "病中仍互问安好，紫鹃更指出黛玉之病多因宝玉，足见用情之深。"
+                            ),
+                            "source_id": "doc-003-chunk-001",
+                            "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                        }
+                    ],
+                    "chunks": [],
+                    "references": [],
+                },
+                "metadata": {"query_mode": mode},
+            }
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        retrieval_client=RelationshipWithoutIllnessRetrievalClient(),
+        semantic_analyzer=person_semantics(
+            "林黛玉的病症或身体状况",
+            evidence_terms=("病", "症", "药"),
+            required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+        ),
+        evidence_judge=KeywordEvidenceJudge(
+            must_contain=("不足之症",),
+            answer_text="林黛玉的病症线索是“不足之症”；原文还说她从会吃饭时便吃药，仍吃人参养荣丸。",
+            evidence_text="众人见黛玉身体面貌虽弱不胜衣，便知他有不足之症；黛玉说自己从会吃饭时便吃药，到如今还是吃人参养荣丸。",
+        ),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "林黛玉生的什么病"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    assert "不足之症" in payload["shortConclusion"][0]["text"]
+    assert "姑表兄妹" not in payload["shortConclusion"][0]["text"]
+    assert payload["evidence"][0]["chapter"] == 3
+    assert payload["evidence"][0]["sourceType"] == "original_text"
+    assert "从会吃饭时便吃药" in payload["evidence"][0]["evidenceText"]
+
+
+def test_api_ask_answers_health_question_from_original_text_without_retrieval_client():
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        semantic_analyzer=person_semantics(
+            "林黛玉的病症或身体状况",
+            evidence_terms=("病", "症", "药"),
+            required_evidence=("候选证据必须直接说明林黛玉的病症、身体状况或长期服药线索",),
+        ),
+        evidence_judge=KeywordEvidenceJudge(
+            must_contain=("不足之症",),
+            answer_text="林黛玉的病症线索是“不足之症”；原文还说她从会吃饭时便吃药，仍吃人参养荣丸。",
+            evidence_text="众人见黛玉身体面貌虽弱不胜衣，便知他有不足之症；黛玉说自己从会吃饭时便吃药，到如今还是吃人参养荣丸。",
+        ),
+    )
+
+    status, payload = handle_api_request(context, "POST", "/api/ask", {"question": "林黛玉生的什么病"})
+
+    assert status == 200
+    assert payload["status"] == "answered"
+    assert "不足之症" in payload["shortConclusion"][0]["text"]
+    assert "葬花" not in payload["shortConclusion"][0]["text"]
+    assert len(payload["shortConclusion"][0]["text"]) < 180
+    assert payload["evidence"][0]["chapter"] == 3
+    assert payload["evidence"][0]["sourceType"] == "original_text"
+
+
 def test_create_app_context_does_not_build_retrieval_client_from_env_by_default(monkeypatch):
     monkeypatch.setenv("LIGHTRAG_BASE_URL", "http://10.1.0.246:9621")
 
@@ -2226,6 +2430,36 @@ def test_create_app_context_can_build_retrieval_client_from_env_when_enabled(mon
 
     assert context.retrieval_client is not None
     assert context.retrieval_client.config.base_url == "http://10.1.0.246:9621"
+
+
+def test_create_app_context_can_build_question_analyzer_from_env_when_enabled(monkeypatch):
+    monkeypatch.setenv("HLM_ASK_PLANNER_BASE_URL", "http://planner.local/v1")
+    monkeypatch.setenv("HLM_ASK_PLANNER_MODEL", "planner-model")
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        use_env_question_analyzer=True,
+    )
+
+    assert isinstance(context.ask_engine.question_planner.semantic_analyzer, OpenAIQuestionAnalyzer)
+    assert context.ask_engine.question_planner.semantic_analyzer.config.base_url == "http://planner.local/v1"
+
+
+def test_create_app_context_can_build_evidence_judge_from_env_when_enabled(monkeypatch):
+    monkeypatch.setenv("HLM_ASK_EVIDENCE_JUDGE_BASE_URL", "http://judge.local/v1")
+    monkeypatch.setenv("HLM_ASK_EVIDENCE_JUDGE_MODEL", "judge-model")
+
+    context = create_app_context(
+        manifest_path=Path("book/chapters_manifest.json"),
+        data_dir=Path("data/app"),
+        static_dir=Path("static"),
+        use_env_evidence_judge=True,
+    )
+
+    assert isinstance(context.ask_engine.evidence_judge, OpenAIEvidenceJudge)
+    assert context.ask_engine.evidence_judge.config.base_url == "http://judge.local/v1"
 
 
 def test_create_app_context_reads_postgres_database_url_from_dotenv(monkeypatch, tmp_path):
@@ -2264,6 +2498,27 @@ def test_create_app_context_enables_postgres_from_dotenv_flag(monkeypatch, tmp_p
     assert context.store[1] == "postgresql://user:p*ss@example.local:5432/hlm"
 
 
+def test_create_app_context_skips_large_json_entity_caches_when_postgres_enabled(monkeypatch, tmp_path):
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:p*ss@example.local:5432/hlm")
+    monkeypatch.setattr("hlm_kg.web_app.PostgresContentStore", lambda database_url, fallback_store: ("postgres", fallback_store))
+    review_card = _review_card(characters=[{"name": "袭人", "actions": ["劝慰宝玉"]}])
+    manifest_path, data_dir, static_dir = _write_minimal_app_context_files(tmp_path, [review_card])
+    (data_dir / "entity_trace_cache.json").write_text("{not json", encoding="utf-8")
+    (data_dir / "entity_graph_cache.json").write_text("{not json", encoding="utf-8")
+
+    context = create_app_context(
+        manifest_path=manifest_path,
+        data_dir=data_dir,
+        static_dir=static_dir,
+        use_postgres_store=True,
+    )
+
+    assert context.store[0] == "postgres"
+    fallback_store = context.store[1]
+    assert fallback_store.entity_trace_payload("袭人", 1) is None
+    assert fallback_store.entity_graph_payloads_for_names(["袭人"]) == {}
+
+
 def test_create_app_context_defaults_to_json_store_when_dotenv_enables_postgres(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     Path(".env").write_text(
@@ -2300,7 +2555,7 @@ def test_create_app_context_fails_fast_when_postgres_enabled_without_database_ur
         raise AssertionError("expected explicit PostgreSQL configuration failure")
 
 
-def test_api_ask_returns_partial_answer_with_refusal_and_links():
+def test_api_ask_refuses_mixed_question_when_no_supported_evidence_exists():
     context = create_app_context(
         manifest_path=Path("book/chapters_manifest.json"),
         data_dir=Path("data/app"),
@@ -2315,10 +2570,10 @@ def test_api_ask_returns_partial_answer_with_refusal_and_links():
     )
 
     assert status == 200
-    assert payload["status"] == "partial"
-    assert payload["shortConclusion"]
-    assert payload["refusal"]["message"]
-    assert payload["continuationLinks"]
+    assert payload["status"] == "refused"
+    assert payload["shortConclusion"] == []
+    assert payload["refusal"]["reason"] == "NO_EVIDENCE"
+    assert payload["continuationLinks"] == []
 
 
 def test_api_ask_returns_refusal_without_internal_reason_code_in_message():

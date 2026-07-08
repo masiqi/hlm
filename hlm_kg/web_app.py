@@ -15,8 +15,10 @@ from hlm_kg.chapter_sources import ChapterSource, parse_chapter_sources
 from hlm_kg.content_store import ContentStore
 from hlm_kg.domain import ChapterReviewCard
 from hlm_kg.evidence_adapter import EvidenceCandidate, normalize_query_data_response
+from hlm_kg.evidence_judge import build_evidence_judge_from_env
 from hlm_kg.lightrag_client import LightRAGClient, LightRAGConfig
 from hlm_kg.postgres_config import load_database_url, load_dotenv, parse_bool
+from hlm_kg.semantic_question_analyzer import build_question_analyzer_from_env
 
 
 INLINE_ENTITY_MAX_CHAPTER_JUMPS = 12
@@ -66,28 +68,41 @@ def create_app_context(
     data_dir: Path,
     static_dir: Path,
     retrieval_client: Any | None = None,
+    semantic_analyzer: Any | None = None,
+    evidence_judge: Any | None = None,
     *,
     use_env_retrieval: bool = False,
+    use_env_question_analyzer: bool = False,
+    use_env_evidence_judge: bool = False,
     use_env_content_store: bool = False,
     use_postgres_store: bool = False,
 ) -> AppContext:
     dotenv = load_dotenv()
-    json_store = ContentStore.from_paths(manifest_path, data_dir)
-    store: Any = json_store
     postgres_setting = ""
     if use_env_content_store:
         postgres_setting = str(os.environ.get("HLM_CONTENT_STORE", dotenv.get("HLM_CONTENT_STORE", ""))).strip().lower()
     postgres_enabled = use_postgres_store or postgres_setting == "postgres" or parse_bool(postgres_setting)
+    database_url = (load_database_url() or load_database_url(dotenv)) if postgres_enabled else None
+    if postgres_enabled and database_url is None:
+        raise RuntimeError("DATABASE_URL is not set for PostgreSQL content store")
+    json_store = ContentStore.from_paths(manifest_path, data_dir, load_entity_caches=not postgres_enabled)
+    store: Any = json_store
     if postgres_enabled:
-        database_url = load_database_url() or load_database_url(dotenv)
-        if database_url is None:
-            raise RuntimeError("DATABASE_URL is not set for PostgreSQL content store")
         store = PostgresContentStore(database_url, fallback_store=json_store)
     if retrieval_client is None and use_env_retrieval:
         retrieval_env = {**dotenv, **os.environ}
         config = LightRAGConfig.from_env(retrieval_env)
         retrieval_client = LightRAGClient(config) if config is not None else None
-    return AppContext(store=store, ask_engine=AskEngine(store), static_dir=static_dir, retrieval_client=retrieval_client)
+    if semantic_analyzer is None and use_env_question_analyzer:
+        semantic_analyzer = build_question_analyzer_from_env({**dotenv, **os.environ})
+    if evidence_judge is None and use_env_evidence_judge:
+        evidence_judge = build_evidence_judge_from_env({**dotenv, **os.environ})
+    return AppContext(
+        store=store,
+        ask_engine=AskEngine(store, semantic_analyzer=semantic_analyzer, evidence_judge=evidence_judge),
+        static_dir=static_dir,
+        retrieval_client=retrieval_client,
+    )
 
 
 def handle_api_request(
@@ -2177,6 +2192,8 @@ def main() -> None:
         data_dir=Path("data/app"),
         static_dir=Path("static"),
         use_env_retrieval=True,
+        use_env_question_analyzer=True,
+        use_env_evidence_judge=True,
         use_env_content_store=True,
     )
     port = find_available_port(8765)

@@ -43,7 +43,7 @@ class ContentStore:
         self._entity_graph_cache = entity_graph_cache or {}
 
     @classmethod
-    def from_paths(cls, manifest_path: Path, data_dir: Path) -> ContentStore:
+    def from_paths(cls, manifest_path: Path, data_dir: Path, *, load_entity_caches: bool = True) -> ContentStore:
         manifest = _read_json(manifest_path)
         chapters = {
             int(item["number"]): Chapter(
@@ -143,10 +143,13 @@ class ContentStore:
             )
             for item in _read_json(data_dir / "evidence.json")
         }
-        trace_cache_path = data_dir / "entity_trace_cache.json"
-        entity_trace_cache = _read_json(trace_cache_path) if trace_cache_path.exists() else {}
-        graph_cache_path = data_dir / "entity_graph_cache.json"
-        entity_graph_cache = _read_json(graph_cache_path) if graph_cache_path.exists() else {}
+        entity_trace_cache = {}
+        entity_graph_cache = {}
+        if load_entity_caches:
+            trace_cache_path = data_dir / "entity_trace_cache.json"
+            entity_trace_cache = _read_json(trace_cache_path) if trace_cache_path.exists() else {}
+            graph_cache_path = data_dir / "entity_graph_cache.json"
+            entity_graph_cache = _read_json(graph_cache_path) if graph_cache_path.exists() else {}
         return cls(
             chapters=chapters,
             review_cards=review_cards,

@@ -43,7 +43,7 @@ class EntityResolver:
             deduped.append(mention)
         return tuple(deduped)
 
-    def resolve_mention(self, mention: str, *, context_text: str = "") -> ResolvedEntity:
+    def resolve_mention(self, mention: str, *, context_text: str = "", preferred_type: str | None = None) -> ResolvedEntity:
         clean_mention = str(mention or "").strip()
         if not clean_mention:
             return ResolvedEntity(
@@ -81,7 +81,17 @@ class EntityResolver:
                 extra_aliases=_aliases_for_candidate(exact_structural[0], self._cards),
             )
 
-        preferred_type = _preferred_type_from_context(context_text)
+        high_margin_exact = _high_margin_exact_candidate(clean_mention, exact, candidates)
+        if high_margin_exact is not None:
+            ambiguity = tuple(candidate for candidate in candidates if candidate.name != high_margin_exact.name)
+            return _resolved(
+                clean_mention,
+                high_margin_exact,
+                "high",
+                ambiguity=ambiguity,
+                extra_aliases=_aliases_for_candidate(high_margin_exact, self._cards),
+            )
+
         if preferred_type:
             typed = [candidate for candidate in candidates if candidate.type == preferred_type]
             if typed:
@@ -179,13 +189,6 @@ def _is_structurally_exact(mention: str, candidate: CandidateEntity) -> bool:
     return len(mention) >= 3 and candidate.type == "person"
 
 
-def _preferred_type_from_context(context_text: str) -> str | None:
-    context = str(context_text or "")
-    if any(term in context for term in ("几岁", "多大", "年纪", "年龄", "怎么死", "死因", "去世", "性格", "为人")):
-        return "person"
-    return None
-
-
 def _select_with_ambiguity(
     mention: str,
     candidates: list[CandidateEntity],
@@ -204,6 +207,28 @@ def _select_with_ambiguity(
     if same_type_contenders:
         return None, ranked
     return top, ranked[1:]
+
+
+def _high_margin_exact_candidate(
+    mention: str,
+    exact: list[CandidateEntity],
+    candidates: list[CandidateEntity],
+) -> CandidateEntity | None:
+    exact_named = [candidate for candidate in exact if candidate.name == mention]
+    if len(exact_named) != 1:
+        return None
+    selected = exact_named[0]
+    same_type_suffix_contenders = [
+        candidate
+        for candidate in candidates
+        if candidate.name != selected.name and candidate.type == selected.type and candidate.name.endswith(mention)
+    ]
+    if same_type_suffix_contenders:
+        return None
+    ranked = sorted(candidates, key=lambda candidate: -candidate.score)
+    if len(ranked) == 1:
+        return selected
+    return selected if selected.score - ranked[1].score >= 50 else None
 
 
 def _selection_pool_for_typed_context(mention: str, candidates: list[CandidateEntity]) -> list[CandidateEntity]:

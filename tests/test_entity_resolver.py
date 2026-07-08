@@ -21,7 +21,7 @@ class Store:
         self.knowledge_cards = cards
 
 
-def test_resolver_maps_short_mention_to_person_canonical_when_exact_card_is_non_person():
+def test_resolver_maps_short_mention_to_person_canonical_with_explicit_type_hint():
     resolver = EntityResolver(
         Store(
             [
@@ -31,7 +31,7 @@ def test_resolver_maps_short_mention_to_person_canonical_when_exact_card_is_non_
         )
     )
 
-    resolved = resolver.resolve_mention("黛玉", context_text="黛玉是怎么死的？")
+    resolved = resolver.resolve_mention("黛玉", preferred_type="person")
 
     assert resolved.canonical_name == "林黛玉"
     assert resolved.canonical_type == "person"
@@ -57,7 +57,31 @@ def test_resolver_keeps_short_person_mention_ambiguous_without_context():
     assert {candidate.name for candidate in resolved.ambiguity} == {"贾宝玉", "甄宝玉", "通灵宝玉"}
 
 
-def test_resolver_uses_person_context_to_select_person_canonical_from_ambiguous_alias():
+def test_resolver_prefers_high_margin_exact_short_name_over_derived_cards():
+    resolver = EntityResolver(
+        Store(
+            [
+                Card(id="card-jiamu", name="贾母", type="person", brief="贾府最高长辈。"),
+                Card(id="card-jiamu-event", name="贾母临终分嘱宝玉贾兰凤姐", type="event"),
+                Card(id="card-jiamu-image", name="贾母临终训诫凤姐", type="image"),
+                Card(id="card-jiamu-place", name="贾母院", type="place"),
+            ]
+        )
+    )
+
+    resolved = resolver.resolve_mention("贾母")
+
+    assert resolved.canonical_name == "贾母"
+    assert resolved.canonical_type == "person"
+    assert resolved.confidence == "high"
+    assert {candidate.name for candidate in resolved.ambiguity} == {
+        "贾母临终分嘱宝玉贾兰凤姐",
+        "贾母临终训诫凤姐",
+        "贾母院",
+    }
+
+
+def test_resolver_uses_explicit_type_hint_to_select_person_canonical_from_ambiguous_alias():
     resolver = EntityResolver(
         Store(
             [
@@ -69,7 +93,7 @@ def test_resolver_uses_person_context_to_select_person_canonical_from_ambiguous_
         )
     )
 
-    resolved = resolver.resolve_mention("宝玉", context_text="宝玉第一次在书中出现的时候是几岁？")
+    resolved = resolver.resolve_mention("宝玉", preferred_type="person")
 
     assert resolved.canonical_name == "贾宝玉"
     assert resolved.canonical_type == "person"
