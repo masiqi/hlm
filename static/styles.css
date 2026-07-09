@@ -55,6 +55,21 @@ main {
   margin-bottom: 20px;
 }
 
+.ask-status {
+  border-left: 3px solid #7b6b52;
+  background: #f7f3ea;
+  padding: 12px 14px;
+  margin: 12px 0 20px;
+}
+
+.ask-status p {
+  margin: 6px 0 0;
+}
+
+.muted {
+  color: #6f6659;
+}
+
 .home-actions {
   display: flex;
   flex-wrap: wrap;

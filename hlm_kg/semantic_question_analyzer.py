@@ -56,12 +56,15 @@ class OpenAIQuestionAnalyzer:
                     "content": (
                         "你是《红楼梦》阅读产品的问题理解器。"
                         "只把用户问题转成开放证据合同 JSON，不回答事实，不补写证据，"
-                        "不要把问题归入固定枚举类别。"
+                        "也不要加入候选答案。"
                         "question_focus 用一句话描述用户真正要问的事实焦点。"
                         "question_focus 和 required_evidence 只能描述证据类型，不得写候选答案、"
                         "不得加入用户未提及且尚未由候选证据提供的事实词。"
                         "required_evidence 写明候选证据必须满足的条件。"
                         "constraints 是字符串数组，可记录 first_mention 等约束。"
+                        "answer_dimensions 是可选的后端证据检索/校验策略数组，不是事实答案；"
+                        "只能从 chapter_location、age、health、death、terminal_chronology 中选择，"
+                        "普通开放问答或不确定时返回空数组。"
                         "known_subjects 是本地实体解析候选，可能包含 ambiguity；"
                         "你只能用它们帮助判断 subject_type_hint 和证据合同，不能把它们当作事实答案。"
                         "subject_type_hint 只能是 null、person、place、object、event、literary_text、concept。"
@@ -81,6 +84,7 @@ class OpenAIQuestionAnalyzer:
                                 "question_focus": None,
                                 "required_evidence": [],
                                 "constraints": [],
+                                "answer_dimensions": [],
                                 "intent": "ask_fact",
                                 "answer_shape": None,
                                 "subject_type_hint": None,
@@ -98,6 +102,7 @@ class OpenAIQuestionAnalyzer:
             question_focus=_optional_string(data.get("question_focus")),
             required_evidence=_string_tuple(data.get("required_evidence")),
             constraints=_string_tuple(data.get("constraints")),
+            answer_dimensions=_string_tuple(data.get("answer_dimensions")),
             intent=_optional_string(data.get("intent")),
             answer_shape=_optional_string(data.get("answer_shape")),
             subject_type_hint=_optional_string(data.get("subject_type_hint")),

@@ -1,4 +1,4 @@
-.PHONY: help env split-chapters analyze-questions dry-run validate-samples generate-chapter-cards generate-all-chapter-materials import-chapter-cards build-topic-index build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed sync-chapter-card-postgres build-entity-trace-cache build-entity-graph-cache sync-entity-graph-cache-postgres build-static-chapter-cache
+.PHONY: help env split-chapters analyze-questions dry-run validate-samples validate-ask-quality-dataset generate-chapter-cards generate-all-chapter-materials import-chapter-cards build-topic-index build-kg lightrag-up lightrag-down test web postgres-migrate postgres-import-seed sync-chapter-card-postgres build-entity-trace-cache build-entity-graph-cache sync-entity-graph-cache-postgres build-static-chapter-cache
 
 help:
 	@echo "Targets:"
@@ -7,6 +7,7 @@ help:
 	@echo "  make analyze-questions Parse JSONL samples and write docs/question_types.md"
 	@echo "  make dry-run           Validate local KG build flow without LightRAG API calls"
 	@echo "  make validate-samples  Validate internal calibration sample quality"
+	@echo "  make validate-ask-quality-dataset  Validate Ask retrieval quality dataset"
 	@echo "  make generate-chapter-cards ARGS='--chapters 3,5,8'"
 	@echo "  make generate-all-chapter-materials ARGS='--chapters 1-120'"
 	@echo "  make import-chapter-cards INPUT=cards.json OUTPUT=data/app/chapter_review_cards.json DATA_DIR=data/app"
@@ -38,6 +39,9 @@ dry-run:
 
 validate-samples:
 	python -m hlm_kg.validation_samples
+
+validate-ask-quality-dataset:
+	uv run python -m hlm_kg.ask_quality_dataset
 
 generate-chapter-cards:
 	python scripts/generate_chapter_cards.py $(ARGS)
