@@ -226,6 +226,17 @@ class FakeLightRAGClient:
         return self.response
 
 
+EXPECTED_ASK_RETRIEVAL_OPTIONS = {
+    "only_need_context": True,
+    "top_k": 40,
+    "chunk_top_k": 20,
+    "enable_rerank": True,
+    "max_entity_tokens": 6000,
+    "max_relation_tokens": 8000,
+    "max_total_tokens": 30000,
+}
+
+
 class FailingRetrievalClient:
     def query_data(self, query: str, mode: str = "hybrid", **options):
         raise AssertionError("retrieval should not be called when local judged evidence answers")
@@ -255,7 +266,7 @@ def test_ask_engine_answers_chapter_location_from_normalized_query_data():
     answer = make_engine(location_semantics()).ask("宝黛初会发生在哪一回？", retrieval_client=client)
 
     validate_answer(answer)
-    assert client.queries == [("宝黛初会发生在哪一回？", "hybrid", {"only_need_context": True})]
+    assert client.queries == [("宝黛初会发生在哪一回？", "mix", EXPECTED_ASK_RETRIEVAL_OPTIONS)]
     assert answer.status == "answered"
     assert "第三回" in answer.short_conclusion[0].text
     assert any(evidence.chapter == 3 for evidence in answer.evidence)
@@ -349,7 +360,7 @@ def test_ask_engine_answers_relationship_question_from_query_data_evidence():
     answer = make_engine().ask("林黛玉和贾宝玉的关系是什么？", retrieval_client=client)
 
     validate_answer(answer)
-    assert client.queries == [("林黛玉和贾宝玉的关系是什么？", "hybrid", {"only_need_context": True})]
+    assert client.queries == [("林黛玉和贾宝玉的关系是什么？", "mix", EXPECTED_ASK_RETRIEVAL_OPTIONS)]
     assert answer.status == "answered"
     assert "姑表兄妹" in answer.short_conclusion[0].text
     assert [link.target_id for link in answer.continuation_links] == ["3", "5"]
@@ -485,7 +496,52 @@ def test_ask_engine_does_not_call_planner_generated_retrieval_queries():
 
     validate_answer(answer)
     assert answer.status == "refused"
-    assert client.queries == [("林黛玉喜欢什么颜色？", "hybrid", {"only_need_context": True})]
+    assert client.queries == [("林黛玉喜欢什么颜色？", "mix", EXPECTED_ASK_RETRIEVAL_OPTIONS)]
+
+
+def test_ask_engine_prefers_chunk_evidence_over_broad_graph_summary():
+    evidence_judge = SupportFirstEvidenceJudge()
+    response = {
+        "status": "success",
+        "data": {
+            "entities": [],
+            "relationships": [
+                {
+                    "src_id": "林黛玉",
+                    "tgt_id": "贾宝玉",
+                    "keywords": "知己关系,病情",
+                    "description": "林黛玉与贾宝玉关系很深。林黛玉有不足之症。",
+                    "source_id": "doc-003-chunk-001",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "chunks": [
+                {
+                    "chunk_id": "doc-003-chunk-001",
+                    "content": "众人见黛玉身体面貌虽弱不胜衣，便知他有不足之症。",
+                    "file_path": "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt",
+                }
+            ],
+            "references": [],
+        },
+        "metadata": {"query_mode": "mix"},
+    }
+
+    answer = make_engine(
+        open_person_semantics(
+            "林黛玉的病症、身体状况、人物关系、知己关系",
+            evidence_terms=("不足之症",),
+            required_evidence=("候选证据必须直接说明林黛玉的病症和身体状况，不要只概括人物关系",),
+        ),
+        evidence_judge=evidence_judge,
+    ).ask("林黛玉得了什么病？", retrieval_client=FakeLightRAGClient(response))
+
+    validate_answer(answer)
+    assert answer.status == "answered"
+    assert answer.evidence[0].source_type == "original_text"
+    assert "不足之症" in answer.evidence[0].evidence_text
+    assert "贾宝玉" not in answer.evidence[0].evidence_text
+    assert evidence_judge.calls[0] == "003-第三回-托内兄如海荐西宾 接外孙贾母惜孤女.txt"
 
 
 def test_ask_engine_falls_back_to_original_text_when_retrieval_hits_do_not_answer_age_question():

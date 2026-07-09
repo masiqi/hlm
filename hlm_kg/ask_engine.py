@@ -30,6 +30,16 @@ from hlm_kg.question_planner import (
 OUT_OF_SCOPE_TERMS = ("作文", "现实", "八卦", "数学", "英语")
 MAX_RETRIEVAL_EVIDENCE = 3
 MAX_LOCAL_EVIDENCE_CANDIDATES = 8
+ASK_RETRIEVAL_MODE = "mix"
+ASK_RETRIEVAL_OPTIONS = {
+    "only_need_context": True,
+    "top_k": 40,
+    "chunk_top_k": 20,
+    "enable_rerank": True,
+    "max_entity_tokens": 6000,
+    "max_relation_tokens": 8000,
+    "max_total_tokens": 30000,
+}
 DEATH_EVIDENCE_MARKERS = (
     "病情加重",
     "急怒攻心",
@@ -129,7 +139,7 @@ class AskEngine:
                 return self._candidate_evidence_answer(question, local_candidates, profile=profile)
 
         try:
-            responses = [retrieval_client.query_data(question, mode="hybrid", only_need_context=True)]
+            responses = [retrieval_client.query_data(question, mode=ASK_RETRIEVAL_MODE, **ASK_RETRIEVAL_OPTIONS)]
         except Exception:  # noqa: BLE001 - retrieval failure should not expose internals to students
             return self._refuse(question, "GRAPH_UNAVAILABLE", "关系线索暂时不可用，当前不能生成可靠回答。")
 
@@ -474,7 +484,7 @@ def _rank_candidates_for_profile(candidates: list[EvidenceCandidate], profile: Q
     return sorted(candidates, key=lambda candidate: _candidate_contract_score(candidate, profile), reverse=True)
 
 
-def _candidate_contract_score(candidate: EvidenceCandidate, profile: QuestionProfile) -> tuple[int, int, int]:
+def _candidate_contract_score(candidate: EvidenceCandidate, profile: QuestionProfile) -> tuple[int, int, int, int]:
     text = "\n".join(
         [
             candidate.title,
@@ -490,13 +500,22 @@ def _candidate_contract_score(candidate: EvidenceCandidate, profile: QuestionPro
     weighted_coverage = sum(len(term) for term in terms if term and term in text)
     subject_coverage = sum(1 for term in profile.subject_terms if term and term in text)
     terminal_order = _candidate_terminal_source_order(candidate) if "terminal_chronology" in profile.dimensions else 0
-    return (coverage * 100 + weighted_coverage * 10 + subject_coverage * 20, terminal_order, candidate.score)
+    return (
+        _candidate_evidence_source_priority(candidate),
+        coverage * 100 + weighted_coverage * 10 + subject_coverage * 20,
+        terminal_order,
+        candidate.score,
+    )
 
 
 def _candidate_terminal_source_order(candidate: EvidenceCandidate) -> int:
     if not candidate.chapter_sources:
         return 0
     return max(source.chapter_number for source in candidate.chapter_sources)
+
+
+def _candidate_evidence_source_priority(candidate: EvidenceCandidate) -> int:
+    return {"chunk": 3, "relationship": 2, "entity": 1}.get(candidate.kind, 0)
 
 
 def _contract_evidence_terms(profile: QuestionProfile) -> tuple[str, ...]:
