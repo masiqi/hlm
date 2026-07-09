@@ -18,6 +18,7 @@
 - `data/inputs/`：LightRAG 扫描输入目录。
 - `data/rag_storage/`：LightRAG 工作目录。
 - `data/prompts/`：LightRAG 和内容生成提示词。
+- `data/prompts/definitions.json`：提示词定义登记表，记录提示词名称、版本、用途、输入输出 schema、证据规则和拒答规则；学生端网页不会直接展示这些提示词定义。
 - `static/`：前端页面资源。
 - `hlm_kg/`：后端应用代码。
 - `scripts/`：内容生成、缓存构建和 PostgreSQL 同步脚本。
